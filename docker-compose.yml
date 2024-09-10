@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # frontend:
+  #   build:
+  #     context: ./Frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5173:5173"
+  # backend:
+  #   build:
+  #     context: ./Backend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  mongodb:
+    image: mongo:latest
+    container_name: ReviewHub
+    ports:
+      - "27017:27017" # Expose port 27017 on the host and map it to the container port 27017
+    volumes:
+      - mongodb_data:/data/db # Mount a named volume for data persistence
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin # Define a root username
+      - MONGO_INITDB_ROOT_PASSWORD=admin123 # Define a root password
+
+volumes:
+  mongodb_data: # Define the named volume
