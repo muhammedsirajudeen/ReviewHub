@@ -24,7 +24,7 @@ export default function Course(): ReactElement {
       setCourses(response.courses);
     }
     dataWrapper();
-  }, []);
+  }, [dispatch]);
   const courseNavHandler = () => {
     navigate("/user/roadmap");
   };

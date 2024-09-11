@@ -17,7 +17,7 @@ export default function SideBar(): ReactElement {
   };
   return (
     <>
-      <nav className="h-screen absolute top-0 w-28 flex items-center flex-col justify-start bg-navbar p-4">
+      <nav className="h-screen fixed top-0 w-28 flex items-center flex-col justify-start bg-navbar p-4">
         <h1 className="text-xl font-light text-white">OLP</h1>
         <div className={` ${page==="dashboard"?"bg-blue-400":""} flex items-center justify-centerreview p-6 rounded-lg mt-10`}>
           <a href="/user/dashboard">

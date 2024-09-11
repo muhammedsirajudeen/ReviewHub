@@ -2,10 +2,9 @@ import express from "express";
 import AdminController from "../controller/admin/AdminController";
 import CourseController from "../controller/admin/CourseController";
 import passport from "passport";
-import upload from "../helper/fileuploadHelper";
+import upload, { resizeMiddleware } from "../helper/fileuploadHelper";
 import UploadHandler from "../helper/fileuploadHelper";
 const router = express.Router();
-
 //user Management
 router.get(
   "/users",
@@ -30,6 +29,7 @@ router.post(
   "/course",
   passport.authenticate("jwt",{session:false}),
   UploadHandler('course').single('file'),
+  resizeMiddleware,
   CourseController.CourseController
 )
 
