@@ -3,20 +3,15 @@ import CourseForm from "../../components/Form/CourseForm";
 import { flushSync } from "react-dom";
 import axios from "axios";
 import url from "../../helper/backendUrl";
+import { useNavigate } from "react-router";
+import { courseProps } from "../../types/courseProps";
 
-interface courseProps{
-    _id:string,
-    courseName:string,
-    courseDescription:string,
-    domain:string,
-    courseImage:string,
-    tagline:string
-}
 
 export default function Course(): ReactElement {
   const [open, setOpen] = useState<boolean>(false);
   const [courses,setCourses]=useState<Array<courseProps>>([])
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const navigate=useNavigate()
     useEffect(()=>{
         async function dataWrapper(){
             const response=(await axios.get(url+"/user/course",{
@@ -42,14 +37,28 @@ export default function Course(): ReactElement {
     setOpen(false);
     dialogRef.current?.close();
   };
+  const courseNavHandler=()=>{
+    navigate('/admin/roadmap')
+  }
+  const courseModalHandler=(e:React.MouseEvent<HTMLImageElement>)=>{
+    e.stopPropagation()
+    alert("clicked here")
+  }
 
   return (
     <>
     
-      <div className="ml-36 mt-10 flex items-center justify-evenly">
+      <div className="ml-36 mt-10 flex items-center justify-evenly flex-wrap ">
         {courses.map((course)=>{
             return(
-                <p key={course._id} >{course.courseName}</p>
+               <div key={course._id} onClick={courseNavHandler} className="flex h-72 w-80 shadow-xl items-center justify-center flex-col">
+                <img className="w-full h-40" src={`${url}/course/${course.courseImage}`}/>
+                <div  className="flex justify-end w-full">
+                  <img onClick={(e)=>courseModalHandler(e)}  src="/ellipsis.png" className="h-3 w-3"/>
+                </div>
+                <p className="text-center text-2xl font-light">{course.courseName}</p>
+                <p className="text-center text-xs font-light">{course.courseDescription}</p>
+               </div>
             )
         })}
         <div className="flex h-72 w-80 shadow-xl items-center flex-col justify-center">

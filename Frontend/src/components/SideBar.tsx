@@ -24,7 +24,7 @@ export default function SideBar(): ReactElement {
             <img  src="/sidebar/dashboard.png"/>   
           </a>
         </div>
-        <div className="flex items-center justify-center mt-28">
+        <div className={` ${page==="course"?"bg-blue-400":""} flex items-center justify-centerreview p-6 rounded-lg mt-10`}>
           <a href="/user/courses">
             <img  src="/sidebar/courses.png"/>   
           </a>
