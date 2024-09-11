@@ -13,19 +13,19 @@ interface userProps {
 export interface GlobalState {
   authenticated: boolean;
   user: userProps;
-  page:string,
+  page: string;
 }
 
 //here do jwt authentication
 const initialState: GlobalState = {
   authenticated: false,
-  page:"",
+  page: "",
   user: {},
 };
 
 export const globalSlice = createSlice({
   name: "global",
-  initialState,
+  initialState: initialState,
   reducers: {
     setAuthenticated: (state) => {
       state.authenticated = true;
@@ -36,8 +36,8 @@ export const globalSlice = createSlice({
     setUser: (state, action: PayloadAction<userProps>) => {
       state.user = action.payload;
     },
-    setPage: (state,action:PayloadAction<string>)=>{
-      state.page=action.payload
+    setPage: (state, action: PayloadAction<string>) => {
+      state.page = action.payload;
     },
   },
 });

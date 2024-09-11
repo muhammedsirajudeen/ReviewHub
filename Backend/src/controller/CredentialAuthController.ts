@@ -75,39 +75,58 @@ const CredentialSignin = async (req: Request, res: Response) => {
 
 const CredentialForgot=async (req:Request,res:Response)=>{
   const {email}=req.body
-  console.log(email)
   const uuid=randomUUID()
   UuidMapping.set(email,uuid)
-  let mailOptions = {
-    from: 'muhammedsirajudeen29@gmail.com',
-    to: email,
-    subject: 'Reset Password',
-    text: `Reset Password using this link <a href="http://localhost:5173/forgot?token=${uuid}`
-  };
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log('Error occurred:', error);
-      res.status(500).json({message:"success"})
-
-    } else {
-      console.log('Email sent:', info.response);
-      res.status(200).json({message:"success"})
-      
+  try{
+    if(await User.findOne({email})){
+      let mailOptions = {
+        from: 'muhammedsirajudeen29@gmail.com',
+        to: email,
+        subject: 'Reset Password',
+        text: `Reset Password using this link <a href="http://localhost:5173/forgot?token=${uuid}`
+      };
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log('Error occurred:', error);
+          res.status(500).json({message:"success"})
+    
+        } else {
+          console.log('Email sent:', info.response);
+          res.status(200).json({message:"success"})
+          
+        }
+      });
+    } else{
+      res.status(200).json({message:"User not found"})
     }
-  });
+  }catch(error){
+    res.status(500).json({message:"server error"})
+  }
+
 }
 
-const CredentialPasswordChange=(req:Request,res:Response)=>{
+const CredentialPasswordChange=async (req:Request,res:Response)=>{
   let {password,email}=req.body
-  console.log(email)
   let {id}=req.query
-  console.log(UuidMapping)
   let uuid=UuidMapping.get(email)
+  console.log(UuidMapping,email)
   console.log(id,uuid)
-  if(id===uuid){
-    res.json({message:"success"})
-  }else{
-    res.json({message:"invalid"})
+  try{
+    if(id===uuid){
+      let updateUser=await User.findOne({email:email})
+      if(updateUser){
+
+        updateUser.password=await hashPassword(password)
+        await updateUser.save()
+        res.status(200).json({message:"success"})
+      }else{
+        res.status(401).json({message:"unauthorized"})
+      }
+    }else{
+      res.json({message:"invalid"})
+    }
+  }catch(error){
+    res.status(500).json({message:"server error occured"})
   }
 
 }

@@ -19,7 +19,7 @@ import AuthPrivateRoute from "./components/AuthPrivateRoute";
 import UserPrivateRoute from "./components/UserPrivateRoute";
 import AdminPrivateRoute from "./components/AdminPrivateRoute";
 import Forgot from "./pages/Authentication/Forgot";
-
+import AdminCourse from "./pages/Admin/Course";
 const router = createBrowserRouter([
   //authentication routes  
   {
@@ -44,7 +44,8 @@ const router = createBrowserRouter([
       },
       {
         path:"/forgot",
-        element:<AuthPrivateRoute Component={Forgot}/>
+        element:<AuthPrivateRoute Component={Forgot}/>,
+        loader:tokenVerifier
       }
     ],
   },
@@ -52,13 +53,21 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: <AdminPrivateRoute Component={AdminSideBar} />,
+    // element:<AdminSideBar/>,
     loader: tokenVerifier,
     children: [
       {
         path: "/admin/dashboard",
         element: <AdminPrivateRoute Component={AdminDashboard} />,
-        loader: tokenVerifier,
+        loader:tokenVerifier
       },
+      {
+        path:"/admin/courses",
+        element:<AdminPrivateRoute Component={AdminCourse} />,
+        loader:tokenVerifier
+        
+        
+      }
     ],
   },
   //user routes

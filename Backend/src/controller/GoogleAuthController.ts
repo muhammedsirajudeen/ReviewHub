@@ -3,6 +3,7 @@ import axios from "axios";
 import User from "../model/User";
 import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
+import { hashPassword } from "../helper/bcryptHelper";
 dotenv.config();
 interface responseProps {
   email: string;
@@ -80,7 +81,7 @@ const GoogleSignup = async (req: Request, res: Response) => {
       //registering new user here
       let newUser = new User({
         email: userData.email,
-        password: userData.id,
+        password: await hashPassword(userData.id),
         profileImage: userData.picture,
       });
       await newUser.save();

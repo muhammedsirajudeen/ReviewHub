@@ -33,7 +33,8 @@ export default function Forgot(): ReactElement {
       }
     )).data;
     if(response.message==="success"){
-        toast("success")
+        toast("Password Changed Successfully")
+        setTimeout(()=>navigate('/signin'),1000)
     }else{
         toast(response.message)
     }
