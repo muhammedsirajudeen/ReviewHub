@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import axios from "axios";
-import User from "../model/User";
+import User from "../../model/User";
 import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
-import { hashPassword } from "../helper/bcryptHelper";
+import { hashPassword } from "../../helper/bcryptHelper";
 dotenv.config();
 interface responseProps {
   email: string;
@@ -44,7 +44,7 @@ const GoogleLogin = async (req: Request, res: Response) => {
             admin:true
           },
           process.env.SECRET_KEY ?? "",
-          { expiresIn: "1h" }
+          { expiresIn: "12h" } //decresae in production
         );
         //temporary solution thinking of better approaches
         return res.status(200).json({ message: "success", token: token ,admin:true});
@@ -56,7 +56,7 @@ const GoogleLogin = async (req: Request, res: Response) => {
           password: checkUser.password,
         },
         process.env.SECRET_KEY ?? "",
-        { expiresIn: "1h" }
+        { expiresIn: "12h" } //dont forget to decrease in production
       );
       res.status(200).json({ message: "success", token: token });
     } else {

@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import User from "../model/User";
+import User from "../../model/User";
 import jwt from "jsonwebtoken";
 const backendUrl="http://localhost:3000/"
 
-import { hashPassword,comparePasswords } from "../helper/bcryptHelper";
+import { hashPassword,comparePasswords } from "../../helper/bcryptHelper";
 import { randomUUID } from "crypto";
-import transporter from "../config/nodemailerConfig";
+import transporter from "../../config/nodemailerConfig";
 
 //storing it in dict
 let UuidMapping:Map<string,string>=new Map()

@@ -1,11 +1,12 @@
 import { Request,Response } from "express"
-import User from "../model/User"
+import User from "../../model/User"
 interface userProps{
     email:string,
     password:string,
     profileImage:string
 }
 const backendUrl="http://localhost:3000/"
+
 const UserUpdate=async (req:Request,res:Response)=>{
     try{
         const user=req.user as userProps

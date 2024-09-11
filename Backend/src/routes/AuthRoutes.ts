@@ -1,12 +1,13 @@
 import express, { Request, Response } from "express";
-import GoogleAuthController from "../controller/GoogleAuthController";
-import CredentialAuthController from "../controller/CredentialAuthController";
+import GoogleAuthController from "../controller/auth/GoogleAuthController";
+import CredentialAuthController from "../controller/auth/CredentialAuthController";
 import passport from "passport";
-import TokenVerifier from "../controller/TokenVerifier";
+import TokenVerifier from "../controller/auth/TokenVerifier";
 import upload from "../helper/fileuploadHelper";
 const router = express.Router();
 
 import "./passport-setup/passport-setup";
+import UploadHandler from "../helper/fileuploadHelper";
 
 router.post("/google/login", GoogleAuthController.GoogleLogin);
 router.post("/google/signup", GoogleAuthController.GoogleSignup);
@@ -17,7 +18,7 @@ router.post("/password",CredentialAuthController.CredentialPasswordChange)
 
 router.post(
   "/credential/signup",
-  upload.single("file"),
+  UploadHandler('profile').single('file'),
   CredentialAuthController.CredentialSignup
 );
 router.post("/credential/signin", CredentialAuthController.CredentialSignin);
