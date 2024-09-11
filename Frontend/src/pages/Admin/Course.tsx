@@ -5,6 +5,8 @@ import axios from "axios";
 import url from "../../helper/backendUrl";
 import { useNavigate } from "react-router";
 import { courseProps } from "../../types/courseProps";
+import { useAppDispatch } from "../../store/hooks";
+import { setPage } from "../../store/globalSlice";
 
 export default function Course(): ReactElement {
   const [open, setOpen] = useState<boolean>(false);
@@ -12,6 +14,7 @@ export default function Course(): ReactElement {
   const [pagecount, setPagecount] = useState<number>(0);
   const [currentpage, setCurrentpage] = useState<number>(1);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const dispatch=useAppDispatch()
   const navigate = useNavigate();
   useEffect(() => {
     async function dataWrapper() {
@@ -24,9 +27,10 @@ export default function Course(): ReactElement {
       ).data;
       setCourses(response.courses);
       setPagecount(response.pageLength);
+      dispatch(setPage("course"))
     }
     dataWrapper();
-  }, [currentpage]);
+  }, [currentpage,dispatch]);
   const openForm = () => {
     //ensuring state is updated before accessing the dom
     flushSync(() => {
@@ -38,15 +42,15 @@ export default function Course(): ReactElement {
     setOpen(false);
     dialogRef.current?.close();
   };
-  const courseNavHandler = () => {
-    navigate("/admin/roadmap");
+  const courseNavHandler = ( id:string) => {
+    navigate("/admin/roadmap",{state:{id:id}});
   };
   const courseModalHandler = (e: React.MouseEvent<HTMLImageElement>) => {
     e.stopPropagation();
     alert("clicked here");
   };
   const pageHandler = (count: number) => {
-    const page = Math.ceil(count / 10);
+    const page = Math.ceil(count / 10)+1;
     const array = [];
     for (let i = 0; i < page; i++) {
       array.push(i + 1);
@@ -63,8 +67,8 @@ export default function Course(): ReactElement {
   }
   const nextpageHandler=()=>{
     const next=currentpage+1
-    if(next>Math.ceil(pagecount / 10)){
-      setCurrentpage(Math.ceil(pagecount / 10))
+    if(next>Math.ceil(pagecount / 10)+1){
+      setCurrentpage(Math.ceil(pagecount / 10)+1)
       return
     }
     setCurrentpage(next)
@@ -78,7 +82,7 @@ export default function Course(): ReactElement {
           return (
             <div
               key={course._id}
-              onClick={courseNavHandler}
+              onClick={()=>courseNavHandler(course._id)}
               className="flex h-72 w-80 shadow-xl items-center justify-center flex-col"
             >
               <img

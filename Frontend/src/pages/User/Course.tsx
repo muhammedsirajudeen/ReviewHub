@@ -42,7 +42,7 @@ export default function Course(): ReactElement {
     alert("favorite clicked");
   };
   const pageHandler = (count: number) => {
-    const page = Math.ceil(count / 10);
+    const page = Math.ceil(count / 10)+1;
     const array = [];
     for (let i = 0; i < page; i++) {
       array.push(i + 1);
@@ -59,8 +59,8 @@ export default function Course(): ReactElement {
   };
   const nextpageHandler = () => {
     const next = currentpage + 1;
-    if (next > Math.ceil(pagecount / 10)) {
-      setCurrentpage(Math.ceil(pagecount / 10));
+    if (next > Math.ceil(pagecount / 10)+1) {
+      setCurrentpage(Math.ceil(pagecount / 10)+1);
       return;
     }
     setCurrentpage(next);
