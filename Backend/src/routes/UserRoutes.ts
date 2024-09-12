@@ -6,8 +6,11 @@ import "./passport-setup/passport-setup";
 import upload from "../helper/fileuploadHelper";
 import UploadHandler from "../helper/fileuploadHelper";
 import CourseController from "../controller/user/CourseController";
+import RoadmapController from "../controller/user/RoadmapController";
 
 router.get("/course", passport.authenticate("jwt", { session: false }),CourseController.CourseList);
+
+router.get("/roadmap/:courseId",passport.authenticate("jwt",{session:false}),RoadmapController.RoadmapList)
 
 router.post(
   "/update",

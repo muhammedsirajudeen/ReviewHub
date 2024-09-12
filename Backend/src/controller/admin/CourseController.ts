@@ -1,17 +1,17 @@
-import { Request, Response } from "express";
-import Course from "../../model/Course";
-import { IUser } from "../../model/User";
+import { Request, Response } from 'express';
+import Course from '../../model/Course';
+import { IUser } from '../../model/User';
 const CourseController = async (req: Request, res: Response) => {
   let { courseName, courseDescription, domain, tagline } = req.body;
-  
+
   let userhere = req.user as IUser;
-  if (userhere.authorization !== "admin") {
-    return res.status(403).json({ message: "insufficient permissions" });
+  if (userhere.authorization !== 'admin') {
+    return res.status(403).json({ message: 'insufficient permissions' });
   }
   try {
     let checkCourse = await Course.findOne({ courseName: courseName });
     if (checkCourse) {
-      res.status(409).json({ message: "course already exists" });
+      res.status(409).json({ message: 'course already exists' });
     } else {
       const newCourse = new Course({
         courseName,
@@ -21,10 +21,10 @@ const CourseController = async (req: Request, res: Response) => {
         courseImage: req.file?.filename,
       });
       await newCourse.save();
-      res.json({ message: "success" });
+      res.json({ message: 'success' });
     }
   } catch (error) {
-    res.status(500).json({ message: "server error occured" });
+    res.status(500).json({ message: 'server error occured' });
   }
 };
 

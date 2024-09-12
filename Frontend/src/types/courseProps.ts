@@ -6,3 +6,16 @@ export interface courseProps{
     courseImage:string,
     tagline:string
 }
+
+export interface roadmapProps {
+    _id: string;
+    roadmapName: string;
+    roadmapDescription: string;
+    courseId: string;
+    lessonCount: number;
+}
+export interface chapterProps{
+    _id:string,
+    chapterName:string,
+    roadmapId:string
+}

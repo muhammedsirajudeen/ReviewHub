@@ -1,7 +1,5 @@
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import RoadmapForm from '../../components/Form/RoadmapForm';
-import { flushSync } from 'react-dom';
 import url from '../../helper/backendUrl';
 import axios from 'axios';
 
@@ -15,11 +13,9 @@ interface roadmapProps {
 
 export default function Roadmap(): ReactElement {
     const location = useLocation();
-    const [open, setOpen] = useState<boolean>(false);
     const [pagecount, setPagecount] = useState<number>(0);
     const [roadmaps, setRoadmaps] = useState<Array<roadmapProps>>([]);
     const [currentpage, setCurrentpage] = useState<number>(1);
-    const dialogRef = useRef<HTMLDialogElement>(null);
     const navigate=useNavigate()
     useEffect(() => {
         console.log("loaded")
@@ -27,7 +23,7 @@ export default function Roadmap(): ReactElement {
             const response = (
                 await axios.get(
                     url +
-                        `/user/roadmap/${location.state.id}?page=${currentpage}`,
+                        `/user/roadmap/${location.state.courseId}?page=${currentpage}`,
                     {
                         headers: {
                             Authorization: `Bearer ${window.localStorage.getItem(
@@ -42,19 +38,10 @@ export default function Roadmap(): ReactElement {
             setPagecount(response.pageLength);
         }
         dataWrapper();
-    }, [currentpage, location.state.id]);
+    }, [currentpage, location.state.courseId]);
 
     //in useffect we have to check existing roadmap
-    const formHandler = () => {
-        flushSync(() => {
-            setOpen(true);
-        });
-        dialogRef.current?.showModal();
-    };
-    const closeForm = () => {
-        setOpen(false);
-        dialogRef.current?.close();
-    };
+
     //pagination handleers
     const pageHandler = (count: number) => {
         const page = Math.ceil(count / 10) + 1;
@@ -82,8 +69,8 @@ export default function Roadmap(): ReactElement {
     };
 
     const roadmapNavHandler=(roadmap:roadmapProps)=>{
-        console.log(roadmap)
-        navigate('/admin/chapter',{state:{roadmap:roadmap}})
+        // console.log(roadmap)
+        navigate('/user/chapter',{state:{roadmapId:roadmap._id}})
         
     }
     const dialogHandler=(e:React.MouseEvent<HTMLImageElement>)=>{
@@ -122,16 +109,7 @@ export default function Roadmap(): ReactElement {
                     </div>
                 );
             })}
-            <div className="flex h-64 w-72 shadow-xl items-center flex-col justify-center">
-                <button
-                    onClick={formHandler}
-                    style={{ fontSize: '4vw' }}
-                    className="flex items-center justify-center text-4xl font-light rounded-lg"
-                >
-                    +
-                </button>
-                <p className="text-sm mt-10 text-gray-500">Add Roadmap...</p>
-            </div>
+
             <div className="fixed left-1/2 bottom-10  w-screen flex">
                 <div className="flex items-center justify-evenly w-32">
                     <button
@@ -162,15 +140,6 @@ export default function Roadmap(): ReactElement {
                     </button>
                 </div>
             </div>
-
-            {open && (
-                <dialog
-                    ref={dialogRef}
-                    className="flex items-center justify-center flex-col w-96  p-2"
-                >
-                    <RoadmapForm id={location.state.id} closeForm={closeForm} />
-                </dialog>
-            )}
         </div>
     );
 }

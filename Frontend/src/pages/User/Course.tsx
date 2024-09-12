@@ -30,8 +30,8 @@ export default function Course(): ReactElement {
     }
     dataWrapper();
   }, [dispatch,currentpage]);
-  const courseNavHandler = () => {
-    navigate("/user/roadmap");
+  const courseNavHandler = (course:courseProps) => {
+    navigate("/user/roadmap",{state:{courseId:course._id}});
   };
   const courseModalHandler = (e: React.MouseEvent<HTMLImageElement>) => {
     e.stopPropagation();
@@ -71,7 +71,7 @@ export default function Course(): ReactElement {
         return (
           <div
             key={course._id}
-            onClick={courseNavHandler}
+            onClick={()=>courseNavHandler(course)}
             className="flex h-72 w-80 shadow-xl items-center justify-center flex-col"
           >
             <img

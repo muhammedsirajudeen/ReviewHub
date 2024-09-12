@@ -18,10 +18,14 @@ import AdminSideBar from "./components/AdminSideBar";
 import AuthPrivateRoute from "./components/AuthPrivateRoute";
 import UserPrivateRoute from "./components/UserPrivateRoute";
 import AdminPrivateRoute from "./components/AdminPrivateRoute";
+import AdminRoadmap from "./pages/Admin/Roadmap"
+import AdminChapter from "./pages/Admin/Chapter"
+
 import Forgot from "./pages/Authentication/Forgot";
 import AdminCourse from "./pages/Admin/Course";
+
 import Course from "./pages/User/Course";
-import AdminRoadmap from "./pages/Admin/Roadmap"
+import Roadmap from "./pages/User/Roadmap";
 const router = createBrowserRouter([
   //authentication routes  
   {
@@ -72,6 +76,11 @@ const router = createBrowserRouter([
         path:"/admin/roadmap",
         element:<AdminPrivateRoute Component={AdminRoadmap}/>,
         loader:tokenVerifier
+      },
+      {
+        path:"/admin/chapter",
+        element:<AdminPrivateRoute Component={AdminChapter}/>,
+        loader:tokenVerifier
       }
     ],
   },
@@ -91,6 +100,11 @@ const router = createBrowserRouter([
         element:<UserPrivateRoute Component={Course}/>,
         loader:tokenVerifier
       },
+      {
+        path:'/user/roadmap',
+        element:<UserPrivateRoute Component={Roadmap}/>,
+        loader:tokenVerifier
+      }
     
       
     ],

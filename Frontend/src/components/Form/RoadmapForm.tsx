@@ -1,11 +1,16 @@
+import axios from "axios";
 import {  ReactElement } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import url from "../../helper/backendUrl";
 
 interface Inputs {
-  courseName: string;
-  courseDescription: string;
+  roadmapName: string;
+  roadmapDescription: string;
 
+}
+interface Payload extends Inputs{
+  courseId:string;
 }
 
 //for now keep it static add an option to accept it from the user as well
@@ -29,6 +34,28 @@ export default function RoadmapForm({
   // form submission Handler
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data,id)
+    const response=(
+      await axios.post(url+"/admin/roadmap",
+        {
+          courseId:id,
+          roadmapName:data.roadmapName,
+          roadmapDescription:data.roadmapDescription
+
+        } as Payload,
+        {
+          headers:{
+            Authorization:`Bearer ${window.localStorage.getItem("token")}`
+          }
+        }
+      )
+    ).data
+    if(response.message==="success"){
+      toast("roadmap added successfully")
+      setTimeout(() => window.location.reload(),1000);
+    }else{
+      toast(response.message)
+    }
+    
   };
 
   return (
@@ -43,57 +70,57 @@ export default function RoadmapForm({
       <input
         placeholder="enter the Roadmap Heading"
         className="h-8 w-full border border-black placeholder:text-xs "
-        {...register("courseName", {
+        {...register("roadmapName", {
           required: {
             value: true,
-            message: "please enter the Course Name",
+            message: "please enter the Roadmap Name",
           },
           minLength: {
             value: 5,
             message: "please enter alteast 8 character",
           },
-          validate: (courseName: string) => {
-            if (courseName.trim() === "") return "please enter the Course Name";
-            if (SpecialCharRegex.test(courseName))
+          validate: (roadmapName: string) => {
+            if (roadmapName.trim() === "") return "please enter the roadmap Name";
+            if (SpecialCharRegex.test(roadmapName))
               return "please enter valid Character";
             return true;
           },
         })}
       />
-      {errors.courseName && (
+      {errors.roadmapName && (
         <span className="text-xs text-red-500">
-          {errors.courseName.message}
+          {errors.roadmapName.message}
         </span>
       )}
       <p className="text-xs font-light text-start w-full mt-4">Description</p>
-      {/* for course Description */}
+      {/* for roadmap Description */}
       <input
         placeholder="enter the Roadmap Description"
         className="h-8 w-full border border-black placeholder:text-xs"
-        {...register("courseDescription", {
+        {...register("roadmapDescription", {
           required: {
             value: true,
-            message: "please enter the Course Desription",
+            message: "please enter the roadmap Desription",
           },
           minLength: {
             value: 5,
             message: "please enter alteast 8 character",
           },
-          validate: (courseDescription: string) => {
-            if (courseDescription.trim() === "")
-              return "please enter the Course Name";
-            if (SpecialCharRegex.test(courseDescription))
+          validate: (roadmapDescription: string) => {
+            if (roadmapDescription.trim() === "")
+              return "please enter the roadmap Name";
+            if (SpecialCharRegex.test(roadmapDescription))
               return "please enter valid Character";
             return true;
           },
         })}
       />
-      {errors.courseDescription && (
+      {errors.roadmapDescription && (
         <span className="text-xs text-red-500">
-          {errors.courseDescription.message}
+          {errors.roadmapDescription.message}
         </span>
       )}
-      {/* for course Category*/}
+      {/* for roadmap Category*/}
 
 
 
