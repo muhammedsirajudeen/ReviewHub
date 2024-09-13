@@ -1,10 +1,13 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import {  SubmitHandler, useForm } from 'react-hook-form';
 import { useLocation } from 'react-router';
 import { chapterProps, roadmapProps } from '../../types/courseProps';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import url from '../../helper/backendUrl';
+import { flushSync } from 'react-dom';
+import ChapterForm from '../../components/Form/ChapterForm';
+import ChapterDelete from '../../components/Form/ChapterDelete';
 
 type Inputs = {
     chapterName: string;
@@ -15,6 +18,11 @@ export default function Chapter(): ReactElement {
     const [currentpage,setCurrentpage]=useState<number>(1)
     const [pagecount,setPagecount]=useState<number>(0)
     const [chapters,setChapters]=useState<Array<chapterProps>>([])
+    const [chapter,setChapter]=useState<chapterProps>()
+    const [open,setOpen]=useState<boolean>(false)
+    const [deleteopen,setDeleteopen]=useState<boolean>(false)
+    const dialogRef=useRef<HTMLDialogElement>(null)
+    const deletedialogRef=useRef<HTMLDialogElement>(null)
     const { roadmap }: { roadmap: roadmapProps } = useLocation().state;
     console.log(roadmap)
     const {
@@ -94,6 +102,30 @@ export default function Chapter(): ReactElement {
         }
         setCurrentpage(next);
     };
+    const editModalHandler=(chapter:chapterProps)=>{
+        setChapter(chapter)
+        flushSync(()=>{
+            setOpen(true)
+        })
+        dialogRef.current?.showModal()
+    }
+    const closeForm=()=>{
+        dialogRef.current?.close()
+        setOpen(false)
+    }
+    const deleteModalHandler=(chapter:chapterProps)=>{
+        setChapter(chapter)
+        flushSync(()=>{
+            setDeleteopen(true)
+        })
+        deletedialogRef.current?.showModal()
+        
+    }
+    const closedeleteForm=()=>{
+        deletedialogRef.current?.close()
+        setDeleteopen(false)
+        
+    }
 
 
     return (
@@ -206,14 +238,15 @@ export default function Chapter(): ReactElement {
                                 <button
                                     className="bg-chapter-light h-6 w-6 flex items-center justify-center mr-4 rounded-xl"
                                     type="button"
+                                    onClick={()=>editModalHandler(chapter)}
                                 >
-                                    <img onClick={()=>alert("edit")} src="/chapter/edit.png" />
+                                    <img onClick={()=>console.log(chapter.chapterName)} src="/chapter/edit.png" />
                                 </button>
                                 <button
                                     className="bg-chapter-light h-6 w-6 flex items-center justify-center mr-4 rounded-xl"
                                     type="button"
                                 >
-                                    <img onClick={()=>alert("delete")} src="/chapter/delete.png" />
+                                    <img onClick={()=>deleteModalHandler(chapter)} src="/chapter/delete.png" />
                                 </button>
                                 
                             </div>
@@ -255,6 +288,18 @@ export default function Chapter(): ReactElement {
                 </div>
             </div>
             <ToastContainer/>
+            {
+                open &&
+                (
+                    <ChapterForm chapter={chapter} dialogRef={dialogRef} closeForm={closeForm}/>
+                )
+            }
+            {
+                deleteopen &&
+                (
+                    <ChapterDelete chapter={chapter} dialogRef={deletedialogRef} closeForm={closedeleteForm}/>
+                )
+            }
         </div>
     );
 }

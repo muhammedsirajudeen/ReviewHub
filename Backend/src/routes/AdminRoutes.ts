@@ -82,4 +82,16 @@ router.post(
   ChapterController.AddChapter
 );
 
+router.put(
+  '/chapter/:chapterId',
+  passport.authenticate('jwt',{session:false}),
+  ChapterController.UpdateChapter
+)
+
+router.delete(
+  '/chapter/:chapterId',
+  passport.authenticate('jwt',{session:false}),
+  ChapterController.DeleteChapter
+)
+
 export default router;

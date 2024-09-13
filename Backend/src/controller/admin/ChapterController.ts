@@ -53,7 +53,48 @@ const ListChapter=async (req:Request,res:Response)=>{
 
 }
 
+const UpdateChapter=async (req:Request,res:Response)=>{
+    try{
+        const user=req.user as IUser
+        if(user.authorization!=="admin"){
+            res.status(401).json({message:"Unauthorized"})
+        }else{
+            const {chapterName}=req.body
+            const {chapterId}=req.params
+            const UpdateChapter=await Chapter.findById(chapterId)
+            if(UpdateChapter){
+                UpdateChapter.chapterName=chapterName ?? UpdateChapter.chapterName
+                await UpdateChapter.save()
+                res.status(200).json({message:"success"})
+            }else{
+                res.status(404).json({message:"chapter not found"})
+            }
+        }
+    }catch(error){
+        console.log(error)
+        res.status(500).json({message:"server error occured"})
+    }
+}
+
+const DeleteChapter=async (req:Request,res:Response)=>{
+    try{
+        const user=req.user as IUser
+        if(user.authorization!=="admin"){
+            res.status(401).json({message:"Unauthorized"})
+        }else{
+            const {chapterId}=req.params
+            await Chapter.findByIdAndDelete(chapterId)
+            res.status(200).json({message:"success"})
+        }
+    }catch(error){
+        console.log(error)
+        res.status(500).json({message:"server error occured"})
+    }
+}
+
 export default {
     AddChapter,
-    ListChapter
+    ListChapter,
+    UpdateChapter,
+    DeleteChapter
 }
