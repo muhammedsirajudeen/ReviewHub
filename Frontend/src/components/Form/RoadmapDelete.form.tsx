@@ -1,22 +1,22 @@
 import { ReactElement, Ref } from 'react';
-import { courseProps } from '../../types/courseProps';
+import { roadmapProps } from '../../types/courseProps';
 import axios from 'axios';
 import url from '../../helper/backendUrl';
 import { toast, ToastContainer } from 'react-toastify';
 
-export default function CourseDeleteForm({
+export default function RoadmapDeleteForm({
   deletedialogRef,
   closeDeleteHandler,
-  course,
+  roadmap,
 }: {
   deletedialogRef: Ref<HTMLDialogElement>;
   closeDeleteHandler: VoidFunction;
-  course: courseProps | undefined;
+  roadmap: roadmapProps | undefined;
 }): ReactElement {
 
   const deleteHandler=async ()=>{
    const response=(
-    await axios.delete(`${url}/admin/course/${course?._id}`,
+    await axios.delete(`${url}/admin/roadmap/${roadmap?._id}`,
         {
             headers:{
                 Authorization:`Bearer ${window.localStorage.getItem("token")}`
@@ -43,8 +43,8 @@ export default function CourseDeleteForm({
       >
         x
       </button>
-      <p className="font-light text-xs mt-4">Do you wanna Delete The Course ?</p>
-      <p className="font-bold text-xs">{course?.courseName}</p>
+      <p className="font-light text-xs mt-4">Do you wanna Delete The Roadmap ?</p>
+      <p className="font-bold text-xs">{roadmap?.roadmapName}</p>
       <button onClick={deleteHandler} className='mt-4  flex items-center justify-center'>
         <img className='scale-125' src='/chapter/delete.png'/>
       </button>

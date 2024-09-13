@@ -3,6 +3,7 @@ import {  ReactElement } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import url from "../../helper/backendUrl";
+import { roadmapProps } from "../../types/courseProps";
 
 interface Inputs {
   roadmapName: string;
@@ -17,10 +18,14 @@ interface Payload extends Inputs{
 
 export default function RoadmapForm({
   closeForm,
-  id
+  id,
+  roadmap,
+  method
 }: {
   closeForm: VoidFunction,
-  id:string
+  id:string,
+  roadmap:roadmapProps | undefined,
+  method:string
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
   const {
@@ -28,12 +33,43 @@ export default function RoadmapForm({
     handleSubmit,
     // watch,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<Inputs>(
+    {
+      defaultValues:{
+        roadmapName:roadmap?.roadmapName,
+        roadmapDescription:roadmap?.roadmapDescription,
+      }
+    }
+  );
 
 
   // form submission Handler
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data,id)
+    if(method==="put"){
+      const response=(
+        await axios.put(`${url}/admin/roadmap/${roadmap?._id}`,
+          {
+            courseId:id,
+            roadmapName:data.roadmapName,
+            roadmapDescription:data.roadmapDescription
+  
+          } as Payload,
+          {
+            headers:{
+              Authorization:`Bearer ${window.localStorage.getItem("token")}`
+            }
+          }
+        )
+      ).data
+      if(response.message==="success"){
+        toast("roadmap updated successfully")
+        setTimeout(() => window.location.reload(),1000);
+      }else{
+        toast(response.message)
+      }
+      return
+    }
     const response=(
       await axios.post(url+"/admin/roadmap",
         {
@@ -121,12 +157,6 @@ export default function RoadmapForm({
         </span>
       )}
       {/* for roadmap Category*/}
-
-
-
-
-
-
       <div className="flex items-center justify-start w-full mt-5">
         <button
           type="submit"

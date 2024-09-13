@@ -4,6 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import Select from "react-select";
 import { toast, ToastContainer } from "react-toastify";
 import url from "../../helper/backendUrl";
+import { courseProps } from "../../types/courseProps";
 
 interface Inputs {
   courseName: string;
@@ -19,10 +20,14 @@ const options = [
   { value: "Golang", label: "Golang" },
 ];
 
+
+
 export default function CourseForm({
   closeForm,
+  course
 }: {
-  closeForm: VoidFunction;
+  closeForm: VoidFunction,
+  course:courseProps | undefined
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
   const {
@@ -30,7 +35,17 @@ export default function CourseForm({
     handleSubmit,
     // watch,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<Inputs>(
+    {
+      defaultValues:{
+        courseName:course?.courseName,
+        courseDescription:course?.courseDescription,
+        domain:course?.domain,
+        tagline:course?.tagline
+
+      }
+    }
+  );
   const [domain,setDomain]=useState("")
   const fileRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -72,6 +87,7 @@ export default function CourseForm({
     formData.append("courseDescription", data.courseDescription);
     formData.append("domain", data.domain);
     formData.append("tagline", data.tagline);
+    if(course) formData.append("courseId",course._id)
     if(!fileRef.current?.files){
         toast("please select a file")
         return
@@ -83,7 +99,26 @@ export default function CourseForm({
         toast("please select a domain first")
         return
     }
-    const response = (
+    if(course){
+      
+      //here the course is there so we are putting data
+      const response = (
+        await axios.put(url + "/admin/course", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+          },
+        })
+      ).data;
+      if(response.message==="success"){
+          toast("updated successfully")
+          setTimeout(()=>window.location.reload(),1000)
+      }else{
+          toast(response.message)
+      }
+      return
+    }
+     const response = (
       await axios.post(url + "/admin/course", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -215,7 +250,7 @@ export default function CourseForm({
         <img
           onClick={() => fileRef.current?.click()}
           ref={imageRef}
-          src="/form/add.png"
+          src={course?.courseImage ? `${url}/course/${course.courseImage}`  :  `/form/add.png`}
           className="h-full w-full rounded-lg"
         />
       </div>

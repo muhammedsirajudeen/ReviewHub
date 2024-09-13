@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router';
 import { courseProps } from '../../types/courseProps';
 import { useAppDispatch } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
-import CourseEditForm from '../../components/Form/CourseEditForm';
 import CourseDeleteForm from '../../components/Form/CourseDeleteForm';
 
 export default function Course(): ReactElement {
@@ -19,7 +18,6 @@ export default function Course(): ReactElement {
     const [editopen,setEditopen]=useState<boolean>(false)
     const [deleteopen,setDeleteopen]=useState<boolean>(false)
     const dialogRef = useRef<HTMLDialogElement>(null);
-    const editdialogRef=useRef<HTMLDialogElement>(null)
     const deletedialogRef=useRef<HTMLDialogElement>(null)
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -90,7 +88,7 @@ export default function Course(): ReactElement {
         flushSync(()=>{
           setEditopen(true)
         })
-        editdialogRef.current?.showModal()
+        dialogRef.current?.showModal()
 
     };
 
@@ -102,9 +100,9 @@ export default function Course(): ReactElement {
         deletedialogRef.current?.showModal()
     };
 
-    const closeEditHandler= ()=>{
+    const closeEditHandler=()=>{
+        dialogRef.current?.close()
         setEditopen(false)
-        editdialogRef.current?.close()
     }
     const closeDeleteHandler=()=>{
       setDeleteopen(false)
@@ -207,17 +205,21 @@ export default function Course(): ReactElement {
                     ref={dialogRef}
                     className="flex items-center justify-center flex-col w-96  p-2"
                 >
-                    <CourseForm closeForm={closeForm} />
+                    <CourseForm course={undefined} closeForm={closeForm} />
                 </dialog>
             )}
             {
               editopen && (
-                <CourseEditForm editdialogRef={editdialogRef} closeEditHandler={closeEditHandler}  />
-              )
+                <dialog
+                    ref={dialogRef}
+                    className="flex items-center justify-center flex-col w-96  p-2"
+                >
+                    <CourseForm course={course} closeForm={closeEditHandler} />
+                </dialog>              )
             }
             {
               deleteopen && (
-                <CourseDeleteForm deletedialogRef={deletedialogRef} closeDeleteHandler={closeDeleteHandler} />
+                <CourseDeleteForm course={course} deletedialogRef={deletedialogRef} closeDeleteHandler={closeDeleteHandler} />
               )
             }
         </>

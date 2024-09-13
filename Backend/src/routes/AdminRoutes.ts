@@ -1,7 +1,7 @@
 import express from 'express';
 import AdminController from '../controller/admin/AdminController';
 import CourseController from '../controller/admin/CourseController';
-import passport from 'passport';
+import passport, { authenticate } from 'passport';
 import upload, { resizeMiddleware } from '../helper/fileuploadHelper';
 import UploadHandler from '../helper/fileuploadHelper';
 import RoadmapController from '../controller/admin/RoadmapController';
@@ -32,8 +32,22 @@ router.post(
   passport.authenticate('jwt', { session: false }),
   UploadHandler('course').single('file'),
   resizeMiddleware,
-  CourseController.CourseController
+  CourseController.AddCourse
 );
+
+router.put(
+  '/course',
+  passport.authenticate('jwt',{session:false}),
+  UploadHandler('course').single('file'),
+  resizeMiddleware,
+  CourseController.UpdateCourse
+)
+
+router.delete(
+  '/course/:courseId',
+  passport.authenticate('jwt',{session:false}),
+  CourseController.DeleteCourse
+)
 
 //roadmap management
 router.post(
@@ -41,6 +55,19 @@ router.post(
   passport.authenticate('jwt', { session: false }),
   RoadmapController.AddRoadmap
 );
+
+router.put(
+  '/roadmap/:roadmapId',
+  passport.authenticate('jwt',{session:false}),
+  RoadmapController.EditRoadmap
+)
+
+router.delete(
+  '/roadmap/:roadmapId',
+  passport.authenticate('jwt',{session:false}),
+  RoadmapController.DeleteRoadmap
+)
+
 
 //chapter management
 router.get(
