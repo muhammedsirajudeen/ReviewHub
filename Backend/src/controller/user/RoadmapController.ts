@@ -2,12 +2,25 @@ import { Request,Response } from "express";
 import Roadmap from "../../model/Roadmap";
 const PAGE_LIMIT = 10;
 
+interface dateProps{
+  '$gt':Date
+}
+interface queryProps{
+  postedDate?:dateProps,
+  courseId:string
+}
+
 const RoadmapList = async (req: Request, res: Response) => {
   try {
     let { page } = req.query ?? '1';
+    const {date}=req.query
     let {courseId}=req.params
-    const length = (await Roadmap.find({courseId})).length;
-    const Roadmaps = await Roadmap.find({courseId})
+    const query:queryProps={courseId:courseId}
+    if(date) query.postedDate={'$gt':new Date(date as string)}
+
+
+    const length = (await Roadmap.find(query)).length;
+    const Roadmaps = await Roadmap.find(query)
       .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
       .limit(PAGE_LIMIT);
 

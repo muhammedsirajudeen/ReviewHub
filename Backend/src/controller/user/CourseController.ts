@@ -12,6 +12,7 @@ interface queryProps{
   postedDate?:dateProps
 }
 
+//constructing the query as it goes 
 const CourseList = async (req: Request, res: Response) => {
   try {
     let { page } = req.query ?? '1';
@@ -21,7 +22,6 @@ const CourseList = async (req: Request, res: Response) => {
     const query:queryProps={}
     if(domain) query.domain=domain as string
     if(date) query.postedDate={  $gt: newDate  }
-    console.log(query)
     const length = (await Course.find(query)).length;
     const Courses = await Course.find(query)
       .skip((parseInt(page as string) - 1) * PAGE_LIMIT)

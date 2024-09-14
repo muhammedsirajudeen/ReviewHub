@@ -80,14 +80,13 @@ export default function Profile(): ReactElement {
     <div className="mt-20 flex items-center justify-center">
       <div className="h-auto p-2 w-96 shadow-xl rounded-xl flex flex-col items-center">
         <p className="font-light text-xl mt-2">PROFILE</p>
-        <button onClick={()=>window.location.reload()} >x</button>
+        <button onClick={() => window.location.reload()}>x</button>
         <img
           ref={imageRef}
-          src={user?.profileImage ?? "user.png"}
+          src={user?.profileImage ?? 'user.png'}
           className="h-20 w-20 rounded-full mt-2"
           onClick={imageHandler}
         />
-        
 
         <p className="text-sm font-light mt-4">{user?.email}</p>
         <form
@@ -103,11 +102,11 @@ export default function Profile(): ReactElement {
             className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
             placeholder="enter the phone number"
             defaultValue={user.phone}
-            {...register("phone", {
-              required: "Phone is required",
+            {...register('phone', {
+              required: 'Phone is required',
               minLength: {
                 value: 10,
-                message: "phone must be minimum 10 characters long",
+                message: 'phone must be minimum 10 characters long',
               },
             })}
           />
@@ -123,15 +122,15 @@ export default function Profile(): ReactElement {
             type="text"
             className="h-16 w-72 border border-black rounded-sm placeholder:text-xs"
             placeholder="enter the address"
-            {...register("address", {
-              required: "Address is required",
+            {...register('address', {
+              required: 'Address is required',
               minLength: {
                 value: 10,
-                message: "phone must be minimum 10 characters long",
+                message: 'phone must be minimum 10 characters long',
               },
               validate: (value: string) => {
                 if (!value.trim()) {
-                  return "Address cannot be empty";
+                  return 'Address cannot be empty';
                 }
                 return true;
               },

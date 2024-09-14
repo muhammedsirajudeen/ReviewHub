@@ -76,7 +76,7 @@ export default function Course(): ReactElement {
         return (
           <div
             key={course._id}
-            onClick={()=>courseNavHandler(course)}
+            onClick={() => courseNavHandler(course)}
             className="flex h-72 w-80 shadow-xl items-center justify-center flex-col"
           >
             <img

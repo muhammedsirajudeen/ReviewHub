@@ -8,6 +8,8 @@ import url from '../../helper/backendUrl';
 import { flushSync } from 'react-dom';
 import ChapterForm from '../../components/Form/ChapterForm';
 import ChapterDelete from '../../components/Form/ChapterDelete';
+import TopBar from '../../components/TopBar';
+import FilterBarRoadmap from '../../components/FilterBarRoadmap';
 
 type Inputs = {
     chapterName: string;
@@ -129,177 +131,181 @@ export default function Chapter(): ReactElement {
 
 
     return (
-        <div className="ml-36 mt-10 flex flex-col">
-            <div className="flex items-center justify-between">
-                {/* placeholder to see which course they are editing */}
-                <div
-                    key={roadmap._id}
-                    className="flex h-64 w-72 shadow-xl m-0 items-center justify-center flex-col"
-                >
-                    <img src="/roadmap/roadmapbg.png" />
+        <>
+            <TopBar/>
+            <FilterBarRoadmap type='chapter' currentpage={currentpage} roadmapId={roadmap._id} setChapters={setChapters}  />
+            <div className="ml-36 mt-10 flex flex-col">
+                <div className="flex items-center justify-between">
+                    {/* placeholder to see which course they are editing */}
+                    <div
+                        key={roadmap._id}
+                        className="flex h-64 w-72 shadow-xl m-0 items-center justify-center flex-col"
+                    >
+                        <img src="/roadmap/roadmapbg.png" />
 
-                    <p className="text-start w-full ml-10 text-4xl font-bold">
-                        {roadmap.lessonCount}
-                        <span className="text-lg ml-10 font-light align-middle">
-                            {roadmap.roadmapName}
-                        </span>
-                    </p>
+                        <p className="text-start w-full ml-10 text-4xl font-bold">
+                            {roadmap.lessonCount}
+                            <span className="text-lg ml-10 font-light align-middle">
+                                {roadmap.roadmapName}
+                            </span>
+                        </p>
 
-                    <div className="flex justify-end mr-10 w-full"></div>
-                    <p className="text-center text-xs mt-4 font-light">
-                        {roadmap.roadmapDescription}
-                    </p>
-                </div>
-                {/* add tag fields here */}
-                <div className="flex h-40 w-98 bg-chapter mr-40 items-start justify-center rounded-2xl">
-                    <div className="flex items-center justify-start">
-                        <form
-                            className="flex items-center flex-col justify-center"
-                            onSubmit={handleSubmit(onSubmit)}
-                        >
-                            <div className="flex items-center justify-center">
-                                <input
-                                    className="h-8 w-full m-4 bg-chapter placeholder:text-white text-white"
-                                    type="text"
-                                    placeholder="enter the chapter name"
-                                    // readOnly={editable}
-                                    {...register('chapterName', {
-                                        required: {
-                                            value: true,
-                                            message: 'please enter the chapter',
-                                        },
-                                        minLength: {
-                                            value: 5,
-                                            message:
-                                                'please enter the required characters',
-                                        },
-                                        validate: (tag: string) => {
-                                            if (tag.trim() === '')
-                                                return 'please enter the roadmap Name';
-                                            if (SpecialCharRegex.test(tag))
-                                                return 'please enter valid Character';
-                                            return true;
-                                        },
-                                    })}
-                                />
-
-                                <button
-                                    className="bg-chapter-light h-6 w-6 flex items-center justify-center mr-4 rounded-xl"
-                                    type="button"
-                                >
-                                    <img src="/chapter/edit.png" />
-                                </button>
-                            </div>
-                            <hr className="text-gray-400 w-3/4 " />
-                            {errors.chapterName && (
-                                <span className="text-red-500 text-xs">
-                                    {errors.chapterName.message}
-                                </span>
-                            )}
-                            <button
-                                type="submit"
-                                className="border border-white  p-1 rounded-lg text-white flex items-center justify-evenly mt-10 mb-4"
+                        <div className="flex justify-end mr-10 w-full"></div>
+                        <p className="text-center text-xs mt-4 font-light">
+                            {roadmap.roadmapDescription}
+                        </p>
+                    </div>
+                    {/* add tag fields here */}
+                    <div className="flex h-40 w-98 bg-chapter mr-40 items-start justify-center rounded-2xl">
+                        <div className="flex items-center justify-start">
+                            <form
+                                className="flex items-center flex-col justify-center"
+                                onSubmit={handleSubmit(onSubmit)}
                             >
-                                <span className="font-bold text-xl mr-4">
-                                    +
-                                </span>
-                                <span className="font-light">Create</span>
-                            </button>
-                        </form>
+                                <div className="flex items-center justify-center">
+                                    <input
+                                        className="h-8 w-full m-4 bg-chapter placeholder:text-white text-white"
+                                        type="text"
+                                        placeholder="enter the chapter name"
+                                        // readOnly={editable}
+                                        {...register('chapterName', {
+                                            required: {
+                                                value: true,
+                                                message: 'please enter the chapter',
+                                            },
+                                            minLength: {
+                                                value: 5,
+                                                message:
+                                                    'please enter the required characters',
+                                            },
+                                            validate: (tag: string) => {
+                                                if (tag.trim() === '')
+                                                    return 'please enter the roadmap Name';
+                                                if (SpecialCharRegex.test(tag))
+                                                    return 'please enter valid Character';
+                                                return true;
+                                            },
+                                        })}
+                                    />
+
+                                    <button
+                                        className="bg-chapter-light h-6 w-6 flex items-center justify-center mr-4 rounded-xl"
+                                        type="button"
+                                    >
+                                        <img src="/chapter/edit.png" />
+                                    </button>
+                                </div>
+                                <hr className="text-gray-400 w-3/4 " />
+                                {errors.chapterName && (
+                                    <span className="text-red-500 text-xs">
+                                        {errors.chapterName.message}
+                                    </span>
+                                )}
+                                <button
+                                    type="submit"
+                                    className="border border-white  p-1 rounded-lg text-white flex items-center justify-evenly mt-10 mb-4"
+                                >
+                                    <span className="font-bold text-xl mr-4">
+                                        +
+                                    </span>
+                                    <span className="font-light">Create</span>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* here the content thats already there is displayed and things like that*/}
-            <div className="flex items-center w-screen justify-center flex-col ">
-                {/* adjusting by 36 to right */}
-                <div className="h-14 w-3/4 bg-chapter mt-20 mr-36 flex items-start justify-center flex-col">
-                    <h1 className="text-gray-400 font-light text-xl align-middle ml-2 ">
-                        {roadmap.roadmapName}
-                    </h1>
-                </div>
-                {/* here we create that stuff */}
-                <div className='flex items-center justify-center flex-wrap  w-3/4'>
-                    
-                {
-                    chapters.map((chapter)=>{
-                        return(
-                            <div key={chapter._id} className="flex h-20 mt-12 w-72 bg-chapter mr-40 items-start justify-center rounded-2xl  ">
-                            <div className="flex items-center justify-center ">
-                                <input
-                                    className="h-8 w-full m-4 bg-chapter placeholder:text-white text-white placeholder:text-xs"
-                                    type="text"
-                                    placeholder="enter the tag"
-                                    value={chapter.chapterName}
-                                    readOnly
-                                    // readOnly={editable}
-                                />
-        
-                                <button
-                                    className="bg-chapter-light h-6 w-6 flex items-center justify-center mr-4 rounded-xl"
-                                    type="button"
-                                    onClick={()=>editModalHandler(chapter)}
-                                >
-                                    <img onClick={()=>console.log(chapter.chapterName)} src="/chapter/edit.png" />
-                                </button>
-                                <button
-                                    className="bg-chapter-light h-6 w-6 flex items-center justify-center mr-4 rounded-xl"
-                                    type="button"
-                                >
-                                    <img onClick={()=>deleteModalHandler(chapter)} src="/chapter/delete.png" />
-                                </button>
-                                
+                {/* here the content thats already there is displayed and things like that*/}
+                <div className="flex items-center w-screen justify-center flex-col ">
+                    {/* adjusting by 36 to right */}
+                    <div className="h-14 w-3/4 bg-chapter mt-20 mr-36 flex items-start justify-center flex-col">
+                        <h1 className="text-gray-400 font-light text-xl align-middle ml-2 ">
+                            {roadmap.roadmapName}
+                        </h1>
+                    </div>
+                    {/* here we create that stuff */}
+                    <div className='flex items-center justify-center flex-wrap  w-3/4'>
+                        
+                    {
+                        chapters.map((chapter)=>{
+                            return(
+                                <div key={chapter._id} className="flex h-20 mt-12 w-72 bg-chapter mr-40 items-start justify-center rounded-2xl  ">
+                                <div className="flex items-center justify-center ">
+                                    <input
+                                        className="h-8 w-full m-4 bg-chapter placeholder:text-white text-white placeholder:text-xs"
+                                        type="text"
+                                        placeholder="enter the tag"
+                                        value={chapter.chapterName}
+                                        readOnly
+                                        // readOnly={editable}
+                                    />
+            
+                                    <button
+                                        className="bg-chapter-light h-6 w-6 flex items-center justify-center mr-4 rounded-xl"
+                                        type="button"
+                                        onClick={()=>editModalHandler(chapter)}
+                                    >
+                                        <img onClick={()=>console.log(chapter.chapterName)} src="/chapter/edit.png" />
+                                    </button>
+                                    <button
+                                        className="bg-chapter-light h-6 w-6 flex items-center justify-center mr-4 rounded-xl"
+                                        type="button"
+                                    >
+                                        <img onClick={()=>deleteModalHandler(chapter)} src="/chapter/delete.png" />
+                                    </button>
+                                    
+                                </div>
                             </div>
-                        </div>
-                        )
-                    })
-                }
-                </div>
+                            )
+                        })
+                    }
+                    </div>
 
-            </div>
-            <div className="fixed left-1/2 bottom-10  w-screen flex">
-                <div className="flex items-center justify-evenly w-32">
-                    <button
-                        onClick={previouspageHandler}
-                        className="flex h-8 items-center justify-center"
-                    >
-                        <img src="/course/prev.png" className="h-6" />
-                    </button>
-                    {pageHandler(pagecount).map((page) => {
-                        return (
-                            <button
-                                key={page}
-                                className={`border border-black p-2 rounded-xl h-8 flex items-center justify-center text-xs ${
-                                    currentpage === page
-                                        ? 'bg-black text-white'
-                                        : ''
-                                } `}
-                            >
-                                {page}
-                            </button>
-                        );
-                    })}
-                    <button
-                        onClick={nextpageHandler}
-                        className="flex h-8 items-center justify-center"
-                    >
-                        <img src="/course/next.png" className="h-6" />
-                    </button>
                 </div>
+                <div className="fixed left-1/2 bottom-10  w-screen flex">
+                    <div className="flex items-center justify-evenly w-32">
+                        <button
+                            onClick={previouspageHandler}
+                            className="flex h-8 items-center justify-center"
+                        >
+                            <img src="/course/prev.png" className="h-6" />
+                        </button>
+                        {pageHandler(pagecount).map((page) => {
+                            return (
+                                <button
+                                    key={page}
+                                    className={`border border-black p-2 rounded-xl h-8 flex items-center justify-center text-xs ${
+                                        currentpage === page
+                                            ? 'bg-black text-white'
+                                            : ''
+                                    } `}
+                                >
+                                    {page}
+                                </button>
+                            );
+                        })}
+                        <button
+                            onClick={nextpageHandler}
+                            className="flex h-8 items-center justify-center"
+                        >
+                            <img src="/course/next.png" className="h-6" />
+                        </button>
+                    </div>
+                </div>
+                <ToastContainer/>
+                {
+                    open &&
+                    (
+                        <ChapterForm chapter={chapter} dialogRef={dialogRef} closeForm={closeForm}/>
+                    )
+                }
+                {
+                    deleteopen &&
+                    (
+                        <ChapterDelete chapter={chapter} dialogRef={deletedialogRef} closeForm={closedeleteForm}/>
+                    )
+                }
             </div>
-            <ToastContainer/>
-            {
-                open &&
-                (
-                    <ChapterForm chapter={chapter} dialogRef={dialogRef} closeForm={closeForm}/>
-                )
-            }
-            {
-                deleteopen &&
-                (
-                    <ChapterDelete chapter={chapter} dialogRef={deletedialogRef} closeForm={closedeleteForm}/>
-                )
-            }
-        </div>
+        </>
     );
 }

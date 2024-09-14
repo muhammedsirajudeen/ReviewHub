@@ -3,7 +3,17 @@ import Chapter from "../../model/Chapter";
 import mongoose from "mongoose";
 import { IUser } from "../../model/User";
 
+interface dateProps{
+    '$gt':Date
+}
+
+interface queryProps{
+    roadmapId:string,
+    postedDate?:dateProps
+}
+
 const PAGE_LIMIT=10
+
 
 const AddChapter=async (req:Request,res:Response)=>{
     try{
@@ -36,9 +46,13 @@ const ListChapter=async (req:Request,res:Response)=>{
             return res.status(401).json({message:"Unauthorized"})
         }
         let { page } = req.query ?? '1';
+        const {date}=req.query
         let {roadmapId}=req.params
-        const length = (await Chapter.find({roadmapId})).length;
-        const Chapters = await Chapter.find({roadmapId})
+        const query:queryProps={roadmapId:roadmapId}
+        if(date) query.postedDate={'$gt':new Date(date as string)}
+        console.log(query)
+        const length = (await Chapter.find(query)).length;
+        const Chapters = await Chapter.find(query)
           .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
           .limit(PAGE_LIMIT);
     

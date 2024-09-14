@@ -4,7 +4,8 @@ interface IChapter extends Document{
     chapterName:string,
     roadmapId:mongoose.Schema.Types.ObjectId,
     quizStatus:boolean,
-    additionalPrompt:string
+    additionalPrompt:string,
+    postedDate:Date
 }
 
 const ChapterSchema=new Schema<IChapter>(
@@ -28,6 +29,12 @@ const ChapterSchema=new Schema<IChapter>(
             type:String,
             required:false,
             unique:false
+        },
+        postedDate:{
+            type:Date,
+            required:false,
+            unique:false,
+            default:new Date()
         }
     }
 )

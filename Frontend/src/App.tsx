@@ -28,9 +28,9 @@ import Course from "./pages/User/Course";
 import Roadmap from "./pages/User/Roadmap";
 import Profile from "./pages/User/Profile";
 const router = createBrowserRouter([
-  //authentication routes  
+  //authentication routes
   {
-    path: "/",
+    path: '/',
     errorElement: <ErrorElement />,
     children: [
       {
@@ -40,79 +40,77 @@ const router = createBrowserRouter([
         loader: tokenVerifier,
       },
       {
-        path: "/signin",
+        path: '/signin',
         element: <AuthPrivateRoute Component={Login} />,
         loader: tokenVerifier,
       },
       {
-        path: "/signup",
+        path: '/signup',
         element: <AuthPrivateRoute Component={Signup} />,
         loader: tokenVerifier,
       },
       {
-        path:"/forgot",
-        element:<AuthPrivateRoute Component={Forgot}/>,
-        loader:tokenVerifier
-      }
+        path: '/forgot',
+        element: <AuthPrivateRoute Component={Forgot} />,
+        loader: tokenVerifier,
+      },
     ],
   },
   //admin routes
   {
-    path: "/admin",
+    path: '/admin',
     element: <AdminPrivateRoute Component={AdminSideBar} />,
     // element:<AdminSideBar/>,
     loader: tokenVerifier,
     children: [
       {
-        path: "/admin/dashboard",
+        path: '/admin/dashboard',
         element: <AdminPrivateRoute Component={AdminDashboard} />,
-        loader:tokenVerifier
+        loader: tokenVerifier,
       },
       {
-        path:"/admin/courses",
-        element:<AdminPrivateRoute Component={AdminCourse} />,
-        loader:tokenVerifier
+        path: '/admin/courses',
+        element: <AdminPrivateRoute Component={AdminCourse} />,
+        loader: tokenVerifier,
       },
       {
-        path:"/admin/roadmap",
-        element:<AdminPrivateRoute Component={AdminRoadmap}/>,
-        loader:tokenVerifier
+        path: '/admin/roadmap',
+        element: <AdminPrivateRoute Component={AdminRoadmap} />,
+        loader: tokenVerifier,
       },
       {
-        path:"/admin/chapter",
-        element:<AdminPrivateRoute Component={AdminChapter}/>,
-        loader:tokenVerifier
-      }
+        path: '/admin/chapter',
+        element: <AdminPrivateRoute Component={AdminChapter} />,
+        loader: tokenVerifier,
+      },
     ],
   },
   //user routes
   {
-    path: "/user",
+    path: '/user',
     element: <UserPrivateRoute Component={SideBar} />,
     loader: tokenVerifier, // Use loader for asynchronous data fetching
     children: [
       {
-        path: "/user/dashboard",
+        path: '/user/dashboard',
         element: <UserPrivateRoute Component={Dashboard} />,
         loader: tokenVerifier,
       },
       {
-        path:'/user/courses',
-        element:<UserPrivateRoute Component={Course}/>,
-        loader:tokenVerifier
+        path: '/user/courses',
+        element: <UserPrivateRoute Component={Course} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/user/roadmap',
-        element:<UserPrivateRoute Component={Roadmap}/>,
-        loader:tokenVerifier
+        path: '/user/roadmap',
+        element: <UserPrivateRoute Component={Roadmap} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/user/profile',
-        element:<UserPrivateRoute Component={Profile}/>,
-        loader:tokenVerifier
-      }
-    
-      
+        path: '/user/profile',
+        element: <UserPrivateRoute Component={Profile} />,
+        loader: tokenVerifier,
+      },
     ],
   },
 ]);

@@ -15,6 +15,6 @@ export default function UserPrivateRoute({Component}:{Component:ComponentType}):
         }
     
     }else{
-        return <Navigate to="/"/>
+      return <Navigate to="/" />;
     }
 }
