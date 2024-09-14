@@ -9,7 +9,6 @@ import { courseProps } from "../../types/courseProps";
 interface Inputs {
   courseName: string;
   courseDescription: string;
-  domain: string;
   tagline: string;
 }
 
@@ -40,7 +39,6 @@ export default function CourseForm({
       defaultValues:{
         courseName:course?.courseName,
         courseDescription:course?.courseDescription,
-        domain:course?.domain,
         tagline:course?.tagline
 
       }
@@ -85,7 +83,7 @@ export default function CourseForm({
     const formData = new FormData();
     formData.append("courseName", data.courseName);
     formData.append("courseDescription", data.courseDescription);
-    formData.append("domain", data.domain);
+    formData.append("domain", domain);
     formData.append("tagline", data.tagline);
     if(course) formData.append("courseId",course._id)
     if(!fileRef.current?.files){

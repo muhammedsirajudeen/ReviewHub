@@ -1,10 +1,9 @@
 import axios from "axios";
-import { ChangeEvent, ReactElement, useEffect, useRef, useState } from "react";
+import { ChangeEvent, ReactElement, useRef } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useLoaderData, useNavigate } from "react-router";
 import url from "../../helper/backendUrl";
 import { toast, ToastContainer } from "react-toastify";
-import userProps from "../../types/userProps";
+import { useAppSelector } from "../../store/hooks";
 interface FormValues {
   phone: string;
   address: string;
@@ -12,33 +11,15 @@ interface FormValues {
 }
 
 export default function Profile(): ReactElement {
-  const data = useLoaderData();
-  const navigate = useNavigate();
-  const [user, setUser] = useState<userProps>();
   const fileRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<FormValues>();
-  useEffect(() => {
-    if (!data) {
-      navigate("/");
-    } else {
-      setUser(data as userProps);
-      if (user) {
-        reset({
-          address: user.address,
-          phone: user.phone,
-        });
-        if (imageRef.current?.src) {
-          imageRef.current.src = user.profileImage ?? "user.png";
-        }
-      }
-    }
-  }, [navigate, data, reset, user]);
+  const user=useAppSelector((state)=>state.global.user)
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     // Handle form submission
     console.log(data);
@@ -121,6 +102,7 @@ export default function Profile(): ReactElement {
             type="number"
             className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
             placeholder="enter the phone number"
+            defaultValue={user.phone}
             {...register("phone", {
               required: "Phone is required",
               minLength: {
@@ -136,6 +118,7 @@ export default function Profile(): ReactElement {
             Address
           </label>
           <input
+            defaultValue={user.address}
             id="address"
             type="text"
             className="h-16 w-72 border border-black rounded-sm placeholder:text-xs"

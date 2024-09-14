@@ -17,5 +17,7 @@ export interface roadmapProps {
 export interface chapterProps{
     _id:string,
     chapterName:string,
-    roadmapId:string
+    roadmapId:string,
+    quizStatus:boolean,
+    additionalPrompt:string
 }

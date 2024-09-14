@@ -26,6 +26,7 @@ import AdminCourse from "./pages/Admin/Course";
 
 import Course from "./pages/User/Course";
 import Roadmap from "./pages/User/Roadmap";
+import Profile from "./pages/User/Profile";
 const router = createBrowserRouter([
   //authentication routes  
   {
@@ -103,6 +104,11 @@ const router = createBrowserRouter([
       {
         path:'/user/roadmap',
         element:<UserPrivateRoute Component={Roadmap}/>,
+        loader:tokenVerifier
+      },
+      {
+        path:'/user/profile',
+        element:<UserPrivateRoute Component={Profile}/>,
         loader:tokenVerifier
       }
     

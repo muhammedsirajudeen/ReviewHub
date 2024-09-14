@@ -45,8 +45,10 @@ export default function SideBar(): ReactElement {
           </a>
         </div>
         <img onClick={signoutHandler} className="mt-72 cursor-pointer" src="/sidebar/logout.png"/>
-        <img className="bg-white h-8 w-8 rounded-full mt-10" src={user.profileImage ?? "/user.png"}/>
+        <a href="/user/profile">
+          <img className="bg-white h-8 w-8 rounded-full mt-10" src={user.profileImage ?? "/user.png"}/>
 
+        </a>
       </nav>  
       <Outlet />
     </>

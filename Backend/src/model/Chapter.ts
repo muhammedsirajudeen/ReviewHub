@@ -2,7 +2,9 @@ import mongoose, { Schema } from "mongoose"
 
 interface IChapter extends Document{
     chapterName:string,
-    roadmapId:mongoose.Schema.Types.ObjectId
+    roadmapId:mongoose.Schema.Types.ObjectId,
+    quizStatus:boolean,
+    additionalPrompt:string
 }
 
 const ChapterSchema=new Schema<IChapter>(
@@ -15,6 +17,16 @@ const ChapterSchema=new Schema<IChapter>(
         roadmapId:{
             type:mongoose.Schema.ObjectId,
             required:true,
+            unique:false
+        },
+        quizStatus:{
+            type:Boolean,
+            required:false,
+            default:false,
+        },
+        additionalPrompt:{
+            type:String,
+            required:false,
             unique:false
         }
     }

@@ -5,6 +5,8 @@ import { courseProps } from "../../types/courseProps";
 import { useNavigate } from "react-router";
 import { useAppDispatch } from "../../store/hooks";
 import { setPage } from "../../store/globalSlice";
+import TopBar from "../../components/TopBar";
+import FilterBar from "../../components/FilterBar";
 
 export default function Course(): ReactElement {
   const [courses, setCourses] = useState<Array<courseProps>>([]);
@@ -66,6 +68,9 @@ export default function Course(): ReactElement {
     setCurrentpage(next);
   };
   return (
+    <>
+    <TopBar/>
+    <FilterBar courses={courses} setResult={setCourses} />
     <div className="ml-36 flex justify-evenly flex-wrap mt-16">
       {courses.map((course) => {
         return (
@@ -128,5 +133,6 @@ export default function Course(): ReactElement {
         </div>
       </div>
     </div>
+    </>
   );
 }

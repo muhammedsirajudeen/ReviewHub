@@ -59,11 +59,13 @@ const UpdateChapter=async (req:Request,res:Response)=>{
         if(user.authorization!=="admin"){
             res.status(401).json({message:"Unauthorized"})
         }else{
-            const {chapterName}=req.body
+            const {chapterName,quizStatus,additionalPrompt}=req.body
             const {chapterId}=req.params
             const UpdateChapter=await Chapter.findById(chapterId)
             if(UpdateChapter){
                 UpdateChapter.chapterName=chapterName ?? UpdateChapter.chapterName
+                UpdateChapter.quizStatus=quizStatus ?? UpdateChapter.quizStatus
+                UpdateChapter.additionalPrompt=additionalPrompt ?? UpdateChapter.additionalPrompt
                 await UpdateChapter.save()
                 res.status(200).json({message:"success"})
             }else{
