@@ -70,7 +70,7 @@ export default function Course(): ReactElement {
   return (
     <>
     <TopBar/>
-    <FilterBar courses={courses} setResult={setCourses} />
+    <FilterBar currentpage={currentpage} setResult={setCourses} />
     <div className="ml-36 flex justify-evenly flex-wrap mt-16">
       {courses.map((course) => {
         return (

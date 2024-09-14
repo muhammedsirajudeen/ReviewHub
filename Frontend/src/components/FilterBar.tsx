@@ -2,34 +2,89 @@ import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from "rea
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import { courseProps } from "../types/courseProps";
+import axios from "axios";
+import url from "../helper/backendUrl";
 
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 
+
 export default function FilterBar(
   {
     setResult,
-    courses
+    currentpage
   }:{
-    courses:Array<courseProps>,
+    currentpage:number,
     setResult:Dispatch<SetStateAction<Array<courseProps>>>
   }
 ):ReactElement{
     const [active,setActive]=useState<string>("")
     const [domain,setDomain]=useState<string>("")
-    const [date, onChange] = useState<Value>(new Date());
+    const [date, setDate] = useState<Value>(new Date());
     const [selectdate,setSelectdate]=useState<boolean>(false)
     useEffect(()=>{
-        if(domain){
-            console.log(courses)
-            const filteredCourses=courses.filter((course)=>course?.domain.toLowerCase()===domain.toLowerCase())
-            setResult(filteredCourses)
-            // alert("hey")
-        }else if(selectdate){
-          alert("filter by date here")
+      if(selectdate && domain){
+        async function dataWrapper() {
+          const response = (
+            await axios.get(
+              url + `/user/course?page=${currentpage}&date=${date}&domain=${domain}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${window.localStorage.getItem(
+                    'token'
+                  )}`,
+                },
+              }
+            )
+          ).data;
+          setResult(response.courses);
+
+
         }
+        dataWrapper()  
+      }
+        else if(domain){
+          async function dataWrapper() {
+            const response = (
+              await axios.get(
+                url + `/user/course?page=${currentpage}&domain=${domain}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${window.localStorage.getItem(
+                      'token'
+                    )}`,
+                  },
+                }
+              )
+            ).data;
+            setResult(response.courses);
+
+
+          }
+          dataWrapper()
+        }else if(selectdate){
+          async function dataWrapper() {
+            const response = (
+              await axios.get(
+                url + `/user/course?page=${currentpage}&date=${date}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${window.localStorage.getItem(
+                      'token'
+                    )}`,
+                  },
+                }
+              )
+            ).data;
+            setResult(response.courses);
+
+
+          }
+          dataWrapper()
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[selectdate,domain])
     const domainHandler=(selection:string)=>{
         
@@ -62,10 +117,10 @@ export default function FilterBar(
         setDomain(domain)
         setActive("")
     }
-    const dateSelectHandler=()=>{
+    const dateSelectHandler=(value: Value)=>{
         setActive("")
         setSelectdate(true)
-        return onChange
+        setDate(value)
     }
 
     return (
@@ -91,7 +146,7 @@ export default function FilterBar(
             {active === 'domain' && (
               <div className="absolute mt-28 h-20 w-20 bg-white border border-gray-400">
                 <button
-                  onClick={() => domainSelector('mern')}
+                  onClick={() => domainSelector('Mern')}
                   className="flex border border-gray-400 w-full items-center justify-center"
                 >
                   <p className="text-xs font-bold">Mern</p>
@@ -119,7 +174,7 @@ export default function FilterBar(
             </button>
             {active === 'date' && (
               <div className="absolute mt-96">
-                <Calendar onChange={() => dateSelectHandler()} />
+                <Calendar onChange={dateSelectHandler} />
               </div>
             )}
           </div>

@@ -114,7 +114,7 @@ export default function Course(): ReactElement {
     return (
       <>
         <TopBar   />
-        <FilterBar courses={courses} setResult={setCourses} />
+        <FilterBar currentpage={currentpage} setResult={setCourses} />
         <div className="ml-36 mt-10 flex items-center justify-evenly flex-wrap ">
           {courses.map((course) => {
             return (

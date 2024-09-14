@@ -6,6 +6,7 @@ export interface ICourse extends Document {
   domain: string;
   tagline: string;
   courseImage: string;
+  postedDate:Date
 }
 const CourseSchema: Schema<ICourse> = new Schema({
   courseName: {
@@ -33,6 +34,11 @@ const CourseSchema: Schema<ICourse> = new Schema({
     required: false,
     unique: false,
   },
+  postedDate:{
+    type:Date,
+    required:true,
+    default:new Date()
+  }
 });
 
 const Course = mongoose.model<ICourse>('courses', CourseSchema);
