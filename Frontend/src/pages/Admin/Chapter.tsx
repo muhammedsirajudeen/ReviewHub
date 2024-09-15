@@ -25,6 +25,7 @@ export default function Chapter(): ReactElement {
     const [deleteopen,setDeleteopen]=useState<boolean>(false)
     const dialogRef=useRef<HTMLDialogElement>(null)
     const deletedialogRef=useRef<HTMLDialogElement>(null)
+    const [search,setSearch]=useState<string>("")
     const { roadmap }: { roadmap: roadmapProps } = useLocation().state;
     console.log(roadmap)
     const {
@@ -37,10 +38,11 @@ export default function Chapter(): ReactElement {
     useEffect(() => {
         console.log("loaded")
         async function dataWrapper() {
+            let urlconstructor=`${url}/admin/chapter/${roadmap._id}?page=${currentpage}`
+            if(search) urlconstructor=`${url}/admin/chapter/${roadmap._id}?page=${currentpage}&search=${search}`
             const response = (
                 await axios.get(
-                    url +
-                        `/admin/chapter/${roadmap._id}?page=${currentpage}`,
+                        urlconstructor,
                     {
                         headers: {
                             Authorization: `Bearer ${window.localStorage.getItem(
@@ -51,11 +53,15 @@ export default function Chapter(): ReactElement {
                 )
             ).data;
             console.log(response)
-            setChapters(response.chapters);
-            setPagecount(response.pageLength);
+            if(response.message==="success"){
+                setChapters(response.chapters);
+                setPagecount(response.pageLength);
+            }else{
+                setChapters([])
+            }
         }
         dataWrapper();
-    }, [currentpage,roadmap._id]);
+    }, [currentpage, roadmap._id, search]);
 
 
     const onSubmit: SubmitHandler<Inputs> = async (data) =>{
@@ -132,7 +138,7 @@ export default function Chapter(): ReactElement {
 
     return (
         <>
-            <TopBar/>
+            <TopBar search={search} setSearch={setSearch} setChapters={setChapters} currentpage={currentpage} roadmapId={roadmap._id}/>
             <FilterBarRoadmap type='chapter' currentpage={currentpage} roadmapId={roadmap._id} setChapters={setChapters}  />
             <div className="ml-36 mt-10 flex flex-col">
                 <div className="flex items-center justify-between">

@@ -9,7 +9,8 @@ interface dateProps{
 
 interface queryProps{
     roadmapId:string,
-    postedDate?:dateProps
+    postedDate?:dateProps,
+    chapterName?:RegExp
 }
 
 const PAGE_LIMIT=10
@@ -46,11 +47,13 @@ const ListChapter=async (req:Request,res:Response)=>{
             return res.status(401).json({message:"Unauthorized"})
         }
         let { page } = req.query ?? '1';
-        const {date}=req.query
+        const {date,search}=req.query
         let {roadmapId}=req.params
         const query:queryProps={roadmapId:roadmapId}
+
         if(date) query.postedDate={'$gt':new Date(date as string)}
-        console.log(query)
+        if(search) query.chapterName=new RegExp(search as string,'i')
+        
         const length = (await Chapter.find(query)).length;
         const Chapters = await Chapter.find(query)
           .skip((parseInt(page as string) - 1) * PAGE_LIMIT)

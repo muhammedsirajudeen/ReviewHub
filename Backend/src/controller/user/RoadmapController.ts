@@ -7,17 +7,20 @@ interface dateProps{
 }
 interface queryProps{
   postedDate?:dateProps,
-  courseId:string
+  courseId:string,
+  roadmapName?:RegExp
 }
 
 const RoadmapList = async (req: Request, res: Response) => {
   try {
     let { page } = req.query ?? '1';
-    const {date}=req.query
+    const {date,search}=req.query
     let {courseId}=req.params
+    
     const query:queryProps={courseId:courseId}
-    if(date) query.postedDate={'$gt':new Date(date as string)}
 
+    if(date) query.postedDate={'$gt':new Date(date as string)}
+    if(search) query.roadmapName=new RegExp(search as string ,'i')
 
     const length = (await Roadmap.find(query)).length;
     const Roadmaps = await Roadmap.find(query)

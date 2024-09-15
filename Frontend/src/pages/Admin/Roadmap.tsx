@@ -27,13 +27,17 @@ export default function Roadmap(): ReactElement {
     const [currentpage, setCurrentpage] = useState<number>(1);
     const dialogRef = useRef<HTMLDialogElement>(null);
     const deletedialogRef=useRef<HTMLDialogElement>(null)
+    const [search,setSearch]=useState<string>("")
     const navigate=useNavigate()
     useEffect(() => {
         async function dataWrapper() {
+          let urlconstructor=`${url}/user/roadmap/${location.state.id}?page=${currentpage}`
+          if(search){
+            urlconstructor=`${url}/user/roadmap/${location.state.id}?page=${currentpage}&search=${search}`
+          }
             const response = (
                 await axios.get(
-                    url +
-                        `/user/roadmap/${location.state.id}?page=${currentpage}`,
+                    urlconstructor,
                     {
                         headers: {
                             Authorization: `Bearer ${window.localStorage.getItem(
@@ -48,9 +52,8 @@ export default function Roadmap(): ReactElement {
             setPagecount(response.pageLength);
         }
         dataWrapper();
-    }, [currentpage, location.state.id]);
+    }, [currentpage, location.state.id,search]);
 
-    //in useffect we have to check existing roadmap
     const formHandler = () => {
         flushSync(() => {
             setOpen(true);
@@ -124,7 +127,7 @@ export default function Roadmap(): ReactElement {
 
     return (
       <>
-        <TopBar/>
+        <TopBar courseId={location.state.id} search={search} currentpage={currentpage} setSearch={setSearch} setRoadmaps={setRoadmaps} />
         <FilterBarRoadmap type='roadmap' currentpage={currentpage} courseId={location.state.id as string}  setRoadmaps={setRoadmaps} />
         <div className="ml-36 mt-10 flex justify-evenly flex-wrap">
           {roadmaps.map((roadmap) => {

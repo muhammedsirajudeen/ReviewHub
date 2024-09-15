@@ -20,12 +20,17 @@ export default function Course(): ReactElement {
     const [deleteopen,setDeleteopen]=useState<boolean>(false)
     const dialogRef = useRef<HTMLDialogElement>(null);
     const deletedialogRef=useRef<HTMLDialogElement>(null)
+    const [search,setSearch]=useState<string>("")
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     useEffect(() => {
         async function dataWrapper() {
+            let urlconstructor=`${url}/user/course?page=${currentpage}`  
+            if(search){
+               urlconstructor = `${url}/user/course?page=${currentpage}&search=${search}`;   
+            }
             const response = (
-                await axios.get(url + `/user/course?page=${currentpage}`, {
+                await axios.get(urlconstructor, {
                     headers: {
                         Authorization: `Bearer ${window.localStorage.getItem(
                             'token'
@@ -38,7 +43,7 @@ export default function Course(): ReactElement {
             dispatch(setPage('course'));
         }
         dataWrapper();
-    }, [currentpage, dispatch]);
+    }, [currentpage, dispatch,search]);
     const openForm = () => {
         //ensuring state is updated before accessing the dom
         flushSync(() => {
@@ -113,7 +118,7 @@ export default function Course(): ReactElement {
 
     return (
       <>
-        <TopBar   />
+        <TopBar currentpage={currentpage} setCourses={setCourses} search={search} setSearch={setSearch}  />
         <FilterBar currentpage={currentpage} setResult={setCourses} />
         <div className="ml-36 mt-10 flex items-center justify-evenly flex-wrap ">
           {courses.map((course) => {

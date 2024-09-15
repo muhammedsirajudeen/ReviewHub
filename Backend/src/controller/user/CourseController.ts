@@ -9,7 +9,8 @@ interface dateProps{
 }
 interface queryProps{
   domain?:string
-  postedDate?:dateProps
+  postedDate?:dateProps,
+  courseName?:RegExp
 }
 
 //constructing the query as it goes 
@@ -17,11 +18,14 @@ const CourseList = async (req: Request, res: Response) => {
   try {
     let { page } = req.query ?? '1';
     const {domain}=req.query
-    const {date}=req.query 
+    const {date,search}=req.query 
+    
     const newDate:Date=new Date(date as string)
     const query:queryProps={}
     if(domain) query.domain=domain as string
     if(date) query.postedDate={  $gt: newDate  }
+    if(search) query.courseName=new RegExp(search as string,'i')
+    console.log(query)
     const length = (await Course.find(query)).length;
     const Courses = await Course.find(query)
       .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
