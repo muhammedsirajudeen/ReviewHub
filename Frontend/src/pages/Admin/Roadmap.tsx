@@ -7,14 +7,9 @@ import axios from 'axios';
 import RoadmapDeleteForm from '../../components/Form/RoadmapDelete.form';
 import FilterBarRoadmap from '../../components/FilterBarRoadmap';
 import TopBar from '../../components/TopBar';
+import { roadmapProps } from '../../types/courseProps';
 
-interface roadmapProps {
-    _id: string;
-    roadmapName: string;
-    roadmapDescription: string;
-    courseId: string;
-    lessonCount: number;
-}
+
 
 export default function Roadmap(): ReactElement {
     const location = useLocation();
@@ -137,7 +132,7 @@ export default function Roadmap(): ReactElement {
                 onClick={() => roadmapNavHandler(roadmap)}
                 className="flex h-64 w-72 shadow-xl m-0 items-center justify-center flex-col p-2"
               >
-                <img src="/roadmap/roadmapbg.png" />
+                <img className='h-28 w-full' src={roadmap.roadmapImage ? `${url}/roadmap/${roadmap.roadmapImage}`  :"/roadmap/roadmapbg.png"} />
 
                 <p className="text-start w-full ml-10 text-4xl font-bold">
                   {roadmap.lessonCount}

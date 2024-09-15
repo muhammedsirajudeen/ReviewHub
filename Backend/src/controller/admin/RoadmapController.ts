@@ -11,10 +11,8 @@ const AddRoadmap = async (req: Request, res: Response) => {
   if(user.authorization!=="admin"){
     res.status(401).json({message:"Unauthorized"})
   }
-  console.log(roadmapName, roadmapDescription, courseId);
   try {
     const RoadMaps = await Roadmap.find({ courseId });
-    console.log(RoadMaps)
     if (RoadMaps.length === 0) {
       //asserting that this is the first roadmap
       const lessonCount = 1;
@@ -23,6 +21,7 @@ const AddRoadmap = async (req: Request, res: Response) => {
         courseId:new mongoose.Types.ObjectId(courseId as string),
         roadmapName,
         roadmapDescription,
+        roadmapImage:req.file?.filename
       });
       await newRoadmap.save();
       res.status(201).json({ message: 'success' });
@@ -37,6 +36,7 @@ const AddRoadmap = async (req: Request, res: Response) => {
         courseId,
         roadmapName,
         roadmapDescription,
+        roadmapImage:req.file?.filename
       });
       await newRoadmap.save();
       res.status(201).json({ message: 'success' });
@@ -59,6 +59,7 @@ const EditRoadmap=async (req:Request,res:Response)=>{
       if(updateRoadmap){
         updateRoadmap.roadmapName=roadmapName ?? updateRoadmap.roadmapName
         updateRoadmap.roadmapDescription=roadmapDescription ?? updateRoadmap.roadmapDescription
+        updateRoadmap.roadmapImage=req.file?.filename ?? updateRoadmap.roadmapImage
         await updateRoadmap.save()
         res.status(200).json({message:"success"})
       }else{

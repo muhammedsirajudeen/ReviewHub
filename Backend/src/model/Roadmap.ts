@@ -5,7 +5,8 @@ interface IRoadmap extends Document{
     roadmapDescription:string,
     courseId:mongoose.Types.ObjectId,
     lessonCount:number,
-    postedDate:Date
+    postedDate:Date,
+    roadmapImage:string
 }
 //validate this model 
 const RoadmapSchema=new Schema<IRoadmap>(
@@ -35,6 +36,11 @@ const RoadmapSchema=new Schema<IRoadmap>(
             type:Date,
             default:new Date(),
             required:true
+        },
+        roadmapImage:{
+            type:String,
+            required:true,
+            unique:false
         }
     }
 )

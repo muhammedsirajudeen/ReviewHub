@@ -12,15 +12,17 @@ export default function Course(): ReactElement {
   const [courses, setCourses] = useState<Array<courseProps>>([]);
   const [currentpage, setCurrentpage] = useState<number>(1);
   const [pagecount, setPagecount] = useState<number>(0);
-
+  const [search,setSearch]=useState<string>("")
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(setPage("course"));
     async function dataWrapper() {
+      let urlconstructor=`${url}/user/course?page=${currentpage}`
+      if(search) urlconstructor=`${url}/user/course?page=${currentpage}&search=${search}`
       const response = (
-        await axios.get(url + `/user/course?page=${currentpage}`, {
+        await axios.get(urlconstructor, {
           headers: {
             Authorization: `Bearer ${window.localStorage.getItem("token")}`,
           },
@@ -31,7 +33,7 @@ export default function Course(): ReactElement {
       setPagecount(response.pageLength);
     }
     dataWrapper();
-  }, [dispatch,currentpage]);
+  }, [dispatch, currentpage, search]);
   const courseNavHandler = (course:courseProps) => {
     navigate("/user/roadmap",{state:{courseId:course._id}});
   };
@@ -69,7 +71,7 @@ export default function Course(): ReactElement {
   };
   return (
     <>
-    <TopBar/>
+    <TopBar search={search} setSearch={setSearch} setCourses={setCourses} currentpage={currentpage} />
     <FilterBar currentpage={currentpage} setResult={setCourses} />
     <div className="ml-36 flex justify-evenly flex-wrap mt-16">
       {courses.map((course) => {

@@ -25,6 +25,7 @@ function UploadHandler(pathName:string){
   return upload
 }
 
+
 export const resizeMiddleware = (req: Request, res: Response, next: Function) => {
   if (!req.file) return next(); // If no file, move on
   const uploadDir = path.join(__dirname, "../public/","course");
@@ -55,5 +56,36 @@ export const resizeMiddleware = (req: Request, res: Response, next: Function) =>
     });
 };
 
+export const resizeMiddlewareWrapper=(pathName:string)=>{
+  return   (req: Request, res: Response, next: Function) => {
+    if (!req.file) return next(); // If no file, move on
+    const uploadDir = path.join(__dirname, "../public/",pathName);
+  
+    const filePath = path.join(uploadDir, req.file.filename);
+  
+    sharp(filePath)
+      .resize(300, 300) // Resize the image to 300x300 pixels
+      .toFile(filePath.replace(path.extname(req.file.filename), '-resized' + path.extname(req.file.filename)), (err, info) => {
+        if (err) {
+          return next(err);
+        }
+  
+        // Optional: Remove the original file if you only want to keep the resized one
+        fs.unlink(filePath, (unlinkErr) => {
+          if (unlinkErr) {
+            console.error("Error deleting the original file:", unlinkErr);
+          }
+          if(req.file?.filename){
+            const resizedFilePath = path.join(
+              path.dirname(filePath), 
+              path.basename(filePath, path.extname(filePath)) + '-resized' + path.extname(filePath)
+            );
+            req.file.filename=path.basename(resizedFilePath)
+          }
+          next();
+        });
+      });
+  };
+}
 
 export default UploadHandler;

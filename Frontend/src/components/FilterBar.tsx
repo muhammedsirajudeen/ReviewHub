@@ -72,7 +72,7 @@ export default function FilterBar({
       dataWrapper();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectdate, domain]);
+  }, [selectdate, domain,date]);
   const domainHandler = (selection: string) => {
     if (active === 'domain') {
       setActive('');
