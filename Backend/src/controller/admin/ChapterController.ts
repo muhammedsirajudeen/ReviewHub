@@ -2,7 +2,7 @@ import { Request,Response } from "express";
 import Chapter from "../../model/Chapter";
 import mongoose from "mongoose";
 import { IUser } from "../../model/User";
-
+import { addMessageToQueue } from "../../helper/redisHelper";
 interface dateProps{
     '$gt':Date
 }
@@ -30,7 +30,9 @@ const AddChapter=async (req:Request,res:Response)=>{
                 roadmapId:new mongoose.Types.ObjectId(roadmapId as string)
             }
         )
-        await newChapter.save()
+        const savedChapter=await newChapter.save()
+        //when the new chapter is created we are publishing it to the queue
+        addMessageToQueue("chapter",savedChapter.id)
         res.status(200).json({message:"success"})        
     }catch(error){
         console.log(error)
