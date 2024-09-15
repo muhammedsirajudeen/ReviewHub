@@ -25,7 +25,6 @@ const CourseList = async (req: Request, res: Response) => {
     if(domain) query.domain=domain as string
     if(date) query.postedDate={  $gt: newDate  }
     if(search) query.courseName=new RegExp(search as string,'i')
-    console.log(query)
     const length = (await Course.find(query)).length;
     const Courses = await Course.find(query)
       .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
