@@ -26,31 +26,34 @@ export interface chapterProps {
 interface contentProps {
   subheading: string;
   article: string;
+  _id: string;
 }
 
 export interface sectionProps {
   sectionName: string;
   content: Array<contentProps>;
+  _id: string;
 }
 
-export interface resourceProps{
-  _id:string,
-  chapterName:string,
-  chapterId:string,
-  Section:Array<sectionProps>
-
+export interface resourceProps {
+  _id: string;
+  chapterName: string;
+  chapterId: string;
+  Section: Array<sectionProps>;
 }
 
-export interface quizProps{
-  question:string,
-  answer:string,
-  options:Array<string>,
-  reward:number
+export interface quizProps {
+  question: string;
+  answer: string;
+  options: Array<string>;
+  reward: number;
+  _id:string
 }
 
 export interface QuizProps {
-  chapterName:string,
-  roadmapId:string,
-  Quiz:Array<quizProps>,
-  chapterId:string
+  chapterName: string;
+  roadmapId: string;
+  Quiz: Array<quizProps>;
+  chapterId: string;
+  _id:string
 }

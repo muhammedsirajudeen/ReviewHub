@@ -3,11 +3,13 @@ import mongoose, { Schema } from 'mongoose';
 interface resourceProps {
   subheading: string;
   article: string;
+  _id:string
 }
 
 interface sectionProps {
   sectionName: string;
   content: Array<resourceProps>;
+  _id:string
 }
 
 interface IResource extends Document {
@@ -28,6 +30,11 @@ const ContentSchema = new Schema<resourceProps>({
     required: false,
     unique: false,
   },
+  _id:{
+    type:String,
+    required:false,
+    unique:false
+  }
 });
 
 const SectionSchema = new Schema<sectionProps>({
@@ -35,6 +42,11 @@ const SectionSchema = new Schema<sectionProps>({
     type: String,
     required: false,
     unique: false,
+  },
+  _id:{
+    type:String,
+    required:false,
+    unique:false
   },
   content: [ContentSchema],
 });

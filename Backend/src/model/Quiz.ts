@@ -6,13 +6,16 @@ interface quizProps{
     answer:string,
     options:Array<string>,
     reward:number
+    _id:string
+
 }
 
 interface IQuiz extends Document{
     chapterName:string,
     roadmapId:mongoose.Types.ObjectId,
     Quiz:Array<quizProps>,
-    chapterId:mongoose.Types.ObjectId
+    chapterId:mongoose.Types.ObjectId,
+    _id:string
 }
 
 const questionSchema=new Schema<quizProps>(
@@ -34,6 +37,11 @@ const questionSchema=new Schema<quizProps>(
         },
         reward:{
             type:Number,
+            required:true,
+            unique:false
+        },
+        _id:{
+            type:String,
             required:true,
             unique:false
         }
@@ -59,6 +67,11 @@ const QuizSchema=new Schema<IQuiz>(
         },
         chapterId:{
             type:mongoose.Schema.ObjectId,
+            required:true,
+            unique:false
+        },
+        _id:{
+            type:String,
             required:true,
             unique:false
         }
