@@ -5,6 +5,7 @@ export interface courseProps {
   domain: string;
   courseImage: string;
   tagline: string;
+  unlistStatus: boolean;
 }
 
 export interface roadmapProps {
@@ -14,6 +15,7 @@ export interface roadmapProps {
   courseId: string;
   lessonCount: number;
   roadmapImage: string;
+  unlistStatus:boolean
 }
 export interface chapterProps {
   _id: string;
@@ -21,6 +23,7 @@ export interface chapterProps {
   roadmapId: string;
   quizStatus: boolean;
   additionalPrompt: string;
+  unlistStatus: boolean;
 }
 
 interface contentProps {
@@ -47,7 +50,7 @@ export interface quizProps {
   answer: string;
   options: Array<string>;
   reward: number;
-  _id:string
+  _id: string;
 }
 
 export interface QuizProps {
@@ -55,5 +58,5 @@ export interface QuizProps {
   roadmapId: string;
   Quiz: Array<quizProps>;
   chapterId: string;
-  _id:string
+  _id: string;
 }

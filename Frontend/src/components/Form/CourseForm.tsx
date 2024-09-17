@@ -1,10 +1,11 @@
-import axios from "axios";
-import { ChangeEvent, ReactElement, useRef, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import Select from "react-select";
-import { toast, ToastContainer } from "react-toastify";
-import url from "../../helper/backendUrl";
-import { courseProps } from "../../types/courseProps";
+import axios from 'axios';
+import { ChangeEvent, ReactElement, useRef, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import Select from 'react-select';
+import { toast, ToastContainer } from 'react-toastify';
+import url from '../../helper/backendUrl';
+import { courseProps } from '../../types/courseProps';
+import Toggle from 'react-toggle';
 
 interface Inputs {
   courseName: string;
@@ -14,19 +15,17 @@ interface Inputs {
 
 //for now keep it static add an option to accept it from the user as well
 const options = [
-  { value: "Mern", label: "Mern" },
-  { value: "Django", label: "Django" },
-  { value: "Golang", label: "Golang" },
+  { value: 'Mern', label: 'Mern' },
+  { value: 'Django', label: 'Django' },
+  { value: 'Golang', label: 'Golang' },
 ];
-
-
 
 export default function CourseForm({
   closeForm,
-  course
+  course,
 }: {
-  closeForm: VoidFunction,
-  course:courseProps | undefined
+  closeForm: VoidFunction;
+  course: courseProps | undefined;
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
   const {
@@ -34,17 +33,15 @@ export default function CourseForm({
     handleSubmit,
     // watch,
     formState: { errors },
-  } = useForm<Inputs>(
-    {
-      defaultValues:{
-        courseName:course?.courseName,
-        courseDescription:course?.courseDescription,
-        tagline:course?.tagline
-
-      }
-    }
-  );
-  const [domain,setDomain]=useState("")
+  } = useForm<Inputs>({
+    defaultValues: {
+      courseName: course?.courseName,
+      courseDescription: course?.courseDescription,
+      tagline: course?.tagline,
+    },
+  });
+  const [domain, setDomain] = useState<string>("")
+  const [list,setList]=useState<boolean>(false)
   const fileRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const fileHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -55,12 +52,12 @@ export default function CourseForm({
       if (e.target.files[0].size > maxSize) {
         // errorSpan.textContent = 'File size exceeds 2MB.';
         // isValid = false;
-        toast("must be less than 2MB");
+        toast('must be less than 2MB');
         return;
       }
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!allowedTypes.includes(e.target.files[0].type)) {
-        toast("invalid file type");
+        toast('invalid file type');
         return;
       }
       const reader = new FileReader();
@@ -74,61 +71,61 @@ export default function CourseForm({
   };
   const imageCloseHandler = () => {
     if (imageRef.current?.src) {
-      imageRef.current.src = "/form/add.png";
+      imageRef.current.src = '/form/add.png';
     }
   };
   // form submission Handler
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
     const formData = new FormData();
-    formData.append("courseName", data.courseName);
-    formData.append("courseDescription", data.courseDescription);
-    formData.append("domain", domain);
-    formData.append("tagline", data.tagline);
-    if(course) formData.append("courseId",course._id)
-    if(!fileRef.current?.files){
-        toast("please select a file")
-        return
-    }else{
-        formData.append("file",fileRef.current.files[0])
+    formData.append('courseName', data.courseName);
+    formData.append('courseDescription', data.courseDescription);
+    formData.append('domain', domain);
+    formData.append('tagline', data.tagline);
+    formData.append('unlistStatus',JSON.stringify(list))
+    if (course) formData.append('courseId', course._id);
+    if (!fileRef.current?.files) {
+      toast('please select a file');
+      return;
+    } else {
+      formData.append('file', fileRef.current.files[0]);
     }
-    console.log(domain)
-    if(!domain){
-        toast("please select a domain first")
-        return
+    console.log(domain);
+    if (!domain) {
+      toast('please select a domain first');
+      return;
     }
-    if(course){
-      
+    if (course) {
       //here the course is there so we are putting data
       const response = (
-        await axios.put(url + "/admin/course", formData, {
+        await axios.put(url + '/admin/course', formData, {
           headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
           },
         })
       ).data;
-      if(response.message==="success"){
-          toast("updated successfully")
-          setTimeout(()=>window.location.reload(),1000)
-      }else{
-          toast(response.message)
+      if (response.message === 'success') {
+        toast('updated successfully');
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        toast(response.message);
       }
-      return
+      return;
     }
-     const response = (
-      await axios.post(url + "/admin/course", formData, {
+    const response = (
+      await axios.post(url + '/admin/course', formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${window.localStorage.getItem('token')}`,
         },
       })
     ).data;
-    if(response.message==="success"){
-        toast("updated successfully")
-        setTimeout(()=>window.location.reload(),1000)
-    }else{
-        toast(response.message)
+    if (response.message === 'success') {
+      toast('updated successfully');
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      toast(response.message);
     }
   };
 
@@ -144,19 +141,19 @@ export default function CourseForm({
       <input
         placeholder="enter the Course Name"
         className="h-8 w-full border border-black placeholder:text-xs "
-        {...register("courseName", {
+        {...register('courseName', {
           required: {
             value: true,
-            message: "please enter the Course Name",
+            message: 'please enter the Course Name',
           },
           minLength: {
             value: 5,
-            message: "please enter alteast 8 character",
+            message: 'please enter alteast 8 character',
           },
           validate: (courseName: string) => {
-            if (courseName.trim() === "") return "please enter the Course Name";
+            if (courseName.trim() === '') return 'please enter the Course Name';
             if (SpecialCharRegex.test(courseName))
-              return "please enter valid Character";
+              return 'please enter valid Character';
             return true;
           },
         })}
@@ -171,20 +168,20 @@ export default function CourseForm({
       <input
         placeholder="enter the Course Description"
         className="h-8 w-full border border-black placeholder:text-xs"
-        {...register("courseDescription", {
+        {...register('courseDescription', {
           required: {
             value: true,
-            message: "please enter the Course Desription",
+            message: 'please enter the Course Desription',
           },
           minLength: {
             value: 5,
-            message: "please enter alteast 8 character",
+            message: 'please enter alteast 8 character',
           },
           validate: (courseDescription: string) => {
-            if (courseDescription.trim() === "")
-              return "please enter the Course Name";
+            if (courseDescription.trim() === '')
+              return 'please enter the Course Name';
             if (SpecialCharRegex.test(courseDescription))
-              return "please enter valid Character";
+              return 'please enter valid Character';
             return true;
           },
         })}
@@ -199,19 +196,19 @@ export default function CourseForm({
       <input
         placeholder="enter the Course Description"
         className="h-8 w-full border border-black placeholder:text-xs"
-        {...register("tagline", {
+        {...register('tagline', {
           required: {
             value: true,
-            message: "please enter the Tag Line",
+            message: 'please enter the Tag Line',
           },
           minLength: {
             value: 5,
-            message: "please enter alteast 8 character",
+            message: 'please enter alteast 8 character',
           },
           validate: (tagLine: string) => {
-            if (tagLine.trim() === "") return "please enter the Course Name";
+            if (tagLine.trim() === '') return 'please enter the Course Name';
             if (SpecialCharRegex.test(tagLine))
-              return "please enter valid Character";
+              return 'please enter valid Character';
             return true;
           },
         })}
@@ -227,7 +224,7 @@ export default function CourseForm({
         name="colors"
         options={options}
         className="basic-multi-select"
-        onChange={(value)=>setDomain(value?.value ?? "")}
+        onChange={(value) => setDomain(value?.value ?? '')}
         classNamePrefix="select"
       />
       <input
@@ -236,7 +233,8 @@ export default function CourseForm({
         type="file"
         className="hidden"
       />
-
+      <label htmlFor="toggle">List Status</label>
+      <Toggle defaultChecked={course?.unlistStatus} onChange={(e)=>setList(e.target.checked)} />
       <button
         type="button"
         onClick={imageCloseHandler}
@@ -244,11 +242,16 @@ export default function CourseForm({
       >
         x
       </button>
+
       <div className="h-32 flex flex-col items-center justify-center w-32 border border-black rounded-lg">
         <img
           onClick={() => fileRef.current?.click()}
           ref={imageRef}
-          src={course?.courseImage ? `${url}/course/${course.courseImage}`  :  `/form/add.png`}
+          src={
+            course?.courseImage
+              ? `${url}/course/${course.courseImage}`
+              : `/form/add.png`
+          }
           className="h-full w-full rounded-lg"
         />
       </div>
@@ -257,7 +260,7 @@ export default function CourseForm({
           type="submit"
           className="bg-blue-500 p-2 text-white  ml-2 h-6 text-xs flex items-center justify-center"
         >
-          submit
+          Submit
         </button>
         <button
           onClick={closeForm}

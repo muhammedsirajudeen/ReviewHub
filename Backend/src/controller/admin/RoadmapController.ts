@@ -6,7 +6,8 @@ import mongoose from 'mongoose';
 
 
 const AddRoadmap = async (req: Request, res: Response) => {
-  const { roadmapName, roadmapDescription, courseId } = req.body;
+  let { roadmapName, roadmapDescription, courseId, unlistStatus } = req.body;
+  unlistStatus=JSON.parse(unlistStatus)
   const user=req.user as IUser
   if(user.authorization!=="admin"){
     res.status(401).json({message:"Unauthorized"})
@@ -21,7 +22,8 @@ const AddRoadmap = async (req: Request, res: Response) => {
         courseId:new mongoose.Types.ObjectId(courseId as string),
         roadmapName,
         roadmapDescription,
-        roadmapImage:req.file?.filename
+        roadmapImage:req.file?.filename,
+        unlistStatus:unlistStatus
       });
       await newRoadmap.save();
       res.status(201).json({ message: 'success' });
@@ -53,13 +55,15 @@ const EditRoadmap=async (req:Request,res:Response)=>{
     if(user.authorization!=="admin"){
       res.status(401).json({message:"Unauthorized"})
     }else{
-      const {roadmapName,roadmapDescription}=req.body
+      let {roadmapName,roadmapDescription,unlistStatus}=req.body
       const {roadmapId}=req.params
+      unlistStatus=JSON.parse(unlistStatus)
       const updateRoadmap=await Roadmap.findById(roadmapId)
       if(updateRoadmap){
         updateRoadmap.roadmapName=roadmapName ?? updateRoadmap.roadmapName
         updateRoadmap.roadmapDescription=roadmapDescription ?? updateRoadmap.roadmapDescription
         updateRoadmap.roadmapImage=req.file?.filename ?? updateRoadmap.roadmapImage
+        updateRoadmap.unlistStatus=unlistStatus ?? updateRoadmap.unlistStatus
         await updateRoadmap.save()
         res.status(200).json({message:"success"})
       }else{
@@ -79,8 +83,14 @@ const DeleteRoadmap=async (req:Request,res:Response)=>{
       res.status(401).json({message:"success"})
     }else{
       const {roadmapId}=req.params
-      await Roadmap.findByIdAndDelete(roadmapId)
-      res.status(200).json({message:"success"})
+      const DeleteRoadmap=await Roadmap.findById(roadmapId)
+      if(DeleteRoadmap){
+        DeleteRoadmap.unlistStatus=true
+        DeleteRoadmap.save()
+        res.status(200).json({message:"success"})
+      }else{
+        res.status(404).json({message:"requested resource not found"})
+      }
     }
   }catch(error){
     console.log(error)

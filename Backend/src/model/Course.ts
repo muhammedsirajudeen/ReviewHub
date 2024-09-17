@@ -6,7 +6,8 @@ export interface ICourse extends Document {
   domain: string;
   tagline: string;
   courseImage: string;
-  postedDate:Date
+  postedDate:Date,
+  unlistStatus:boolean
 }
 const CourseSchema: Schema<ICourse> = new Schema({
   courseName: {
@@ -38,6 +39,12 @@ const CourseSchema: Schema<ICourse> = new Schema({
     type:Date,
     required:true,
     default:new Date()
+  },
+  unlistStatus:{
+    type:Boolean,
+    required:false,
+    unique:false,
+    default:false
   }
 });
 

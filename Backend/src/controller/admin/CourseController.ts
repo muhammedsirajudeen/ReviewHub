@@ -4,8 +4,8 @@ import { IUser } from '../../model/User';
 
 //add course here
 const AddCourse = async (req: Request, res: Response) => {
-  let { courseName, courseDescription, domain, tagline } = req.body;
-
+  let { courseName, courseDescription, domain, tagline ,unlistStatus } = req.body;
+  unlistStatus=JSON.parse(unlistStatus)
   let userhere = req.user as IUser;
   if (userhere.authorization !== 'admin') {
     return res.status(403).json({ message: 'insufficient permissions' });
@@ -21,6 +21,7 @@ const AddCourse = async (req: Request, res: Response) => {
         domain,
         tagline,
         courseImage: req.file?.filename,
+        unlistStatus:unlistStatus
       });
       await newCourse.save();
       res.json({ message: 'success' });
@@ -38,7 +39,8 @@ const UpdateCourse=async (req:Request,res:Response)=>{
     if(user.authorization!=="admin"){
       res.status(401).json({message:"Unauthorized"})
     }else{
-      let {courseId,courseName,courseDescription,domain,tagline}=req.body
+      let {courseId,courseName,courseDescription,domain,tagline,unlistStatus}=req.body
+      unlistStatus=JSON.parse(unlistStatus)
       const checkCourse=await Course.findById(courseId)
       if(checkCourse){
         //partially updating the contents
@@ -47,6 +49,7 @@ const UpdateCourse=async (req:Request,res:Response)=>{
         checkCourse.domain=domain ?? checkCourse.domain
         checkCourse.tagline=tagline ?? checkCourse.tagline
         checkCourse.courseImage=req.file?.filename ?? checkCourse.courseImage
+        checkCourse.unlistStatus=unlistStatus ?? checkCourse.unlistStatus
         await checkCourse.save()
         res.status(200).json({message:"success"})
       }else{
@@ -70,8 +73,17 @@ const DeleteCourse=async (req:Request,res:Response)=>{
       
     }else{
       const {courseId}=req.params
-      const deleteCourse=await Course.findByIdAndDelete(courseId)
-      res.status(200).json({message:"success"})
+      //disabling hard delete(
+      // const deleteCourse=await Course.findByIdAndDelete(courseId)
+      const unlistCourse=await Course.findById(courseId)
+      if(unlistCourse){
+
+        unlistCourse.unlistStatus=true
+        await unlistCourse.save()
+        res.status(200).json({message:"success"})
+      } else{
+        res.status(404).json({message:"course not found"})
+      }
     }
   }catch(error){
     console.log(error)

@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { ChangeEvent, ReactElement, useRef } from 'react';
+import { ChangeEvent, ReactElement, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import url from '../../helper/backendUrl';
 import { roadmapProps } from '../../types/courseProps';
+import Toggle from 'react-toggle';
 
 interface Inputs {
   roadmapName: string;
@@ -36,6 +37,7 @@ export default function RoadmapForm({
       roadmapDescription: roadmap?.roadmapDescription,
     },
   });
+  const [list,setList]=useState<boolean>(false)
   const imageRef = useRef<HTMLImageElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const fileHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -74,6 +76,7 @@ export default function RoadmapForm({
     formData.append("roadmapName",data.roadmapName)
     formData.append("roadmapDescription",data.roadmapDescription)
     formData.append("courseId",id)
+    formData.append("unlistStatus",JSON.stringify(list))
     if (!fileRef.current?.files) {
       toast('please select a file');
       return;
@@ -206,6 +209,8 @@ export default function RoadmapForm({
           className="h-full w-full rounded-lg"
         />
       </div>
+      <label htmlFor='toggle' className='text-xs font-light'>ListStatus</label>
+      <Toggle defaultChecked={roadmap?.unlistStatus} onChange={(e)=>setList(e.target.checked)} />
       {/* for roadmap Category*/}
       <div className="flex items-center justify-start w-full mt-5">
         <button

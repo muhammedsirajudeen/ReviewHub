@@ -126,7 +126,7 @@ export default function Course(): ReactElement {
               <div
                 key={course._id}
                 onClick={() => courseNavHandler(course._id)}
-                className="flex h-72 w-80 shadow-xl items-center justify-center flex-col"
+                className={`${course.unlistStatus ? "bg-gray-500" : ""} flex h-72 w-80 shadow-xl items-center justify-center flex-col`}
               >
                 <img
                   className="w-full h-40"
@@ -156,7 +156,7 @@ export default function Course(): ReactElement {
                     }}
                   />
                 </div>
-                <p className="text-center text-2xl font-light">
+                <p className={`${course.unlistStatus ? "line-through" :"" } text-center text-2xl font-light`}>
                   {course.courseName}
                 </p>
                 <p className="text-center text-xs font-light">

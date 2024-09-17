@@ -1,5 +1,6 @@
 import { Request,Response } from "express";
 import Roadmap from "../../model/Roadmap";
+import { IUser } from "../../model/User";
 const PAGE_LIMIT = 10;
 
 interface dateProps{
@@ -8,17 +9,21 @@ interface dateProps{
 interface queryProps{
   postedDate?:dateProps,
   courseId:string,
-  roadmapName?:RegExp
+  roadmapName?:RegExp,
+  unlistStatus?:boolean
 }
 
 const RoadmapList = async (req: Request, res: Response) => {
   try {
+    const user=req.user as IUser
     let { page } = req.query ?? '1';
     const {date,search}=req.query
     let {courseId}=req.params
     
     const query:queryProps={courseId:courseId}
-
+    if(user.authorization!=="admin"){
+      query.unlistStatus=false
+    }
     if(date) query.postedDate={'$gt':new Date(date as string)}
     if(search) query.roadmapName=new RegExp(search as string ,'i')
 

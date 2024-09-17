@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import url from '../../helper/backendUrl';
 import axios from 'axios';
@@ -12,6 +12,7 @@ export default function Roadmap(): ReactElement {
   const [roadmaps, setRoadmaps] = useState<Array<roadmapProps>>([]);
   const [currentpage, setCurrentpage] = useState<number>(1);
   const [search, setSearch] = useState<string>('');
+  let lessonCount=1
   const navigate = useNavigate();
   useEffect(() => {
     console.log('loaded');
@@ -104,7 +105,7 @@ export default function Roadmap(): ReactElement {
               />
 
               <p className="text-start w-full ml-10 text-4xl font-bold">
-                {roadmap.lessonCount}
+                {lessonCount++}
                 <span className="text-lg ml-10 font-light align-middle">
                   {roadmap.roadmapName}
                 </span>

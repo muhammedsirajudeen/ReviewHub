@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Course from '../../model/Course';
+import { IUser } from '../../model/User';
 
 const PAGE_LIMIT = 10;
 
@@ -10,18 +11,23 @@ interface dateProps{
 interface queryProps{
   domain?:string
   postedDate?:dateProps,
-  courseName?:RegExp
+  courseName?:RegExp,
+  unlistStatus?:boolean
 }
 
 //constructing the query as it goes 
 const CourseList = async (req: Request, res: Response) => {
   try {
+    const user=req.user as IUser
     let { page } = req.query ?? '1';
     const {domain}=req.query
     const {date,search}=req.query 
     
     const newDate:Date=new Date(date as string)
     const query:queryProps={}
+    if(user.authorization!=="admin"){
+      query.unlistStatus=false
+    }
     if(domain) query.domain=domain as string
     if(date) query.postedDate={  $gt: newDate  }
     if(search) query.courseName=new RegExp(search as string,'i')
