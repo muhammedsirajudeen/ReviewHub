@@ -16,10 +16,16 @@ export default function ChapterForm({
   dialogRef,
   closeForm,
   chapter,
+  method,
+  chapterName,
+  roadmapId
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeForm: VoidFunction;
   chapter: chapterProps | undefined;
+  method:string;
+  chapterName:string | undefined;
+  roadmapId:string | undefined
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
   const [quiz,setQuiz]=useState<boolean>(false)
@@ -29,12 +35,38 @@ export default function ChapterForm({
     formState: { errors },
   } = useForm<Inputs>({
     defaultValues:{
-        chapterName:chapter?.chapterName,
+        chapterName:chapter?.chapterName || chapterName,
         additionalPrompt:chapter?.additionalPrompt
     }
   });
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
+    if(method){
+      const response = (
+        await axios.post(
+          `${url}/admin/chapter`,
+          {
+            roadmapId: roadmapId,
+            chapterName: chapterName,
+            quizStatus: quiz,
+            additionalPrompt: data.additionalPrompt,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+            },
+          }
+        )
+      ).data;
+    if(response.message==="success"){
+        toast("created successfully")
+        setTimeout(()=>window.location.reload(),1000)
+    }else{
+        toast(response.message)
+    } 
+    return
+    }
+    
     const response=(
         await axios.put(`${url}/admin/chapter/${chapter?._id}`,
             {

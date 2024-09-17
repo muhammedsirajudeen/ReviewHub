@@ -22,17 +22,20 @@ const AddChapter=async (req:Request,res:Response)=>{
         if(user.authorization!=="admin"){
             return res.status(401).json({message:"Unauthorized"})
           }
-        const {roadmapId,chapterName}=req.body
+        const {roadmapId,chapterName,quizStatus,additionalPrompt}=req.body
         
         const newChapter=new Chapter(
             {
                 chapterName,
-                roadmapId:new mongoose.Types.ObjectId(roadmapId as string)
+                roadmapId:new mongoose.Types.ObjectId(roadmapId as string),
+                quizStatus,
+                additionalPrompt
             }
         )
         const savedChapter=await newChapter.save()
         //when the new chapter is created we are publishing it to the queue
         addMessageToQueue("chapter",savedChapter.id)
+
         res.status(200).json({message:"success"})        
     }catch(error){
         console.log(error)
@@ -60,7 +63,7 @@ const ListChapter=async (req:Request,res:Response)=>{
         const Chapters = await Chapter.find(query)
           .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
           .limit(PAGE_LIMIT);
-    
+
         res
           .status(200)
           .json({ message: 'success', chapters: Chapters ?? [], pageLength: length });
@@ -85,7 +88,9 @@ const UpdateChapter=async (req:Request,res:Response)=>{
                 UpdateChapter.chapterName=chapterName ?? UpdateChapter.chapterName
                 UpdateChapter.quizStatus=quizStatus ?? UpdateChapter.quizStatus
                 UpdateChapter.additionalPrompt=additionalPrompt ?? UpdateChapter.additionalPrompt
-                await UpdateChapter.save()
+                const savedChapter=await UpdateChapter.save()
+                addMessageToQueue("chapter",savedChapter.id)
+
                 res.status(200).json({message:"success"})
             }else{
                 res.status(404).json({message:"chapter not found"})

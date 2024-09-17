@@ -27,7 +27,7 @@ const ChapterSchema=new Schema<IChapter>(
         },
         additionalPrompt:{
             type:String,
-            required:false,
+            required:true,
             unique:false
         },
         postedDate:{

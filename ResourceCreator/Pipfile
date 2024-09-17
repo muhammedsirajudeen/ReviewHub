@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 redis = "*"
+pymongo = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

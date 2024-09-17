@@ -3,7 +3,7 @@ import {  SubmitHandler, useForm } from 'react-hook-form';
 import { useLocation } from 'react-router';
 import { chapterProps, roadmapProps } from '../../types/courseProps';
 import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import url from '../../helper/backendUrl';
 import { flushSync } from 'react-dom';
 import ChapterForm from '../../components/Form/ChapterForm';
@@ -26,8 +26,10 @@ export default function Chapter(): ReactElement {
     const dialogRef=useRef<HTMLDialogElement>(null)
     const deletedialogRef=useRef<HTMLDialogElement>(null)
     const [search,setSearch]=useState<string>("")
+    //giving the method here and setting it explicitly
+    const [method,setMethod]=useState<string>("")
+    const [chaptername,setChaptername]=useState<string>("")
     const { roadmap }: { roadmap: roadmapProps } = useLocation().state;
-    console.log(roadmap)
     const {
         register,
         handleSubmit,
@@ -36,7 +38,6 @@ export default function Chapter(): ReactElement {
     } = useForm<Inputs>();
 
     useEffect(() => {
-        console.log("loaded")
         async function dataWrapper() {
             let urlconstructor=`${url}/admin/chapter/${roadmap._id}?page=${currentpage}`
             if(search) urlconstructor=`${url}/admin/chapter/${roadmap._id}?page=${currentpage}&search=${search}`
@@ -66,25 +67,17 @@ export default function Chapter(): ReactElement {
 
     const onSubmit: SubmitHandler<Inputs> = async (data) =>{
         console.log(data)
-        const response=(await axios.post(
-            url+"/admin/chapter",
-            {
-              roadmapId:roadmap._id,
-              chapterName:data.chapterName,
-                
-            },
-            {
-                headers:{
-                    Authorization:`Bearer ${window.localStorage.getItem("token")}`
-                }
-            }
-        )).data
-        if(response.message==="success"){
-            toast("chapter added successfully")
-            setTimeout(()=>window.location.reload(),1000)
-        }else{
-            toast(response.message)
-        }
+        setChaptername(data.chapterName)
+        //synchronously updating the state special case
+        //fyi can hurt bit of perfomance
+        flushSync(()=>{
+            setOpen(true)
+            setChapter(undefined)
+
+        })
+        setMethod("post")
+        dialogRef.current?.showModal()
+
     };
     const pageHandler = (count: number) => {
         const page = Math.ceil(count / 10) + 1;
@@ -147,7 +140,7 @@ export default function Chapter(): ReactElement {
                         key={roadmap._id}
                         className="flex h-64 w-72 shadow-xl m-0 items-center justify-center flex-col"
                     >
-                        <img src="/roadmap/roadmapbg.png" />
+                        <img className='h-32 w-full' src={roadmap.roadmapImage ? `${url}/roadmap/${roadmap.roadmapImage}` : `/roadmap/roadmapbg.png`} />
 
                         <p className="text-start w-full ml-10 text-4xl font-bold">
                             {roadmap.lessonCount}
@@ -302,7 +295,7 @@ export default function Chapter(): ReactElement {
                 {
                     open &&
                     (
-                        <ChapterForm chapter={chapter} dialogRef={dialogRef} closeForm={closeForm}/>
+                        <ChapterForm roadmapId={roadmap._id} method={method} chapterName={chaptername} chapter={chapter} dialogRef={dialogRef} closeForm={closeForm}/>
                     )
                 }
                 {
