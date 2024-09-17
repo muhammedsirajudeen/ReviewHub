@@ -58,7 +58,7 @@ export default function Login(): ReactElement {
       console.log("the user is", user);
       if (user) dispatch(setUser(user));
 
-      setTimeout(() => navigate("/dashboard"), 1000);
+      setTimeout(() => navigate("/user/dashboard"), 1000);
     } else {
       toast(response.data.message);
     }
