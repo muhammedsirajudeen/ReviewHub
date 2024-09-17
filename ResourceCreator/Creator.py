@@ -9,13 +9,14 @@ import re
 load_dotenv()
 
 
+
 #generating json has been successfull now we have to validate it as extra steps
 
 #global variables for both collection and database
 COLLECTION_NAME="chapters"
 RESOURCE_NAME="resources"
 DATABASE_NAME="test"
-
+QUIZ_NAME="quizes"
 
 def QueryObjects():
     try:
@@ -50,26 +51,32 @@ def PromptResultGenerator(prompt,additionalPrompt,quizStatus):
                 "chapterName": "{prompt}",
                 "Section": [
                     {{
+                        "_id":"uniqueid",
                         "sectionName": "sectionOne",
                         "content": [
                             {{
+                                "_id:"uniqueid",
                                 "subheading": "populate",
                                 "article": "populate"
                             }},
                             {{
+                                "_id:"uniqueid"
                                 "subheading": "populate",
                                 "article": "populate"
                             }}
                         ]
                     }},
                     {{
+                        "_id":"uniqueid",
                         "sectionName": "sectionTwo",
                         "content": [
                             {{
+                                "_id":"uniqueid",
                                 "subheading": "populate",
                                 "article": "populate"
                             }},
                             {{
+                                "_id":"uniqueid",
                                 "subheading": "populate",
                                 "article": "populate"
                             }}
@@ -91,6 +98,7 @@ def PromptResultGenerator(prompt,additionalPrompt,quizStatus):
                     "chapterName":"{prompt}",
                     "Quiz":[
                         {{
+                            "_id":"uniqueid",
                             "question":"populate",
                             "description":"populate",
                             "answer:"populate",
@@ -130,9 +138,9 @@ def main():
                 pass
             else:
                 #we are getting the id here
-                id=json.loads(msg['data'])
+                messageData=json.loads(json.loads(msg['data']))
                 chapter_col=my_db[COLLECTION_NAME]
-                Chapter=chapter_col.find_one({'_id':ObjectId(id)})
+                Chapter=chapter_col.find_one({'_id':ObjectId(messageData['chapterId'])})
                 #now we got the associated data time for prompt
 
                 print(Chapter)
@@ -140,9 +148,14 @@ def main():
                 json_result=extract_json_from_text(result)
 
                 print(json_result)
-                resource_col=my_db[RESOURCE_NAME]
-
-                json_result["chapterId"]=ObjectId(id)
+                if Chapter['quizStatus']:
+                    resource_col=my_db[QUIZ_NAME]
+                    
+                else:
+                    resource_col=my_db[RESOURCE_NAME]
+                    
+                json_result["chapterId"]=ObjectId(messageData['chapterId'])
+                json_result["roadmapId"]=ObjectId(messageData['roadmapId'])
                 try:
                     resource_col.insert_one(json_result)
                     print("Successfully Inserted")

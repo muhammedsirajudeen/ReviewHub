@@ -34,7 +34,7 @@ const AddChapter=async (req:Request,res:Response)=>{
         )
         const savedChapter=await newChapter.save()
         //when the new chapter is created we are publishing it to the queue
-        addMessageToQueue("chapter",savedChapter.id)
+        addMessageToQueue("chapter",JSON.stringify({chapterId:savedChapter.id,roadmapId:savedChapter.roadmapId}))
 
         res.status(200).json({message:"success"})        
     }catch(error){
@@ -89,6 +89,8 @@ const UpdateChapter=async (req:Request,res:Response)=>{
                 UpdateChapter.quizStatus=quizStatus ?? UpdateChapter.quizStatus
                 UpdateChapter.additionalPrompt=additionalPrompt ?? UpdateChapter.additionalPrompt
                 const savedChapter=await UpdateChapter.save()
+                // addMessageToQueue("chapter",JSON.stringify({chapterId:savedChapter.id,roadmapId:savedChapter.roadmapId}))
+
                 res.status(200).json({message:"success"})
             }else{
                 res.status(404).json({message:"chapter not found"})

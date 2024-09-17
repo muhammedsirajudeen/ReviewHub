@@ -41,8 +41,8 @@ export default function ChapterForm({
     }
   });
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
-    if(method){
+    console.log(method)
+    if(method==='post'){
       const response = (
         await axios.post(
           `${url}/admin/chapter`,
@@ -67,7 +67,6 @@ export default function ChapterForm({
     } 
     return
     }
-    
     const response=(
         await axios.put(`${url}/admin/chapter/${chapter?._id}`,
             {
@@ -169,7 +168,7 @@ export default function ChapterForm({
         {/* here we give a button to view the complete chapter */}
         {
           method==='put' && (
-            <Link to='/admin/resource' state={{chapterId:chapter?._id}} className='p-1 text-xs border border-black  m-4 '>View Chapter</Link>
+            <Link to='/admin/resource' state={{chapterId:chapter?._id,roadmapId:roadmapId,quizStatus:chapter?.quizStatus}} className='p-1 text-xs border border-black  m-4 '>View Chapter</Link>
           )
         }
         <button className='flex mt-4 items-center justify-center border border-black p-2 text-xs mb-4' type="submit">Submit</button>

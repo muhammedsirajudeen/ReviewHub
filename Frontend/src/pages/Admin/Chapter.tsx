@@ -66,16 +66,17 @@ export default function Chapter(): ReactElement {
 
 
     const onSubmit: SubmitHandler<Inputs> = async (data) =>{
-        console.log(data)
+        // console.log(data)
         setChaptername(data.chapterName)
+        setMethod("post")
         //synchronously updating the state special case
         //fyi can hurt bit of perfomance
         flushSync(()=>{
             setOpen(true)
+
             setChapter(undefined)
 
         })
-        setMethod("post")
         dialogRef.current?.showModal()
 
     };

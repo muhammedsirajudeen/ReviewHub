@@ -6,6 +6,7 @@ import upload, { resizeMiddleware, resizeMiddlewareWrapper } from '../helper/fil
 import UploadHandler from '../helper/fileuploadHelper';
 import RoadmapController from '../controller/admin/RoadmapController';
 import ChapterController from '../controller/admin/ChapterController';
+import ResourceController from '../controller/admin/ResourceController';
 const router = express.Router();
 //user Management
 router.get(
@@ -98,6 +99,18 @@ router.delete(
   ChapterController.DeleteChapter
 )
 
+//resource management
+router.get(
+  '/resource/:chapterId',
+  passport.authenticate('jwt',{session:false}),
+  ResourceController.GetResource
+)
+
+router.get(
+  '/quiz/:chapterId',
+  passport.authenticate('jwt',{session:false}),
+  ResourceController.GetQuiz
+)
 
 
 export default router;

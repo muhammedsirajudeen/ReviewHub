@@ -1,26 +1,22 @@
-import { Request, Response } from 'express';
-import Resource from '../../model/Resource';
-import mongoose from 'mongoose';
+import { Request,Response } from "express";
+import Resource from "../../model/Resource";
+import mongoose from "mongoose";
+import Quiz from "../../model/Quiz";
 
-const GetResource = async (req: Request, res: Response) => {
-  try {
-    const { chapterId } = req.params;
-
-    const resultResource = await Resource.findOne({
-      chapterId: new mongoose.Types.ObjectId(chapterId as string),
-    });
-    console.log(resultResource);
-    if (resultResource) {
-      res.status(200).json({ message: 'success', resource: resultResource });
-    } else {
-      res.status(404).json({ message: 'requested resource not found' });
+const GetResources=async (req:Request,res:Response)=>{
+    try{
+        const {roadmapId}=req.params
+        console.log(roadmapId)
+        const Resources=await Resource.find({roadmapId:new mongoose.Types.ObjectId(roadmapId as string)})
+        console.log(Resources)
+        const Quizes=await Quiz.find({roadmapId:new mongoose.Types.ObjectId(roadmapId as string)})
+        res.status(200).json({message:"success",resource:Resources,quiz:Quizes})
+    }catch(error){
+        console.log(error)
+        res.status(500).json({message:"success"})
     }
-  } catch (error) {
-    // console.log(error);
-    res.status(500).json({ message: 'server error occured' });
-  }
-};
+}
 
 export default {
-  GetResource,
-};
+    GetResources
+}

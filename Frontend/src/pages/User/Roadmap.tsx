@@ -63,7 +63,7 @@ export default function Roadmap(): ReactElement {
 
   const roadmapNavHandler = (roadmap: roadmapProps) => {
     // console.log(roadmap)
-    navigate('/user/chapter', { state: { roadmapId: roadmap._id } });
+    navigate('/user/resource', { state: { roadmapId: roadmap._id } });
   };
   const dialogHandler = (e: React.MouseEvent<HTMLImageElement>) => {
     e.stopPropagation();

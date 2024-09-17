@@ -14,6 +14,7 @@ interface IResource extends Document {
   chapterName: string;
   Section: Array<sectionProps>;
   chapterId: mongoose.Types.ObjectId;
+  roadmapId:mongoose.Types.ObjectId
 }
 
 const ContentSchema = new Schema<resourceProps>({
@@ -52,6 +53,11 @@ const ResourceSchema = new Schema<IResource>({
     required: true,
     unique: false,
   },
+  roadmapId:{
+    type:mongoose.Schema.ObjectId,
+    required:true,
+    unique:false
+  }
 });
 
 const Resource = mongoose.model('resource', ResourceSchema);

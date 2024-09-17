@@ -40,3 +40,17 @@ export interface resourceProps{
   Section:Array<sectionProps>
 
 }
+
+export interface quizProps{
+  question:string,
+  answer:string,
+  options:Array<string>,
+  reward:number
+}
+
+export interface QuizProps {
+  chapterName:string,
+  roadmapId:string,
+  Quiz:Array<quizProps>,
+  chapterId:string
+}
