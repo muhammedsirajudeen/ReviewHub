@@ -89,8 +89,6 @@ const UpdateChapter=async (req:Request,res:Response)=>{
                 UpdateChapter.quizStatus=quizStatus ?? UpdateChapter.quizStatus
                 UpdateChapter.additionalPrompt=additionalPrompt ?? UpdateChapter.additionalPrompt
                 const savedChapter=await UpdateChapter.save()
-                addMessageToQueue("chapter",savedChapter.id)
-
                 res.status(200).json({message:"success"})
             }else{
                 res.status(404).json({message:"chapter not found"})
