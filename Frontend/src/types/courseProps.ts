@@ -22,3 +22,21 @@ export interface chapterProps {
   quizStatus: boolean;
   additionalPrompt: string;
 }
+
+interface contentProps {
+  subheading: string;
+  article: string;
+}
+
+export interface sectionProps {
+  sectionName: string;
+  content: Array<contentProps>;
+}
+
+export interface resourceProps{
+  _id:string,
+  chapterName:string,
+  chapterId:string,
+  Section:Array<sectionProps>
+
+}

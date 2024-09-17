@@ -6,6 +6,7 @@ import url from '../../helper/backendUrl';
 import { toast } from 'react-toastify';
 import "react-toggle/style.css"
 import Toggle from "react-toggle"
+import { Link } from 'react-router-dom';
 
 type Inputs = {
   chapterName: string;
@@ -166,8 +167,12 @@ export default function ChapterForm({
         />
         <p className='text-xs font-light'>Additional Prompt</p>
         {/* here we give a button to view the complete chapter */}
-        <p className='text-xs mt-4' >The rest of the chapter would come here</p>
-        <button className='flex mt-4 items-center justify-center border border-black p-2 text-xs' type="submit">Submit</button>
+        {
+          method==='put' && (
+            <Link to='/admin/resource' state={{chapterId:chapter?._id}} className='p-1 text-xs border border-black  m-4 '>View Chapter</Link>
+          )
+        }
+        <button className='flex mt-4 items-center justify-center border border-black p-2 text-xs mb-4' type="submit">Submit</button>
       </form>
     </dialog>
   );

@@ -20,9 +20,10 @@ import UserPrivateRoute from "./components/UserPrivateRoute";
 import AdminPrivateRoute from "./components/AdminPrivateRoute";
 import AdminRoadmap from "./pages/Admin/Roadmap"
 import AdminChapter from "./pages/Admin/Chapter"
+import AdminCourse from "./pages/Admin/Course";
+import AdminResource from "./pages/Admin/Resource"
 
 import Forgot from "./pages/Authentication/Forgot";
-import AdminCourse from "./pages/Admin/Course";
 
 import Course from "./pages/User/Course";
 import Roadmap from "./pages/User/Roadmap";
@@ -83,6 +84,11 @@ const router = createBrowserRouter([
         element: <AdminPrivateRoute Component={AdminChapter} />,
         loader: tokenVerifier,
       },
+      {
+        path:'/admin/resource',
+        element:<AdminPrivateRoute Component={AdminResource}/>,
+        loader:tokenVerifier
+      }
     ],
   },
   //user routes

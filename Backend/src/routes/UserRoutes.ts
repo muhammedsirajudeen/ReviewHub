@@ -7,6 +7,7 @@ import upload from "../helper/fileuploadHelper";
 import UploadHandler from "../helper/fileuploadHelper";
 import CourseController from "../controller/user/CourseController";
 import RoadmapController from "../controller/user/RoadmapController";
+import ResourceController from '../controller/user/ResourceController';
 
 router.get("/course", passport.authenticate("jwt", { session: false }),CourseController.CourseList);
 
@@ -18,5 +19,12 @@ router.post(
   UploadHandler("profile").single("file"),
   UserController.UserUpdate
 );
+
+//resource management
+router.get(
+  '/resource/:chapterId',
+  passport.authenticate('jwt',{session:false}),
+  ResourceController.GetResource
+)
 
 export default router;

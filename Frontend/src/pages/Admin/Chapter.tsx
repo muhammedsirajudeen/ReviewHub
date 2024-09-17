@@ -104,6 +104,7 @@ export default function Chapter(): ReactElement {
         setCurrentpage(next);
     };
     const editModalHandler=(chapter:chapterProps)=>{
+        setMethod('put')
         setChapter(chapter)
         flushSync(()=>{
             setOpen(true)
