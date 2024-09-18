@@ -1,20 +1,29 @@
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import url from '../../helper/backendUrl';
 import axios from 'axios';
 import FilterBarRoadmap from '../../components/FilterBarRoadmap';
 import TopBar from '../../components/TopBar';
 import { roadmapProps } from '../../types/courseProps';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function Roadmap(): ReactElement {
   const location = useLocation();
+  const navigate = useNavigate();
+  //when user try to navigate normally just redirect them out
+
   const [pagecount, setPagecount] = useState<number>(0);
   const [roadmaps, setRoadmaps] = useState<Array<roadmapProps>>([]);
   const [currentpage, setCurrentpage] = useState<number>(1);
+  const [enroll, setEnroll] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
-  let lessonCount=1
-  const navigate = useNavigate();
+  let lessonCount = 1;
+
   useEffect(() => {
+    if (!location.state) {
+      navigate('/user/courses');
+      return;
+    }
     console.log('loaded');
     async function dataWrapper() {
       let urlconstructor = `${url}/user/roadmap/${location.state.courseId}?page=${currentpage}`;
@@ -32,7 +41,22 @@ export default function Roadmap(): ReactElement {
       setPagecount(response.pageLength);
     }
     dataWrapper();
-  }, [currentpage, location.state, location.state.courseId, search]);
+
+    async function enrolledWrapper() {
+      const urlconstructor = `${url}/user/enroll/${location.state.courseId}`;
+      const response = (
+        await axios.get(urlconstructor, {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+          },
+        })
+      ).data;
+      if (response.message === 'success') {
+        setEnroll(true);
+      }
+    }
+    enrolledWrapper();
+  }, [currentpage, location.state, navigate, search]);
 
   //in useffect we have to check existing roadmap
 
@@ -64,17 +88,57 @@ export default function Roadmap(): ReactElement {
 
   const roadmapNavHandler = (roadmap: roadmapProps) => {
     // console.log(roadmap)
-    navigate('/user/resource', { state: { roadmapId: roadmap._id } });
+    if (enroll) {
+      navigate('/user/resource', { state: { roadmapId: roadmap._id } });
+    } else {
+      toast('enroll before seeing the resource');
+    }
   };
   const dialogHandler = (e: React.MouseEvent<HTMLImageElement>) => {
     e.stopPropagation();
     alert('ellipsis');
   };
+  const enrollHandler = async () => {
+    const response = (
+      await axios.post(
+        `${url}/user/enroll`,
+        {
+          courseId: location.state.courseId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+          },
+        }
+      )
+    ).data;
+    if (response.message === 'success') {
+      toast('enrolled successfully');
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      toast(response.message);
+    }
+  };
+  const disenrollHandler = async () => {
+    const response = (
+      await axios.delete(`${url}/user/enroll/${location.state.courseId}`, {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+        },
+      })
+    ).data;
+    if (response.message === 'success') {
+      toast('disenrolled successfully');
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      toast(response.message);
+    }
+  };
 
   return (
     <>
       <TopBar
-        courseId={location.state.courseId}
+        courseId={location.state ? location.state.courseId : ''}
         search={search}
         setSearch={setSearch}
         setRoadmaps={setRoadmaps}
@@ -83,10 +147,26 @@ export default function Roadmap(): ReactElement {
       <FilterBarRoadmap
         type="roadmap"
         currentpage={currentpage}
-        courseId={location.state.courseId as string}
+        courseId={location.state ? location.state.courseId : ''}
         setRoadmaps={setRoadmaps}
       />
-
+      {enroll ? (
+        <button
+          onClick={disenrollHandler}
+          className=" ml-64 bg-red-500 p-2 flex justify-evenly items-center mt-10"
+        >
+          <img className="mr-2" src="/dashboard/school.png" />
+          <p className="text-xs text-white font-bold">Disenroll</p>
+        </button>
+      ) : (
+        <button
+          onClick={enrollHandler}
+          className=" ml-64 bg-green-500 p-2 flex justify-evenly items-center mt-10"
+        >
+          <img className="mr-2" src="/dashboard/school.png" />
+          <p className="text-xs text-white font-bold">Enroll</p>
+        </button>
+      )}
       <div className="ml-36 mt-10 flex justify-evenly flex-wrap">
         {roadmaps.map((roadmap) => {
           return (
@@ -154,6 +234,7 @@ export default function Roadmap(): ReactElement {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 }

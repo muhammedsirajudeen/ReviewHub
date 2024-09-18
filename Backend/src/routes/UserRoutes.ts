@@ -8,6 +8,7 @@ import UploadHandler from '../helper/fileuploadHelper';
 import CourseController from '../controller/user/CourseController';
 import RoadmapController from '../controller/user/RoadmapController';
 import ResourceController from '../controller/user/ResourceController';
+import EnrollmentController from '../controller/user/EnrollmentController';
 
 router.get(
   '/course',
@@ -31,8 +32,33 @@ router.post(
 //resource viewer
 router.get(
   '/resource/:roadmapId',
-  passport.authenticate('jwt',{session:false}),
+  passport.authenticate('jwt', { session: false }),
   ResourceController.GetResources
+);
+
+//enrollment manager
+router.get(
+  '/enroll',
+  passport.authenticate('jwt', { session: false }),
+  EnrollmentController.GetEnroll
+);
+
+router.get(
+  '/enroll/:courseId',
+  passport.authenticate('jwt', { session: false }),
+  EnrollmentController.GetEnrollById
+);
+
+router.post(
+  '/enroll',
+  passport.authenticate('jwt', { session: false }),
+  EnrollmentController.Enroll
+);
+
+router.delete(
+  '/enroll/:courseId',
+  passport.authenticate('jwt', { session: false }),
+  EnrollmentController.DeleteEnrollById
 );
 
 export default router;

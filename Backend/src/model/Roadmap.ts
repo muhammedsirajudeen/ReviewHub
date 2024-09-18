@@ -43,8 +43,8 @@ const RoadmapSchema = new Schema<IRoadmap>({
   },
   unlistStatus: {
     type: 'Boolean',
-    required:true,
-    unique:false
+    required: true,
+    unique: false,
   },
 });
 

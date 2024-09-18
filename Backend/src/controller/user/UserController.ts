@@ -9,7 +9,6 @@ const backendUrl = 'http://localhost:3000/';
 
 const UserUpdate = async (req: Request, res: Response) => {
   try {
-    
     const user = req.user as userProps;
     const { phone, address, profileImage, email } = req.body;
     const checkUser = await User.findOne({ email });

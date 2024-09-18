@@ -4,33 +4,32 @@ import { IUser } from '../../model/User';
 
 const PAGE_LIMIT = 10;
 
-
-interface dateProps{
-  '$gt':Date
+interface dateProps {
+  $gt: Date;
 }
-interface queryProps{
-  domain?:string
-  postedDate?:dateProps,
-  courseName?:RegExp,
-  unlistStatus?:boolean
+interface queryProps {
+  domain?: string;
+  postedDate?: dateProps;
+  courseName?: RegExp;
+  unlistStatus?: boolean;
 }
 
-//constructing the query as it goes 
+//constructing the query as it goes
 const CourseList = async (req: Request, res: Response) => {
   try {
-    const user=req.user as IUser
+    const user = req.user as IUser;
     let { page } = req.query ?? '1';
-    const {domain}=req.query
-    const {date,search}=req.query 
-    
-    const newDate:Date=new Date(date as string)
-    const query:queryProps={}
-    if(user.authorization!=="admin"){
-      query.unlistStatus=false
+    const { domain } = req.query;
+    const { date, search } = req.query;
+
+    const newDate: Date = new Date(date as string);
+    const query: queryProps = {};
+    if (user.authorization !== 'admin') {
+      query.unlistStatus = false;
     }
-    if(domain) query.domain=domain as string
-    if(date) query.postedDate={  $gt: newDate  }
-    if(search) query.courseName=new RegExp(search as string,'i')
+    if (domain) query.domain = domain as string;
+    if (date) query.postedDate = { $gt: newDate };
+    if (search) query.courseName = new RegExp(search as string, 'i');
     const length = (await Course.find(query)).length;
     const Courses = await Course.find(query)
       .skip((parseInt(page as string) - 1) * PAGE_LIMIT)

@@ -1,6 +1,6 @@
 // Import required modules
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -12,12 +12,11 @@ const dbURI = process.env.MONGODB_URI as string;
 const connectDB = async () => {
   try {
     // Connect to MongoDB using the URI from environment variables
-    await mongoose.connect(dbURI, {
-    });
-    console.log("MongoDB connected");
+    await mongoose.connect(dbURI, {});
+    console.log('MongoDB connected');
   } catch (error) {
     // Log any connection errors
-    console.error("MongoDB connection error:", error);
+    console.error('MongoDB connection error:', error);
   }
 };
 

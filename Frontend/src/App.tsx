@@ -64,6 +64,8 @@ const router = createBrowserRouter([
     element: <AdminPrivateRoute Component={AdminSideBar} />,
     // element:<AdminSideBar/>,
     loader: tokenVerifier,
+    errorElement: <ErrorElement />,
+
     children: [
       {
         path: '/admin/dashboard',
@@ -97,6 +99,8 @@ const router = createBrowserRouter([
     path: '/user',
     element: <UserPrivateRoute Component={SideBar} />,
     loader: tokenVerifier, // Use loader for asynchronous data fetching
+    // errorElement: <ErrorElement />,
+
     children: [
       {
         path: '/user/dashboard',

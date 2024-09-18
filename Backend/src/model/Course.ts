@@ -6,8 +6,8 @@ export interface ICourse extends Document {
   domain: string;
   tagline: string;
   courseImage: string;
-  postedDate:Date,
-  unlistStatus:boolean
+  postedDate: Date;
+  unlistStatus: boolean;
 }
 const CourseSchema: Schema<ICourse> = new Schema({
   courseName: {
@@ -35,17 +35,17 @@ const CourseSchema: Schema<ICourse> = new Schema({
     required: false,
     unique: false,
   },
-  postedDate:{
-    type:Date,
-    required:true,
-    default:new Date()
+  postedDate: {
+    type: Date,
+    required: true,
+    default: new Date(),
   },
-  unlistStatus:{
-    type:Boolean,
-    required:false,
-    unique:false,
-    default:false
-  }
+  unlistStatus: {
+    type: Boolean,
+    required: false,
+    unique: false,
+    default: false,
+  },
 });
 
 const Course = mongoose.model<ICourse>('courses', CourseSchema);
