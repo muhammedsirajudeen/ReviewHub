@@ -133,180 +133,114 @@ export default function Chapter(): ReactElement {
 
     return (
         <>
-            <TopBar search={search} setSearch={setSearch} setChapters={setChapters} currentpage={currentpage} roadmapId={roadmap._id}/>
-            <FilterBarRoadmap type='chapter' currentpage={currentpage} roadmapId={roadmap._id} setChapters={setChapters}  />
-            <div className="ml-36 mt-10 flex flex-col">
-                <div className="flex items-center justify-between">
-                    {/* placeholder to see which course they are editing */}
-                    <div
-                        key={roadmap._id}
-                        className="flex h-64 w-72 shadow-xl m-0 items-center justify-center flex-col"
-                    >
-                        <img className='h-32 w-full' src={roadmap.roadmapImage ? `${url}/roadmap/${roadmap.roadmapImage}` : `/roadmap/roadmapbg.png`} />
-
-                        <p className="text-start w-full ml-10 text-4xl font-bold">
-                            {roadmap.lessonCount}
-                            <span className="text-lg ml-10 font-light align-middle">
-                                {roadmap.roadmapName}
-                            </span>
-                        </p>
-
-                        <div className="flex justify-end mr-10 w-full"></div>
-                        <p className="text-center text-xs mt-4 font-light">
-                            {roadmap.roadmapDescription}
-                        </p>
+            <TopBar search={search} setSearch={setSearch} setChapters={setChapters} currentpage={currentpage} roadmapId={roadmap._id} />
+            <FilterBarRoadmap type='chapter' currentpage={currentpage} roadmapId={roadmap._id} setChapters={setChapters} />
+            <div className="container mx-auto p-6">
+                <div className="flex flex-col lg:flex-row justify-between items-start gap-6 mb-8">
+                    {/* Roadmap Info */}
+                    <div className="flex flex-col bg-white shadow-lg rounded-lg p-6 w-full lg:w-1/2">
+                        <img className="h-32 w-full object-cover rounded-lg" src={roadmap.roadmapImage ? `${url}/roadmap/${roadmap.roadmapImage}` : `/roadmap/roadmapbg.png`} alt="Roadmap" />
+                        <h2 className="text-3xl font-bold mt-4">{roadmap.roadmapName}</h2>
+                        <p className="text-gray-600 mt-2">{roadmap.roadmapDescription}</p>
+                        <span className="text-gray-500 mt-2">Lessons: {roadmap.lessonCount}</span>
                     </div>
-                    {/* add tag fields here */}
-                    <div className="flex h-40 w-98 bg-chapter mr-40 items-start justify-center rounded-2xl">
-                        <div className="flex items-center justify-start">
-                            <form
-                                className="flex items-center flex-col justify-center"
-                                onSubmit={handleSubmit(onSubmit)}
+                    {/* Add Chapter Form */}
+                    <div className="flex flex-col bg-white shadow-lg rounded-lg p-6 w-full lg:w-1/2">
+                        <h2 className="text-xl font-semibold mb-4">Add New Chapter</h2>
+                        <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+                            <input
+                                className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                type="text"
+                                placeholder="Enter chapter name"
+                                {...register('chapterName', {
+                                    required: {
+                                        value: true,
+                                        message: 'Please enter the chapter name',
+                                    },
+                                    minLength: {
+                                        value: 5,
+                                        message: 'Minimum length is 5 characters',
+                                    },
+                                    validate: (value: string) => {
+                                        if (SpecialCharRegex.test(value))
+                                            return 'No special characters allowed';
+                                        return true;
+                                    },
+                                })}
+                            />
+                            {errors.chapterName && (
+                                <span className="text-red-500 text-sm">{errors.chapterName.message}</span>
+                            )}
+                            <button
+                                type="submit"
+                                className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-200"
                             >
-                                <div className="flex items-center justify-center">
-                                    <input
-                                        className="h-8 w-full m-4 bg-chapter placeholder:text-white text-white"
-                                        type="text"
-                                        placeholder="enter the chapter name"
-                                        // readOnly={editable}
-                                        {...register('chapterName', {
-                                            required: {
-                                                value: true,
-                                                message: 'please enter the chapter',
-                                            },
-                                            minLength: {
-                                                value: 5,
-                                                message:
-                                                    'please enter the required characters',
-                                            },
-                                            validate: (tag: string) => {
-                                                if (tag.trim() === '')
-                                                    return 'please enter the roadmap Name';
-                                                if (SpecialCharRegex.test(tag))
-                                                    return 'please enter valid Character';
-                                                return true;
-                                            },
-                                        })}
-                                    />
-
-                                    <button
-                                        className="bg-chapter-light h-6 w-6 flex items-center justify-center mr-4 rounded-xl"
-                                        type="button"
-                                    >
-                                        <img src="/chapter/edit.png" />
-                                    </button>
-                                </div>
-                                <hr className="text-gray-400 w-3/4 " />
-                                {errors.chapterName && (
-                                    <span className="text-red-500 text-xs">
-                                        {errors.chapterName.message}
-                                    </span>
-                                )}
-                                <button
-                                    type="submit"
-                                    className="border border-white  p-1 rounded-lg text-white flex items-center justify-evenly mt-10 mb-4"
-                                >
-                                    <span className="font-bold text-xl mr-4">
-                                        +
-                                    </span>
-                                    <span className="font-light">Create</span>
-                                </button>
-                            </form>
-                        </div>
+                                Create Chapter
+                            </button>
+                        </form>
                     </div>
                 </div>
 
-                {/* here the content thats already there is displayed and things like that*/}
-                <div className="flex items-center w-screen justify-center flex-col ">
-                    {/* adjusting by 36 to right */}
-                    <div className="h-14 w-3/4 bg-chapter mt-20 mr-36 flex items-start justify-center flex-col">
-                        <h1 className="text-gray-400 font-light text-xl align-middle ml-2 ">
-                            {roadmap.roadmapName}
-                        </h1>
-                    </div>
-                    {/* here we create that stuff */}
-                    <div className='flex items-center justify-center flex-wrap  w-3/4'>
-                        
-                    {
-                        chapters.map((chapter)=>{
-                            return(
-                                <div key={chapter._id} className="flex h-20 mt-12 w-72 bg-chapter mr-40 items-start justify-center rounded-2xl  ">
-                                <div className="flex items-center justify-center ">
-                                    <input
-                                        className="h-8 w-full m-4 bg-chapter placeholder:text-white text-white placeholder:text-xs"
-                                        type="text"
-                                        placeholder="enter the tag"
-                                        value={chapter.chapterName}
-                                        readOnly
-                                        // readOnly={editable}
-                                    />
-            
+                {/* Chapter List */}
+                <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
+                    <h2 className="text-xl font-semibold mb-4">{roadmap.roadmapName} - Chapters</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {chapters.map((chapter) => (
+                            <div key={chapter._id} className="bg-gray-100 shadow-md rounded-lg p-4 flex items-center justify-between">
+                                <span className="text-gray-800">{chapter.chapterName}</span>
+                                <div className="flex space-x-2">
                                     <button
-                                        className="bg-chapter-light h-6 w-6 flex items-center justify-center mr-4 rounded-xl"
-                                        type="button"
-                                        onClick={()=>editModalHandler(chapter)}
+                                        className="text-blue-500 hover:underline"
+                                        onClick={() => editModalHandler(chapter)}
                                     >
-                                        <img onClick={()=>console.log(chapter.chapterName)} src="/chapter/edit.png" />
+                                        Edit
                                     </button>
                                     <button
-                                        className="bg-chapter-light h-6 w-6 flex items-center justify-center mr-4 rounded-xl"
-                                        type="button"
+                                        className="text-red-500 hover:underline"
+                                        onClick={() => deleteModalHandler(chapter)}
                                     >
-                                        <img onClick={()=>deleteModalHandler(chapter)} src="/chapter/delete.png" />
+                                        Delete
                                     </button>
-                                    
                                 </div>
                             </div>
-                            )
-                        })
-                    }
+                        ))}
                     </div>
+                </div>
 
-                </div>
-                <div className="fixed left-1/2 bottom-10  w-screen flex">
-                    <div className="flex items-center justify-evenly w-32">
+                {/* Pagination */}
+                <div className="flex justify-center items-center space-x-2">
+                    <button
+                        onClick={previouspageHandler}
+                        className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-200"
+                    >
+                        Previous
+                    </button>
+                    {pageHandler(pagecount).map((page) => (
                         <button
-                            onClick={previouspageHandler}
-                            className="flex h-8 items-center justify-center"
+                            key={page}
+                            className={`px-4 py-2 border rounded-lg ${currentpage === page ? 'bg-blue-500 text-white' : 'bg-white'}`}
+                            onClick={() => setCurrentpage(page)}
                         >
-                            <img src="/course/prev.png" className="h-6" />
+                            {page}
                         </button>
-                        {pageHandler(pagecount).map((page) => {
-                            return (
-                                <button
-                                    key={page}
-                                    className={`border border-black p-2 rounded-xl h-8 flex items-center justify-center text-xs ${
-                                        currentpage === page
-                                            ? 'bg-black text-white'
-                                            : ''
-                                    } `}
-                                >
-                                    {page}
-                                </button>
-                            );
-                        })}
-                        <button
-                            onClick={nextpageHandler}
-                            className="flex h-8 items-center justify-center"
-                        >
-                            <img src="/course/next.png" className="h-6" />
-                        </button>
-                    </div>
+                    ))}
+                    <button
+                        onClick={nextpageHandler}
+                        className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-200"
+                    >
+                        Next
+                    </button>
                 </div>
-                <ToastContainer/>
-                {
-                    open &&
-                    (
-                        <ChapterForm roadmapId={roadmap._id} method={method} chapterName={chaptername} chapter={chapter} dialogRef={dialogRef} closeForm={closeForm}/>
-                    )
-                }
-                {
-                    deleteopen &&
-                    (
-                        <ChapterDelete chapter={chapter} dialogRef={deletedialogRef} closeForm={closedeleteForm}/>
-                    )
-                }
             </div>
+
+            {/* Modals */}
+            {open && (
+                <ChapterForm roadmapId={roadmap._id} method={method} chapterName={chaptername} chapter={chapter} dialogRef={dialogRef} closeForm={closeForm} />
+            )}
+            {deleteopen && (
+                <ChapterDelete chapter={chapter} dialogRef={deletedialogRef} closeForm={closedeleteForm} />
+            )}
+            <ToastContainer />
         </>
     );
 }

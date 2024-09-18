@@ -104,14 +104,16 @@ export default function Course(): ReactElement {
             <div
               key={course._id}
               onClick={() => courseNavHandler(course)}
-              className={`${
-                enrolledcourses.includes(course._id)
-                  ? 'bg-green-500 text-white'
-                  : ''
-              } flex h-72 w-80 shadow-xl items-center justify-center flex-col`}
+              className={`p-3 rounded-lg flex h-72 w-80 shadow-xl items-center justify-center flex-col hover:bg-gray-200`}
             >
+              {
+                enrolledcourses.includes(course._id) && (
+                  <img className='absolute mb-52 mr-64 h-10 w-10'  src='/course/enroll.png'/>
+
+                )
+              }
               <img
-                className="w-full h-40"
+                className="w-full h-40 rounded-lg"
                 src={`${url}/course/${course.courseImage}`}
               />
               <div className="flex justify-between w-full">

@@ -26,7 +26,7 @@ export interface chapterProps {
   unlistStatus: boolean;
 }
 
-interface contentProps {
+export interface contentProps {
   subheading: string;
   article: string;
   _id: string;
@@ -60,3 +60,4 @@ export interface QuizProps {
   chapterId: string;
   _id: string;
 }
+

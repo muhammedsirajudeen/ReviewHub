@@ -23,8 +23,8 @@ export default function Roadmap(): ReactElement {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const deletedialogRef=useRef<HTMLDialogElement>(null)
     const [search,setSearch]=useState<string>("")
-    const lessonCount=useRef<number>(1);
     const navigate=useNavigate()
+    let lessonCount=1
     useEffect(() => {
         async function dataWrapper() {
           let urlconstructor=`${url}/user/roadmap/${location.state.id}?page=${currentpage}`
@@ -131,12 +131,12 @@ export default function Roadmap(): ReactElement {
               <div
                 key={roadmap._id}
                 onClick={() => roadmapNavHandler(roadmap)}
-                className={`${roadmap.unlistStatus ? "bg-gray-400" : ""} flex h-64 w-72 shadow-xl m-0 items-center justify-center flex-col p-2`}
+                className={`${roadmap.unlistStatus ? "bg-gray-200" : ""} hover:bg-gray-200 flex h-64 w-72 shadow-xl m-0 items-center justify-center flex-col p-4`}
               >
-                <img className='h-28 w-full' src={roadmap.roadmapImage ? `${url}/roadmap/${roadmap.roadmapImage}`  :"/roadmap/roadmapbg.png"} />
+                <img className='h-28 w-full rounded-lg' src={roadmap.roadmapImage ? `${url}/roadmap/${roadmap.roadmapImage}`  :"/roadmap/roadmapbg.png"} />
 
                 <p className="text-start w-full ml-10 text-4xl font-bold">
-                  {lessonCount.current++}
+                  {lessonCount++}
                   <span className={`text-lg ml-10 font-light align-middle ${roadmap.unlistStatus ? "line-through" : ""} `}>
                     {roadmap.roadmapName}
                   </span>

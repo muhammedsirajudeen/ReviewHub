@@ -99,7 +99,7 @@ const router = createBrowserRouter([
     path: '/user',
     element: <UserPrivateRoute Component={SideBar} />,
     loader: tokenVerifier, // Use loader for asynchronous data fetching
-    // errorElement: <ErrorElement />,
+    errorElement: <ErrorElement />,
 
     children: [
       {

@@ -126,10 +126,10 @@ export default function Course(): ReactElement {
               <div
                 key={course._id}
                 onClick={() => courseNavHandler(course._id)}
-                className={`${course.unlistStatus ? "bg-gray-500" : ""} flex h-72 w-80 shadow-xl items-center justify-center flex-col`}
+                className={`${course.unlistStatus ? "bg-gray-200" : ""} hover:bg-gray-200 p-3 flex h-72 w-80 shadow-xl items-center justify-center flex-col`}
               >
                 <img
-                  className="w-full h-40"
+                  className="w-full h-40 rounded-lg"
                   src={`${url}/course/${course.courseImage}`}
                 />
                 <div className="flex items-center justify-end w-full mt-2 ">
