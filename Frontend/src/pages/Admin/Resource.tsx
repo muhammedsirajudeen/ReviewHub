@@ -11,7 +11,9 @@ import {
 import ResourceForm from '../../components/Form/Resource/ResourceForm';
 import { flushSync } from 'react-dom';
 import QuizForm from '../../components/Form/Resource/QuizForm';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import ResourceDelete from '../../components/Form/Resource/ResourceDelete';
+import QuizDelete from '../../components/Form/Resource/QuizDelete';
 
 export default function Resource(): ReactElement {
   const [resource, setResource] = useState<resourceProps>();
@@ -21,11 +23,17 @@ export default function Resource(): ReactElement {
   const [quiz, setQuiz] = useState<QuizProps>();
   const [activequiz, setActivequiz] = useState<quizProps>();
   const [resourceEdit, setResourceEdit] = useState<boolean>(false);
+  const [resourceDelete,setResourceDelete]=useState<boolean>(false)
+
   const [quizedit, setQuizedit] = useState<boolean>(false);
+  const [quizdelete,setQuizdelete]=useState<boolean>(false)
   const [method, setMethod] = useState<string>('');
   //refactor this
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const deleteDialogRef=useRef<HTMLDialogElement>(null);
+
   const quizdialogRef = useRef<HTMLDialogElement>(null);
+  const deleteQuizDialogRef=useRef<HTMLDialogElement>(null)
   useEffect(() => {
     async function dataWrapper() {
       if (!quizStatus) {
@@ -103,22 +111,22 @@ export default function Resource(): ReactElement {
     dialogRef.current?.showModal();
   };
 
-  const deleteResourceHandler = async (id: string) => {
+  const deleteResourceHandler = async (section: sectionProps) => {
+    console.log(section)
+    flushSync(()=>{
+      setResourceDelete(true)
+      setActiveresource(section)
+    })
+    deleteDialogRef.current?.showModal()
     //we have access to the curent resource id as well as the section id here
-    const response = (
-      await axios.delete(`${url}/admin/resource/${resource?._id}/${id}`, {
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-        },
-      })
-    ).data;
-    if (response.message === 'success') {
-      toast('deleted successfully');
-      setTimeout(() => window.location.reload(), 1000);
-    } else {
-      toast(response.message);
-    }
+
+
   };
+  const closeDeleteResourceHandler=()=>{
+    deleteDialogRef.current?.close()
+    setResourceDelete(false)
+  }
+
 
   //rest of the operations on the quiz module
   const addQuizHandler = () => {
@@ -129,26 +137,22 @@ export default function Resource(): ReactElement {
     });
     quizdialogRef.current?.showModal();
   };
-  const deleteQuizHandler=async (id:string)=>{
-    console.log(id)
+  const deleteQuizHandler = async (quiz: quizProps) => {
+    flushSync(() => {
+      setQuizdelete(true);
+      setActivequiz(quiz);
+    });
+    deleteQuizDialogRef.current?.showModal();
+    // setQuizdelete(false)
+    // deleteQuizDialogRef.current?.close()
     //we can access the main id here
-    const response=(
-      await axios.delete(`${url}/admin/quiz/${quiz?._id}/${id}`,
-        {
-          headers:{
-            Authorization:`Bearer ${window.localStorage.getItem("token")}`
-          }
-        }
-      )
-    ).data
-    if(response.message==="success"){
-      toast("deleted successfully")
-      setTimeout(()=>window.location.reload(),1000)
-    }else{
-      toast(response.message)
-    }
-  }
 
+
+  };
+  const closeDeleteQuizHandler=()=>{
+    setQuizdelete(false)
+    deleteQuizDialogRef.current?.close()
+  }
   return (
     <>
       <div className="flex flex-col lg:flex-row ml-36 mt-10">
@@ -178,7 +182,7 @@ export default function Resource(): ReactElement {
                   >
                     <span>{section.sectionName}</span>
                     <button
-                      onClick={() => deleteResourceHandler(section._id)}
+                      onClick={() => deleteResourceHandler(section)}
                       className="bg-red-400 p-1 rounded-full"
                     >
                       <img className="h-3 w-3" src="/delete.png" />
@@ -248,17 +252,12 @@ export default function Resource(): ReactElement {
                       <p className="text-lg text-gray-500">{option}</p>
                     </div>
                   ))}
-                  <button
-                    className="text-xs bg-blue-600 text-white rounded-lg p-2 mt-4"
-                    type="submit"
-                  >
-                    Check
-                  </button>
+
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteQuizHandler(quiz._id);
+                      deleteQuizHandler(quiz);
                     }}
                     className="flex items-center text-xs mt-2 justify-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow transition duration-200"
                   >
@@ -280,6 +279,14 @@ export default function Resource(): ReactElement {
           dialogRef={dialogRef}
         />
       )}
+      {resourceDelete && (
+        <ResourceDelete
+          resourceId={resource?._id}
+          section={activeresource}
+          closeHandler={closeDeleteResourceHandler}
+          deleteDialogRef={deleteDialogRef}
+        />
+      )}
       {quizedit && (
         <QuizForm
           method={method}
@@ -287,6 +294,14 @@ export default function Resource(): ReactElement {
           quiz={activequiz}
           closeHandler={closeQuizEditHandler}
           dialogRef={quizdialogRef}
+        />
+      )}
+      {quizdelete && (
+        <QuizDelete
+          quizId={quiz?._id}
+          quiz={activequiz}
+          deleteQuizDialogRef={deleteQuizDialogRef}
+          closeHandler={closeDeleteQuizHandler}
         />
       )}
       <ToastContainer />

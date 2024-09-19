@@ -9,6 +9,7 @@ import CourseController from '../controller/user/CourseController';
 import RoadmapController from '../controller/user/RoadmapController';
 import ResourceController from '../controller/user/ResourceController';
 import EnrollmentController from '../controller/user/EnrollmentController';
+import QuizCheckerController from '../controller/user/quiz/QuizCheckerController';
 
 router.get(
   '/course',
@@ -60,5 +61,12 @@ router.delete(
   passport.authenticate('jwt', { session: false }),
   EnrollmentController.DeleteEnrollById
 );
+
+//quuiz checker
+router.post(
+  '/quiz/check/:quizId',
+  passport.authenticate('jwt',{session:false}),
+  QuizCheckerController.QuizChecker
+)
 
 export default router;

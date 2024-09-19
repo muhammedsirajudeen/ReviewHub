@@ -17,13 +17,13 @@ export default function ResourceForm({
   closeHandler,
   section,
   resourceId,
-  method
+  method,
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   section: sectionProps | undefined;
   resourceId: string;
-  method:string
+  method: string;
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
 
@@ -39,42 +39,46 @@ export default function ResourceForm({
     },
   });
 
-  const { fields,append,remove } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: 'content',
     control,
   });
-  const addHandler=()=>{
-    append({subheading:"",article:"",_id:uuidv4()})
-  }
+  const addHandler = () => {
+    append({ subheading: '', article: '', _id: uuidv4() });
+  };
 
   const onSubmit = async (data: Inputs) => {
     console.log(data);
-    if(method==="post"){
-        const response = (
-            await axios.post(`${url}/admin/resource/${resourceId}`, data, {
-              headers: {
-                Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-              },
-            })
-          ).data;
-          if (response.message === 'success') {
-            toast('created successfully');
-            setTimeout(()=>window.location.reload(),1000)
-          } else {
-            toast(response.message);
-          }
-          return 
-    } 
+    if (method === 'post') {
+      const response = (
+        await axios.post(`${url}/admin/resource/${resourceId}`, data, {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+          },
+        })
+      ).data;
+      if (response.message === 'success') {
+        toast('created successfully');
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        toast(response.message);
+      }
+      return;
+    }
     const response = (
-      await axios.put(`${url}/admin/resource/${resourceId}/${section?._id}`, data, {
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-        },
-      })
+      await axios.put(
+        `${url}/admin/resource/${resourceId}/${section?._id}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+          },
+        }
+      )
     ).data;
     if (response.message === 'success') {
       toast('edited successfully');
-      setTimeout(()=>window.location.reload(),1000)
+      setTimeout(() => window.location.reload(), 1000);
     } else {
       toast(response.message);
     }
@@ -127,13 +131,13 @@ export default function ResourceForm({
               },
             })}
           />
-            <button
-            type='button'
+          <button
+            type="button"
             onClick={addHandler}
             className="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
-            >
+          >
             +
-            </button>
+          </button>
           {errors.sectionName && (
             <span className="text-red-500 text-sm">
               {errors.sectionName.message}
@@ -220,14 +224,16 @@ export default function ResourceForm({
                     </span>
                   )}
                 </div>
-                    <button
-                    onClick={()=>remove(index)}
-                    className="bg-red-500 text-white h-10 w-10 p-1 flex items-center justify-center rounded-full shadow-lg hover:bg-red-600 transition duration-200"
+                <div className="flex justify-end w-full">
+                  <button
+                    onClick={() => remove(index)}
+                    className="bg-red-500 text-white h-5 w-5 p-1 flex items-center justify-center rounded-full shadow-lg hover:bg-red-600 transition duration-200"
                     aria-label="Delete Item"
-                    >
-                    <img className="h-6 w-6" src="/delete.png" alt="Delete" />
-                    </button>              
+                  >
+                    <img className="h-3 w-3" src="/delete.png" alt="Delete" />
+                  </button>
                 </div>
+              </div>
             </Fragment>
           ))}
           <button

@@ -1,5 +1,5 @@
-import {  ReactElement, Ref, useState } from 'react';
-import {  useForm } from 'react-hook-form';
+import { ReactElement, Ref, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { quizProps } from '../../../types/courseProps';
 import classNames from 'classnames';
 import axios from 'axios';
@@ -12,21 +12,21 @@ export default function QuizForm({
   closeHandler,
   quiz,
   quizId,
-  method
+  method,
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   quiz: quizProps | undefined;
-  quizId:string
-  method:string
+  quizId: string;
+  method: string;
 }): ReactElement {
-    const [options,setOptions]=useState<Array<string>>(quiz?.options ?? [])
+  const [options, setOptions] = useState<Array<string>>(quiz?.options ?? []);
 
-    const {
+  const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue
+    setValue,
   } = useForm<quizProps>({
     defaultValues: {
       question: quiz?.question,
@@ -35,62 +35,54 @@ export default function QuizForm({
       options: options,
     },
   });
-  const addHandler=()=>{
-    setOptions([...options,"one"])
-  }
-  const deleteHandler=(optionName:string)=>{
-    const modified=options.filter((option)=>option!==optionName)
-    setOptions(modified)
-    setValue('options',modified)
-  }
+  const addHandler = () => {
+    setOptions([...options, 'one']);
+  };
+  const deleteHandler = (optionName: string) => {
+    const modified = options.filter((option) => option !== optionName);
+    setOptions(modified);
+    setValue('options', modified);
+  };
   //form submission handler here
-  const onSubmit = async  (data: quizProps) => {
+  const onSubmit = async (data: quizProps) => {
     console.log(data);
-    
-    if(method==="post"){
-      data._id=uuidv4()
-      const response=(
-        await axios.post(`${url}/admin/quiz/${quizId}`,
-          data,
-          {
-            headers:{
-              Authorization:`Bearer ${window.localStorage.getItem("token")}`
-            }
-          }
-        )
-      ).data
-      if(response.message==="success"){
-        toast("created successfully")
-        setTimeout(()=>window.location.reload(),1000)
-      }else{
-        toast(response.message)
-      }
-      return        
-    }
-    const response=(
-      await axios.put(`${url}/admin/quiz/${quizId}/${quiz?._id}`,
-        data,
-        {
-          headers:{
-            Authorization:`Bearer ${window.localStorage.getItem("token")}`
-          }
-        }
-      )
-    ).data
-    if(response.message==="success"){
-      toast("edited successfully")
-      setTimeout(()=>window.location.reload(),1000)
-    }else{
-      toast(response.message)
-    }
 
-    
+    if (method === 'post') {
+      data._id = uuidv4();
+      const response = (
+        await axios.post(`${url}/admin/quiz/${quizId}`, data, {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+          },
+        })
+      ).data;
+      if (response.message === 'success') {
+        toast('created successfully');
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        toast(response.message);
+      }
+      return;
+    }
+    const response = (
+      await axios.put(`${url}/admin/quiz/${quizId}/${quiz?._id}`, data, {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+        },
+      })
+    ).data;
+    if (response.message === 'success') {
+      toast('edited successfully');
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      toast(response.message);
+    }
   };
 
   return (
     <>
       <dialog
-      style={{height:"60vh",width:"40vw"}}
+        style={{ height: '60vh', width: '40vw' }}
         className="h-96 w-96 flex flex-col p-6 rounded-lg shadow-lg bg-white"
         ref={dialogRef}
       >
@@ -200,14 +192,20 @@ export default function QuizForm({
                     { 'border-red-500': errors.options?.[index] }
                   )}
                   {...register(`options.${index}`, {
-                    required: { value: true, message: 'Please enter an option' },
+                    required: {
+                      value: true,
+                      message: 'Please enter an option',
+                    },
                     minLength: {
                       value: 5,
                       message: 'At least 5 characters required',
                     },
                   })}
                 />
-                <button onClick={()=>deleteHandler(option)} className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition">
+                <button
+                  onClick={() => deleteHandler(option)}
+                  className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition"
+                >
                   <img className="h-4 w-4" src="/delete.png" alt="Delete" />
                 </button>
                 {errors.options?.[index] && (
@@ -217,7 +215,11 @@ export default function QuizForm({
                 )}
               </div>
             ))}
-            <button onClick={addHandler} type='button' className="bg-blue-500 text-white p-2 rounded-full mt-2 hover:bg-blue-600 transition">
+            <button
+              onClick={addHandler}
+              type="button"
+              className="bg-blue-500 text-white p-2 rounded-full mt-2 hover:bg-blue-600 transition"
+            >
               +
             </button>
           </div>
@@ -230,7 +232,7 @@ export default function QuizForm({
           </button>
         </form>
       </dialog>
-      <ToastContainer/>
+      <ToastContainer />
     </>
   );
 }

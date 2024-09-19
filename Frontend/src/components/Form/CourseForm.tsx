@@ -13,7 +13,7 @@ interface Inputs {
   tagline: string;
 }
 
-//for now keep it static add an option to accept it from the user as well
+// Options for select input
 const options = [
   { value: 'Mern', label: 'Mern' },
   { value: 'Django', label: 'Django' },
@@ -31,7 +31,6 @@ export default function CourseForm({
   const {
     register,
     handleSubmit,
-    // watch,
     formState: { errors },
   } = useForm<Inputs>({
     defaultValues: {
@@ -40,24 +39,22 @@ export default function CourseForm({
       tagline: course?.tagline,
     },
   });
-  const [domain, setDomain] = useState<string>("")
-  const [list,setList]=useState<boolean>(false)
+
+  const [domain, setDomain] = useState<string>('');
+  const [list, setList] = useState<boolean>(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const fileHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.files);
-    if (e.target.files) {
-      const maxSize = 2 * 1024 * 1024; // 2MB in bytes
 
+  const fileHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const maxSize = 2 * 1024 * 1024; // 2MB
       if (e.target.files[0].size > maxSize) {
-        // errorSpan.textContent = 'File size exceeds 2MB.';
-        // isValid = false;
-        toast('must be less than 2MB');
+        toast('File size must be less than 2MB');
         return;
       }
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!allowedTypes.includes(e.target.files[0].type)) {
-        toast('invalid file type');
+        toast('Invalid file type');
         return;
       }
       const reader = new FileReader();
@@ -69,207 +66,168 @@ export default function CourseForm({
       reader.readAsDataURL(e.target.files[0]);
     }
   };
+
   const imageCloseHandler = () => {
     if (imageRef.current?.src) {
       imageRef.current.src = '/form/add.png';
     }
   };
-  // form submission Handler
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
     const formData = new FormData();
     formData.append('courseName', data.courseName);
     formData.append('courseDescription', data.courseDescription);
     formData.append('domain', domain);
     formData.append('tagline', data.tagline);
-    formData.append('unlistStatus',JSON.stringify(list))
+    formData.append('unlistStatus', JSON.stringify(list));
     if (course) formData.append('courseId', course._id);
     if (!fileRef.current?.files) {
-      toast('please select a file');
+      toast('Please select a file');
       return;
     } else {
       formData.append('file', fileRef.current.files[0]);
     }
-    console.log(domain);
     if (!domain) {
-      toast('please select a domain first');
+      toast('Please select a domain first');
       return;
     }
-    if (course) {
-      //here the course is there so we are putting data
-      const response = (
-        await axios.put(url + '/admin/course', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-          },
-        })
-      ).data;
-      if (response.message === 'success') {
-        toast('updated successfully');
+
+    try {
+      const response = course
+        ? await axios.put(url + '/admin/course', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+            },
+          })
+        : await axios.post(url + '/admin/course', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+            },
+          });
+      
+      if (response.data.message === 'success') {
+        toast('Course saved successfully');
         setTimeout(() => window.location.reload(), 1000);
       } else {
-        toast(response.message);
+        toast(response.data.message);
       }
-      return;
-    }
-    const response = (
-      await axios.post(url + '/admin/course', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-        },
-      })
-    ).data;
-    if (response.message === 'success') {
-      toast('updated successfully');
-      setTimeout(() => window.location.reload(), 1000);
-    } else {
-      toast(response.message);
+    } catch (error) {
+      console.log(error)
+      toast('An error occurred, please try again.');
     }
   };
 
   return (
     <form
-      className="flex flex-col items-center justify-start w-3/4"
+      className="flex flex-col items-center justify-start w-full max-w-md p-6 bg-white shadow-md rounded-lg"
       onSubmit={handleSubmit(onSubmit)}
     >
-      {/* input forms here */}
-      <p className="text-2xl font-light mt-4">ADD COURSE</p>
-      <p className="text-xs font-light text-start w-full mt-4">Name</p>
+      <h2 className="text-2xl font-semibold mb-4">Add Course</h2>
 
+      {/* Course Name */}
+      <label className="text-sm font-light w-full mt-4">Name</label>
       <input
-        placeholder="enter the Course Name"
-        className="h-8 w-full border border-black placeholder:text-xs "
+        placeholder="Enter the Course Name"
+        className="h-10 w-full border border-gray-300 rounded-md p-2 mb-2"
         {...register('courseName', {
-          required: {
-            value: true,
-            message: 'please enter the Course Name',
-          },
-          minLength: {
-            value: 5,
-            message: 'please enter alteast 8 character',
-          },
-          validate: (courseName: string) => {
-            if (courseName.trim() === '') return 'please enter the Course Name';
-            if (SpecialCharRegex.test(courseName))
-              return 'please enter valid Character';
-            return true;
-          },
+          required: 'Please enter the Course Name',
+          minLength: { value: 5, message: 'At least 5 characters required' },
+          validate: (value) => !SpecialCharRegex.test(value) || 'Invalid characters',
         })}
       />
-      {errors.courseName && (
-        <span className="text-xs text-red-500">
-          {errors.courseName.message}
-        </span>
-      )}
-      <p className="text-xs font-light text-start w-full mt-4">Description</p>
-      {/* for course Description */}
+      {errors.courseName && <span className="text-xs text-red-500">{errors.courseName.message}</span>}
+
+      {/* Course Description */}
+      <label className="text-sm font-light w-full mt-4">Description</label>
       <input
-        placeholder="enter the Course Description"
-        className="h-8 w-full border border-black placeholder:text-xs"
+        placeholder="Enter the Course Description"
+        className="h-10 w-full border border-gray-300 rounded-md p-2 mb-2"
         {...register('courseDescription', {
-          required: {
-            value: true,
-            message: 'please enter the Course Desription',
-          },
-          minLength: {
-            value: 5,
-            message: 'please enter alteast 8 character',
-          },
-          validate: (courseDescription: string) => {
-            if (courseDescription.trim() === '')
-              return 'please enter the Course Name';
-            if (SpecialCharRegex.test(courseDescription))
-              return 'please enter valid Character';
-            return true;
-          },
+          required: 'Please enter the Course Description',
+          minLength: { value: 5, message: 'At least 5 characters required' },
+          validate: (value) => !SpecialCharRegex.test(value) || 'Invalid characters',
         })}
       />
-      {errors.courseDescription && (
-        <span className="text-xs text-red-500">
-          {errors.courseDescription.message}
-        </span>
-      )}
-      {/* for course Category*/}
-      <p className="text-xs font-light text-start w-full mt-4">TagLine</p>
+      {errors.courseDescription && <span className="text-xs text-red-500">{errors.courseDescription.message}</span>}
+
+      {/* Tagline */}
+      <label className="text-sm font-light w-full mt-4">Tagline</label>
       <input
-        placeholder="enter the Course Description"
-        className="h-8 w-full border border-black placeholder:text-xs"
+        placeholder="Enter the Tagline"
+        className="h-10 w-full border border-gray-300 rounded-md p-2 mb-2"
         {...register('tagline', {
-          required: {
-            value: true,
-            message: 'please enter the Tag Line',
-          },
-          minLength: {
-            value: 5,
-            message: 'please enter alteast 8 character',
-          },
-          validate: (tagLine: string) => {
-            if (tagLine.trim() === '') return 'please enter the Course Name';
-            if (SpecialCharRegex.test(tagLine))
-              return 'please enter valid Character';
-            return true;
-          },
+          required: 'Please enter a Tagline',
+          minLength: { value: 5, message: 'At least 5 characters required' },
+          validate: (value) => !SpecialCharRegex.test(value) || 'Invalid characters',
         })}
       />
-      {errors.courseDescription && (
-        <span className="text-xs text-red-500">
-          {errors.courseDescription.message}
-        </span>
-      )}
-      <p className="text-xs font-light text-start w-full mt-4">Domain</p>
+      {errors.tagline && <span className="text-xs text-red-500">{errors.tagline.message}</span>}
+
+      {/* Domain Selection */}
+      <label className="text-sm font-light w-full mt-4">Domain</label>
       <Select
-        defaultValue={options[0]}
-        name="colors"
         options={options}
-        className="basic-multi-select"
+        className="w-full mb-2"
         onChange={(value) => setDomain(value?.value ?? '')}
         classNamePrefix="select"
       />
+
+      {/* File Upload */}
       <input
         onChange={fileHandler}
         ref={fileRef}
         type="file"
         className="hidden"
       />
-      <label htmlFor="toggle">List Status</label>
-      <Toggle defaultChecked={course?.unlistStatus} onChange={(e)=>setList(e.target.checked)} />
-      <button
-        type="button"
-        onClick={imageCloseHandler}
-        className="flex relative top-8 items-center justify-center font-light bg-red-600 text-white p-2 text-xs rounded-full h-6 w-6 mt-4 mr-24"
-      >
-        x
-      </button>
-
-      <div className="h-32 flex flex-col items-center justify-center w-32 border border-black rounded-lg">
-        <img
-          onClick={() => fileRef.current?.click()}
-          ref={imageRef}
-          src={
-            course?.courseImage
-              ? `${url}/course/${course.courseImage}`
-              : `/form/add.png`
-          }
-          className="h-full w-full rounded-lg"
-        />
+      <div className="flex flex-col items-center mb-4">
+        <label className="cursor-pointer">
+          <div className="h-32 w-32 border border-gray-300 rounded-lg flex items-center justify-center">
+            <img
+              ref={imageRef}
+              src={course?.courseImage ? `${url}/course/${course.courseImage}` : '/form/add.png'}
+              className="h-full w-full rounded-lg cursor-pointer"
+              onClick={() => fileRef.current?.click()}
+              alt="Course Preview"
+            />
+          </div>
+        </label>
+        <button
+          type="button"
+          onClick={imageCloseHandler}
+          className="flex items-center justify-center bg-red-600 text-white p-2 text-xs rounded-full mt-2"
+        >
+          Remove Image
+        </button>
       </div>
-      <div className="flex items-center justify-start w-full mt-5">
+
+      {/* List Status */}
+      <label className="flex items-center w-full mt-4">
+        <span className="mr-2">List Status</span>
+        <Toggle
+          defaultChecked={course?.unlistStatus}
+          onChange={(e) => setList(e.target.checked)}
+        />
+      </label>
+
+      {/* Action Buttons */}
+      <div className="flex items-center justify-between w-full mt-6">
         <button
           type="submit"
-          className="bg-blue-500 p-2 text-white  ml-2 h-6 text-xs flex items-center justify-center"
+          className="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"
         >
           Submit
         </button>
         <button
           onClick={closeForm}
           type="button"
-          className="bg-white p-2 text-black border border-black ml-2 h-6 text-xs flex items-center justify-center"
+          className="bg-gray-200 text-black p-2 rounded-md border border-gray-300 hover:bg-gray-300 transition"
         >
           Cancel
         </button>
       </div>
+
       <ToastContainer />
     </form>
   );

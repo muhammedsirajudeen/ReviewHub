@@ -150,90 +150,89 @@ export default function Roadmap(): ReactElement {
         courseId={location.state ? location.state.courseId : ''}
         setRoadmaps={setRoadmaps}
       />
-      {enroll ? (
-        <button
-          onClick={disenrollHandler}
-          className=" ml-64 bg-red-500 p-2 flex justify-evenly items-center mt-10"
-        >
-          <img className="mr-2" src="/dashboard/school.png" />
-          <p className="text-xs text-white font-bold">Disenroll</p>
-        </button>
-      ) : (
-        <button
-          onClick={enrollHandler}
-          className=" ml-64 bg-green-500 p-2 flex justify-evenly items-center mt-10"
-        >
-          <img className="mr-2" src="/dashboard/school.png" />
-          <p className="text-xs text-white font-bold">Enroll</p>
-        </button>
-      )}
-      <div className="ml-36 mt-10 flex justify-evenly flex-wrap">
-        {roadmaps.map((roadmap) => {
-          return (
-            <div
-              key={roadmap._id}
-              onClick={() => roadmapNavHandler(roadmap)}
-              className="flex h-64 w-72 shadow-xl m-0 items-center justify-center flex-col"
-            >
-              <img
-                className="h-28 w-full"
-                src={
-                  roadmap.roadmapImage
-                    ? `${url}/roadmap/${roadmap.roadmapImage}`
-                    : '/roadmap/roadmapbg.png'
-                }
-              />
 
-              <p className="text-start w-full ml-10 text-4xl font-bold">
-                {lessonCount++}
-                <span className="text-lg ml-10 font-light align-middle">
-                  {roadmap.roadmapName}
-                </span>
-              </p>
+      <div className="flex justify-center mt-10">
+        {enroll ? (
+          <button
+            onClick={disenrollHandler}
+            className="bg-red-500 p-2 flex items-center rounded-lg shadow hover:bg-red-600 transition duration-300"
+          >
+            <img className="mr-2" src="/dashboard/school.png" alt="Disenroll" />
+            <p className="text-xs text-white font-bold">Disenroll</p>
+          </button>
+        ) : (
+          <button
+            onClick={enrollHandler}
+            className="bg-green-500 p-2 flex items-center rounded-lg shadow hover:bg-green-600 transition duration-300"
+          >
+            <img className="mr-2" src="/dashboard/school.png" alt="Enroll" />
+            <p className="text-xs text-white font-bold">Enroll</p>
+          </button>
+        )}
+      </div>
 
-              <div className="flex justify-end mr-10 w-full">
-                <img
-                  onClick={dialogHandler}
-                  src="/ellipsis.png"
-                  className="h-3 w-3"
-                />
-              </div>
-              <p className="text-center text-xs mt-4 font-light">
-                {roadmap.roadmapDescription}
-              </p>
+      <div className="mt-10 flex justify-evenly flex-wrap">
+        {roadmaps.map((roadmap) => (
+          <div
+            key={roadmap._id}
+            onClick={() => roadmapNavHandler(roadmap)}
+            className="flex h-64 w-72 shadow-lg m-4 items-center justify-center flex-col rounded-lg transition-transform transform hover:scale-105"
+          >
+            <img
+              className="h-28 w-full object-cover rounded-t-lg"
+              src={
+                roadmap.roadmapImage
+                  ? `${url}/roadmap/${roadmap.roadmapImage}`
+                  : '/roadmap/roadmapbg.png'
+              }
+              alt={roadmap.roadmapName}
+            />
+            <div className="p-2 text-center">
+              <p className="text-4xl font-bold">{lessonCount++}</p>
+              <p className="text-lg font-light">{roadmap.roadmapName}</p>
             </div>
-          );
-        })}
-
-        <div className="fixed left-1/2 bottom-10  w-screen flex">
-          <div className="flex items-center justify-evenly w-32">
-            <button
-              onClick={previouspageHandler}
-              className="flex h-8 items-center justify-center"
-            >
-              <img src="/course/prev.png" className="h-6" />
-            </button>
-            {pageHandler(pagecount).map((page) => {
-              return (
-                <button
-                  key={page}
-                  className={`border border-black p-2 rounded-xl h-8 flex items-center justify-center text-xs ${
-                    currentpage === page ? 'bg-black text-white' : ''
-                  } `}
-                >
-                  {page}
-                </button>
-              );
-            })}
-            <button
-              onClick={nextpageHandler}
-              className="flex h-8 items-center justify-center"
-            >
-              <img src="/course/next.png" className="h-6" />
-            </button>
+            <div className="flex justify-end mr-2 w-full">
+              <img
+                onClick={dialogHandler}
+                src="/ellipsis.png"
+                className="h-4 w-4 cursor-pointer hover:opacity-75 transition duration-300"
+                alt="More Options"
+              />
+            </div>
+            <p className="text-center text-xs mt-2 font-light px-4">
+              {roadmap.roadmapDescription}
+            </p>
           </div>
+        ))}
+      </div>
+
+      <div className="fixed left-1/2 bottom-10 transform -translate-x-1/2 w-screen flex justify-center">
+        <div className="flex items-center justify-evenly w-1/2">
+          <button
+            onClick={previouspageHandler}
+            className="flex h-8 items-center justify-center hover:bg-gray-200 rounded-lg p-1 transition duration-300"
+          >
+            <img src="/course/prev.png" className="h-6" alt="Previous" />
+          </button>
+          {pageHandler(pagecount).map((page) => (
+            <button
+              key={page}
+              className={`border border-gray-300 p-2 rounded-lg h-8 flex items-center justify-center text-xs ${
+                currentpage === page ? 'bg-black text-white' : 'text-gray-700'
+              } hover:bg-gray-200 transition duration-300`}
+            >
+              {page}
+            </button>
+          ))}
+          <button
+            onClick={nextpageHandler}
+            className="flex h-8 items-center justify-center hover:bg-gray-200 rounded-lg p-1 transition duration-300"
+          >
+            <img src="/course/next.png" className="h-6" alt="Next" />
+          </button>
         </div>
       </div>
+
       <ToastContainer />
     </>
   );

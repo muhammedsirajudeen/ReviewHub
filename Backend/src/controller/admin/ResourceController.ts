@@ -69,7 +69,6 @@ const EditResource=async (req:Request,res:Response)=>{
 const DeleteResource=async (req:Request,res:Response)=>{
   try{  
     const {resourceId,sectionId}=req.params
-    console.log(resourceId,sectionId)
     const deleteResource=await Resource.findById(resourceId)
     if(deleteResource){
       deleteResource.Section=deleteResource.Section.filter((section)=>section._id!==sectionId)
@@ -152,7 +151,6 @@ const EditQuiz=async (req:Request,res:Response)=>{
 const DeleteQuiz=async (req:Request,res:Response)=>{
   try{
     const {quizId,questionId}=req.params
-    console.log(quizId,questionId)
     const deleteQuiz=await Quiz.findById(quizId)
     if(deleteQuiz){
       deleteQuiz.Quiz=deleteQuiz.Quiz.filter((quiz)=>quiz._id!==questionId)
