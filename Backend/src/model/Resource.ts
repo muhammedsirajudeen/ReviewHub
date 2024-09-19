@@ -6,7 +6,7 @@ interface resourceProps {
   _id:string
 }
 
-interface sectionProps {
+export interface sectionProps {
   sectionName: string;
   content: Array<resourceProps>;
   _id:string
@@ -16,7 +16,7 @@ interface IResource extends Document {
   chapterName: string;
   Section: Array<sectionProps>;
   chapterId: mongoose.Types.ObjectId;
-  roadmapId:mongoose.Types.ObjectId
+  roadmapId:mongoose.Types.ObjectId;
 }
 
 const ContentSchema = new Schema<resourceProps>({
@@ -52,6 +52,8 @@ const SectionSchema = new Schema<sectionProps>({
 });
 
 const ResourceSchema = new Schema<IResource>({
+
+
   chapterName: {
     type: String,
     required: true,
@@ -69,7 +71,9 @@ const ResourceSchema = new Schema<IResource>({
     type:mongoose.Schema.ObjectId,
     required:true,
     unique:false
-  }
+  },
+  
+  
 });
 
 const Resource = mongoose.model('resource', ResourceSchema);

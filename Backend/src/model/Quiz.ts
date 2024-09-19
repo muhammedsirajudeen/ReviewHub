@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-interface quizProps {
+export interface quizProps {
   question: string;
   answer: string;
   options: Array<string>;
@@ -13,7 +13,7 @@ interface IQuiz extends Document {
   roadmapId: mongoose.Types.ObjectId;
   Quiz: Array<quizProps>;
   chapterId: mongoose.Types.ObjectId;
-  _id: string;
+
 }
 
 const questionSchema = new Schema<quizProps>({
@@ -65,11 +65,7 @@ const QuizSchema = new Schema<IQuiz>({
     required: true,
     unique: false,
   },
-  _id: {
-    type: String,
-    required: true,
-    unique: false,
-  },
+
 });
 
 const Quiz = mongoose.model<IQuiz>('quizes', QuizSchema);

@@ -112,23 +112,22 @@ function TopBar({
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="flex items-center justify-center border border-gray-400 rounded-lg">
-          <input
+        <input
             id="chapterName"
-            className="h-8 placeholder:text-xs rounded-lg"
-            placeholder="enter the search term"
+            className="h-10 px-4 placeholder:text-xs rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter search term"
             {...register('search', {
               required: {
                 value: true,
-                message: 'please enter the search term',
+                message: 'Please enter a search term',
               },
               minLength: {
                 value: 5,
-                message: 'please enter the required characters',
+                message: 'Please enter at least 5 characters',
               },
               validate: (tag: string) => {
-                if (tag.trim() === '') return 'please enter the search term';
-                if (SpecialCharRegex.test(tag))
-                  return 'please enter valid Character';
+                if (tag.trim() === '') return 'Please enter a search term';
+                if (SpecialCharRegex.test(tag)) return 'Please enter valid characters';
                 return true;
               },
             })}

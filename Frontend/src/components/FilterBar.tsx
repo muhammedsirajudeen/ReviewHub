@@ -6,10 +6,7 @@ import axios from "axios";
 import url from "../helper/backendUrl";
 
 type ValuePiece = Date | null;
-
 type Value = ValuePiece | [ValuePiece, ValuePiece];
-
-
 
 export default function FilterBar({
   setResult,
@@ -22,83 +19,37 @@ export default function FilterBar({
   const [domain, setDomain] = useState<string>('');
   const [date, setDate] = useState<Value>(new Date());
   const [selectdate, setSelectdate] = useState<boolean>(false);
-  //try to refactor this piece of code
+
   useEffect(() => {
+    const fetchData = async (endpoint: string) => {
+      const response = (
+        await axios.get(url + endpoint, {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+          },
+        })
+      ).data;
+      setResult(response.courses);
+    };
+
     if (selectdate && domain) {
-      async function dataWrapper() {
-        const response = (
-          await axios.get(
-            url +
-              `/user/course?page=${currentpage}&date=${date}&domain=${domain}`,
-            {
-              headers: {
-                Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-              },
-            }
-          )
-        ).data;
-        setResult(response.courses);
-      }
-      dataWrapper();
+      fetchData(`/user/course?page=${currentpage}&date=${date}&domain=${domain}`);
     } else if (domain) {
-      async function dataWrapper() {
-        const response = (
-          await axios.get(
-            url + `/user/course?page=${currentpage}&domain=${domain}`,
-            {
-              headers: {
-                Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-              },
-            }
-          )
-        ).data;
-        setResult(response.courses);
-      }
-      dataWrapper();
+      fetchData(`/user/course?page=${currentpage}&domain=${domain}`);
     } else if (selectdate) {
-      async function dataWrapper() {
-        const response = (
-          await axios.get(
-            url + `/user/course?page=${currentpage}&date=${date}`,
-            {
-              headers: {
-                Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-              },
-            }
-          )
-        ).data;
-        setResult(response.courses);
-      }
-      dataWrapper();
+      fetchData(`/user/course?page=${currentpage}&date=${date}`);
     }
   }, [selectdate, domain, date, currentpage, setResult]);
-  const domainHandler = (selection: string) => {
-    if (active === 'domain') {
-      setActive('');
-    } else {
-      setActive(selection);
-    }
-    // alert("domain handler")
-  };
-  const dateHandler = (selection: string) => {
-    if (active === 'date') {
-      setActive('');
-    } else {
-      setActive(selection);
-    }
-  };
-  const categoryHandler = (selection: string) => {
-    if (active === 'category') {
-      setActive('');
-    } else {
-      setActive(selection);
-    }
+
+  const toggleActive = (selection: string) => {
+    setActive(prev => (prev === selection ? '' : selection));
   };
 
   const domainSelector = (domain: string) => {
     setDomain(domain);
     setActive('');
   };
+
   const dateSelectHandler = (value: Value) => {
     setActive('');
     setSelectdate(true);
@@ -107,29 +58,25 @@ export default function FilterBar({
 
   return (
     <>
-      <div className="ml-36 flex items-center justify-evenly mt-4">
-        <div className="flex flex-col items-center justify-center">
+      <div className="flex items-center justify-evenly mt-4 px-8">
+        {/* Domain Filter */}
+        <div className="relative flex flex-col items-center">
           <button
-            className={`border border-black text-black p-2 rounded-lg flex items-center justify-center ${
-              active === 'domain' ? 'bg-black text-white' : ''
-            } `}
+            className={`border border-gray-300 text-gray-700 p-2 rounded-lg flex items-center justify-center transition-colors duration-300 hover:bg-gray-100 ${active === 'domain' ? 'bg-gray-800 text-white' : ''}`}
+            onClick={() => toggleActive('domain')}
           >
             <span className="text-xs font-light">Domain</span>
             <img
-              onClick={() => domainHandler('domain')}
-              src={
-                active === 'domain'
-                  ? '/filterbar/up.png'
-                  : '/filterbar/down.png'
-              }
-              className="h-3 w-3"
+              src={active === 'domain' ? '/filterbar/up.png' : '/filterbar/down.png'}
+              className="h-3 w-3 ml-2"
+              alt="toggle"
             />
           </button>
           {active === 'domain' && (
-            <div className="absolute mt-28 h-20 w-20 bg-white border border-gray-400">
+            <div className="absolute mt-8 bg-white border border-gray-400 rounded shadow-lg">
               <button
                 onClick={() => domainSelector('Mern')}
-                className="flex border border-gray-400 w-full items-center justify-center"
+                className="flex border-b border-gray-200 w-full items-center justify-center p-2 hover:bg-gray-100"
               >
                 <p className="text-xs font-bold">Mern</p>
               </button>
@@ -137,62 +84,60 @@ export default function FilterBar({
           )}
         </div>
 
-        <div className="flex flex-col items-center justify-center">
+        {/* Date Filter */}
+        <div className="relative flex flex-col items-center">
           <button
-            className={`border border-black text-black p-2 rounded-lg flex items-center justify-center ${
-              active === 'date' ? 'bg-black text-white' : ''
-            } `}
+            className={`border border-gray-300 text-gray-700 p-2 rounded-lg flex items-center justify-center transition-colors duration-300 hover:bg-gray-100 ${active === 'date' ? 'bg-gray-800 text-white' : ''}`}
+            onClick={() => toggleActive('date')}
           >
             <span className="text-xs font-light">Date</span>
             <img
-              onClick={() => dateHandler('date')}
-              src={
-                active === 'date' ? '/filterbar/up.png' : '/filterbar/down.png'
-              }
-              className="h-3 w-3"
+              src={active === 'date' ? '/filterbar/up.png' : '/filterbar/down.png'}
+              className="h-3 w-3 ml-2"
+              alt="toggle"
             />
           </button>
           {active === 'date' && (
-            <div className="absolute mt-96">
+            <div className="absolute mt-2">
               <Calendar onChange={dateSelectHandler} />
             </div>
           )}
         </div>
 
+        {/* Category Filter */}
         <button
-          className={`border border-black text-black p-2 rounded-lg flex items-center justify-center ${
-            active === 'category' ? 'bg-black text-white' : ''
-          } `}
+          className={`border border-gray-300 text-gray-700 p-2 rounded-lg flex items-center justify-center transition-colors duration-300 hover:bg-gray-100 ${active === 'category' ? 'bg-gray-800 text-white' : ''}`}
+          onClick={() => toggleActive('category')}
         >
           <span className="text-xs font-light">Category</span>
           <img
-            onClick={() => categoryHandler('category')}
-            src={
-              active === 'category'
-                ? '/filterbar/up.png'
-                : '/filterbar/down.png'
-            }
-            className="h-3 w-3"
+            src={active === 'category' ? '/filterbar/up.png' : '/filterbar/down.png'}
+            className="h-3 w-3 ml-2"
+            alt="toggle"
           />
         </button>
+
+        {/* Selected Filters */}
         {domain && (
-          <button className="bg-white border border-b-black ">{domain}</button>
+          <button className="bg-white border border-gray-300 rounded-lg px-3 py-1 shadow-md">
+            {domain}
+          </button>
         )}
         {selectdate && (
-          <button className="bg-white border border-b-black">
+          <button className="bg-white border border-gray-300 rounded-lg px-3 py-1 shadow-md">
             {date?.toString().split(' ').slice(0, 4).join(' ')}
           </button>
         )}
         <button
           onClick={() => window.location.reload()}
-          className="border border-black text-black p-2 rounded-lg flex items-center justify-center text-xs font-light"
+          className="border border-gray-300 text-gray-700 p-2 rounded-lg flex items-center justify-center text-xs font-light hover:bg-gray-100 transition-colors duration-300"
         >
           Clear all X
         </button>
       </div>
 
-      <div className="w-full flex items-center justify-center">
-        <hr className="  border border-gray-400 mt-4 w-3/4" />
+      <div className="w-full flex items-center justify-center mt-4">
+        <hr className="border border-gray-400 w-3/4" />
       </div>
     </>
   );

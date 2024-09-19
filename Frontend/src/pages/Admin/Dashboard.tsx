@@ -1,4 +1,4 @@
-import { ReactElement, useEffect,  } from "react";
+import { ReactElement, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { useAppDispatch } from "../../store/hooks";
 import { setPage } from "../../store/globalSlice";
@@ -8,6 +8,7 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import { ScatterChart } from '@mui/x-charts/ScatterChart';
 import Stack from '@mui/material/Stack';
 import { Gauge } from '@mui/x-charts/Gauge';
+
 const data = [
   {
     id: 'data-0',
@@ -172,23 +173,24 @@ const data = [
   },
 ];
 
-// this page is all static dont forget to make it dynamic as possible
 export default function AdminDashboard(): ReactElement {
-  const dispatch=useAppDispatch()
-  useEffect(()=>{
-    dispatch(setPage("dashboard"))
-  },[dispatch])
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setPage("dashboard"));
+  }, [dispatch]);
+
   return (
     <>
-      <div className="ml-36 mt-10">
-        <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-        <p className="mb-8 text-lg text-gray-600">
+      <div className="container mx-auto px-6 mt-10">
+        <h1 className="text-4xl font-bold mb-6 text-center">Admin Dashboard</h1>
+        <p className="mb-8 text-lg text-gray-700 text-center">
           Welcome to the admin dashboard. Here, you can review user activities, track performance,
           and monitor the progress of programming courses.
         </p>
 
-        <div className="flex justify-evenly items-center flex-wrap">
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">Quarterly Performance Overview</h2>
             <BarChart
               series={[
@@ -204,7 +206,7 @@ export default function AdminDashboard(): ReactElement {
             />
           </div>
 
-          <div>
+          <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">Course Engagement Breakdown</h2>
             <PieChart
               series={[
@@ -221,8 +223,9 @@ export default function AdminDashboard(): ReactElement {
             />
           </div>
 
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">User Growth Over Time</h2>
+        </div>
+          <h2 className="text-2xl font-semibold mb-4 text-center w-full ">User Growth Over Time</h2>
+          <div className="bg-white  p-6 flex items-center justify-center w-full rounded-lg shadow-lg">
             <LineChart
               xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
               series={[
@@ -234,10 +237,9 @@ export default function AdminDashboard(): ReactElement {
               height={300}
             />
           </div>
-        </div>
 
-        <div className="mt-10 flex items-center justify-evenly flex-col gap-10">
-          <h2 className="text-2xl font-semibold mb-4">Data Visualizations</h2>
+        <div className="mt-10 flex items-center justify-center flex-col">
+          <h2 className="text-2xl font-semibold text-center mb-4">Data Visualizations</h2>
           <ScatterChart
             width={600}
             height={300}
@@ -254,13 +256,15 @@ export default function AdminDashboard(): ReactElement {
           />
           <Stack
             direction={{ xs: 'column', md: 'row' }}
-            spacing={{ xs: 1, md: 3 }}
+            spacing={4}
+            className="mt-6"
+            justifyContent="center"
           >
-            <div>
+            <div className="bg-white p-4 rounded-lg shadow-md text-center">
               <h2 className="text-xl font-semibold mb-2">Course Completion Rate</h2>
               <Gauge width={100} height={100} value={60} />
             </div>
-            <div>
+            <div className="bg-white p-4 rounded-lg shadow-md text-center">
               <h2 className="text-xl font-semibold mb-2">User Retention</h2>
               <Gauge width={100} height={100} value={60} startAngle={-90} endAngle={90} />
             </div>

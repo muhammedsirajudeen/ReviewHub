@@ -108,10 +108,24 @@ router.get(
   ResourceController.GetResource
 );
 
+router.put(
+  '/resource/:resourceId/:sectionId',
+  passport.authenticate('jwt',{session:false}),
+  ResourceController.EditResource
+)
+
 router.get(
   '/quiz/:chapterId',
   passport.authenticate('jwt', { session: false }),
   ResourceController.GetQuiz
 );
+
+//quiz id identified the entire document and question id identifies the question it belongs to
+router.put(
+  '/quiz/:quizId',
+  passport.authenticate('jwt',{session:false}),
+  ResourceController.EditQuiz
+
+)
 
 export default router;

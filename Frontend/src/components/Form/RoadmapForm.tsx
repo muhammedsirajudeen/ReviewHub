@@ -11,9 +11,6 @@ interface Inputs {
   roadmapDescription: string;
 }
 
-
-//for now keep it static add an option to accept it from the user as well
-
 export default function RoadmapForm({
   closeForm,
   id,
@@ -26,34 +23,28 @@ export default function RoadmapForm({
   method: string;
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
-  const {
-    register,
-    handleSubmit,
-    // watch,
-    formState: { errors },
-  } = useForm<Inputs>({
+  const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
     defaultValues: {
       roadmapName: roadmap?.roadmapName,
       roadmapDescription: roadmap?.roadmapDescription,
     },
   });
-  const [list,setList]=useState<boolean>(false)
+  
+  const [list, setList] = useState<boolean>(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
   const fileHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.files);
     if (e.target.files) {
       const maxSize = 2 * 1024 * 1024; // 2MB in bytes
 
       if (e.target.files[0].size > maxSize) {
-        // errorSpan.textContent = 'File size exceeds 2MB.';
-        // isValid = false;
-        toast('must be less than 2MB');
+        toast('File must be less than 2MB');
         return;
       }
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!allowedTypes.includes(e.target.files[0].type)) {
-        toast('invalid file type');
+        toast('Invalid file type');
         return;
       }
       const reader = new FileReader();
@@ -65,168 +56,138 @@ export default function RoadmapForm({
       reader.readAsDataURL(e.target.files[0]);
     }
   };
+
   const imageCloseHandler = () => {
     if (imageRef.current?.src) {
       imageRef.current.src = '/form/add.png';
     }
   };
-  // form submission Handler
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const formData=new FormData()
-    formData.append("roadmapName",data.roadmapName)
-    formData.append("roadmapDescription",data.roadmapDescription)
-    formData.append("courseId",id)
-    formData.append("unlistStatus",JSON.stringify(list))
+    const formData = new FormData();
+    formData.append("roadmapName", data.roadmapName);
+    formData.append("roadmapDescription", data.roadmapDescription);
+    formData.append("courseId", id);
+    formData.append("unlistStatus", JSON.stringify(list));
+
     if (!fileRef.current?.files) {
-      toast('please select a file');
+      toast('Please select a file');
       return;
     } else {
       formData.append('file', fileRef.current.files[0]);
     }
-    console.log(data, id);
-    if (method === 'put') {
-      const response = (
-        await axios.put(
-          `${url}/admin/roadmap/${roadmap?._id}`,
-            formData
-          ,
-          {
-            headers: {
-              Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-              'Content-Type':'multipart/form-data',
-            },
-          }
-        )
-      ).data;
-      if (response.message === 'success') {
-        toast('roadmap updated successfully');
-        setTimeout(() => window.location.reload(), 1000);
-      } else {
-        toast(response.message);
-      }
-      return;
-    }
-    const response = (
-      await axios.post(
-        url + '/admin/roadmap',
-          formData,
-        {
+
+    const response = method === 'put'
+      ? await axios.put(`${url}/admin/roadmap/${roadmap?._id}`, formData, {
           headers: {
             Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-            "Content-Type":'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
           },
-        }
-      )
-    ).data;
-    if (response.message === 'success') {
-      toast('roadmap added successfully');
+        })
+      : await axios.post(`${url}/admin/roadmap`, formData, {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+            "Content-Type": 'multipart/form-data'
+          },
+        });
+
+    if (response.data.message === 'success') {
+      toast(`Roadmap ${method === 'put' ? 'updated' : 'added'} successfully`);
       setTimeout(() => window.location.reload(), 1000);
     } else {
-      toast(response.message);
+      toast(response.data.message);
     }
   };
 
   return (
     <form
-      className="flex flex-col items-center justify-start w-3/4"
+      className="flex flex-col items-center justify-start w-full max-w-md p-6 bg-white rounded-lg shadow-lg"
       onSubmit={handleSubmit(onSubmit)}
     >
-      {/* input forms here */}
-      <p className="text-2xl font-light mt-4">ADD ROADMAP</p>
-      <p className="text-xs font-light text-start w-full mt-4">Name</p>
+      <h2 className="text-2xl font-semibold text-center mb-4">Manage Roadmap</h2>
 
+      <label className="text-sm font-light w-full text-left">Name</label>
       <input
-        placeholder="enter the Roadmap Heading"
-        className="h-8 w-full border border-black placeholder:text-xs "
+        placeholder="Enter the Roadmap Heading"
+        className="h-10 w-full border border-gray-300 rounded-md px-2 focus:outline-none focus:ring focus:ring-blue-500"
         {...register('roadmapName', {
-          required: {
-            value: true,
-            message: 'please enter the Roadmap Name',
-          },
+          required: 'Please enter the Roadmap Name',
           minLength: {
             value: 5,
-            message: 'please enter alteast 8 character',
+            message: 'Please enter at least 5 characters',
           },
           validate: (roadmapName: string) => {
-            if (roadmapName.trim() === '')
-              return 'please enter the roadmap Name';
-            if (SpecialCharRegex.test(roadmapName))
-              return 'please enter valid Character';
+            if (SpecialCharRegex.test(roadmapName)) return 'Please enter valid characters';
             return true;
           },
         })}
       />
       {errors.roadmapName && (
-        <span className="text-xs text-red-500">
-          {errors.roadmapName.message}
-        </span>
+        <span className="text-xs text-red-500">{errors.roadmapName.message}</span>
       )}
-      <p className="text-xs font-light text-start w-full mt-4">Description</p>
-      {/* for roadmap Description */}
+
+      <label className="text-sm font-light w-full text-left mt-4">Description</label>
       <input
-        placeholder="enter the Roadmap Description"
-        className="h-8 w-full border border-black placeholder:text-xs"
+        placeholder="Enter the Roadmap Description"
+        className="h-10 w-full border border-gray-300 rounded-md px-2 focus:outline-none focus:ring focus:ring-blue-500"
         {...register('roadmapDescription', {
-          required: {
-            value: true,
-            message: 'please enter the roadmap Desription',
-          },
+          required: 'Please enter the Roadmap Description',
           minLength: {
             value: 5,
-            message: 'please enter alteast 8 character',
+            message: 'Please enter at least 5 characters',
           },
           validate: (roadmapDescription: string) => {
-            if (roadmapDescription.trim() === '')
-              return 'please enter the roadmap Name';
-            if (SpecialCharRegex.test(roadmapDescription))
-              return 'please enter valid Character';
+            if (SpecialCharRegex.test(roadmapDescription)) return 'Please enter valid characters';
             return true;
           },
         })}
       />
       {errors.roadmapDescription && (
-        <span className="text-xs text-red-500">
-          {errors.roadmapDescription.message}
-        </span>
+        <span className="text-xs text-red-500">{errors.roadmapDescription.message}</span>
       )}
+
       <input ref={fileRef} onChange={fileHandler} type="file" className="hidden" />
       <button
         type="button"
         onClick={imageCloseHandler}
-        className="flex relative top-8 items-center justify-center font-light bg-red-600 text-white p-2 text-xs rounded-full h-6 w-6 mt-4 mr-24"
+        className="flex relative top-10 left-36 items-center justify-center font-light bg-red-400 text-white p-2 text-xs rounded-lg h-6 w-6 mt-4"
       >
         x
       </button>
-      <div className="h-32 flex flex-col items-center justify-center w-32 border border-black rounded-lg">
+
+      <div className="h-32 flex flex-col items-center justify-center w-full border border-gray-300 rounded-lg overflow-hidden mt-4">
         <img
           onClick={() => fileRef.current?.click()}
           ref={imageRef}
-          src={
-            roadmap?.roadmapImage
-              ? `${url}/roadmap/${roadmap.roadmapImage}`
-              : `/form/add.png`
-          }
-          className="h-full w-full rounded-lg"
+          src={roadmap?.roadmapImage ? `${url}/roadmap/${roadmap.roadmapImage}` : '/form/add.png'}
+          className={`${fileRef.current } h-10 w-10`}
+          alt="Preview"
         />
       </div>
-      <label htmlFor='toggle' className='text-xs font-light'>ListStatus</label>
-      <Toggle defaultChecked={roadmap?.unlistStatus} onChange={(e)=>setList(e.target.checked)} />
-      {/* for roadmap Category*/}
-      <div className="flex items-center justify-start w-full mt-5">
+
+      <label htmlFor='toggle' className='text-sm font-light mt-4'>List Status</label>
+      <Toggle
+        defaultChecked={roadmap?.unlistStatus}
+        onChange={(e) => setList(e.target.checked)}
+        className="mt-2"
+      />
+
+      <div className="flex items-center justify-between w-full mt-6">
         <button
           type="submit"
-          className="bg-blue-500 p-2 text-white  ml-2 h-6 text-xs flex items-center justify-center"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600 transition"
         >
-          submit
+          Submit
         </button>
         <button
           onClick={closeForm}
           type="button"
-          className="bg-white p-2 text-black border border-black ml-2 h-6 text-xs flex items-center justify-center"
+          className="bg-gray-200 text-black px-4 py-2 rounded-md border border-gray-400 shadow hover:bg-gray-300 transition"
         >
           Cancel
         </button>
       </div>
+
       <ToastContainer />
     </form>
   );
