@@ -1,9 +1,12 @@
 import axios from 'axios';
-import { FormEvent, Fragment, ReactElement, useEffect, useState } from 'react';
+import { FormEvent, Fragment, ReactElement, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import url from '../../helper/backendUrl';
-import { QuizProps, resourceProps } from '../../types/courseProps';
+import { QuizProps, resourceProps, responseProps } from '../../types/courseProps';
 import { toast, ToastContainer } from 'react-toastify';
+import QuizCheck from '../../components/Form/Resource/user/QuizCheck';
+import { flushSync } from 'react-dom';
+import ConfettiExplosion from 'react-confetti-explosion';
 
 export default function Resource(): ReactElement {
   const location = useLocation();
@@ -13,7 +16,12 @@ export default function Resource(): ReactElement {
   const [activequiz, setActivequiz] = useState<QuizProps>();
   const [quizes, setQuizes] = useState<Array<QuizProps>>([]);
   const [active, setActive] = useState<string>('');
+  const [responseData,setResponseData]=useState<responseProps[]>([])
+  const [finalReward,setFinalReward]=useState<number>(0)
   const [type, setType] = useState<string>('');
+  const [result,setResult]=useState<boolean>(false)
+  const resultdialogRef=useRef<HTMLDialogElement>(null)
+  
   useEffect(() => {
     if (!location.state) {
       navigate('/user/courses');
@@ -76,6 +84,14 @@ export default function Resource(): ReactElement {
         ).data
         if(response.message==="success"){
           toast("success")
+
+          setResponseData(response.result)
+          setFinalReward(response.finalReward)
+          flushSync(()=>{
+            setResult(true)
+          })
+          resultdialogRef.current?.showModal()
+          //set quiz success modal here
         }else{
           toast(response.message)
         }
@@ -85,6 +101,11 @@ export default function Resource(): ReactElement {
       }
     }
   };
+
+  const resultCloseHandler=()=>{
+    resultdialogRef.current?.close()
+    setResult(false)
+  }
   return (
     <div className="ml-36 flex items-start justify-start">
       <div className="w-1/4 h-screen flex flex-col mt-10">
@@ -201,6 +222,7 @@ export default function Resource(): ReactElement {
         </div>
       )}
 
+
       <ToastContainer
         style={{
           backgroundColor: 'gray',
@@ -208,6 +230,14 @@ export default function Resource(): ReactElement {
           borderRadius: '10px',
         }}
       />
+      {
+        result && (
+          <QuizCheck finalReward={finalReward} verifydialogRef={resultdialogRef} closeHandler={resultCloseHandler} responseData={responseData}/>
+        )
+      }
+      {
+        result && <ConfettiExplosion/> 
+      }
     </div>
   );
 }

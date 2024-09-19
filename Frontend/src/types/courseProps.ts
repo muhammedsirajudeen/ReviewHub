@@ -61,3 +61,9 @@ export interface QuizProps {
   _id: string;
 }
 
+
+
+export interface responseProps {
+  question: string;
+  reward: number;
+}

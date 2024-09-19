@@ -6,11 +6,9 @@ import Quiz from '../../model/Quiz';
 const GetResources = async (req: Request, res: Response) => {
   try {
     const { roadmapId } = req.params;
-    console.log(roadmapId);
     const Resources = await Resource.find({
       roadmapId: new mongoose.Types.ObjectId(roadmapId as string),
     });
-    console.log(Resources);
     const Quizes = await Quiz.find({
       roadmapId: new mongoose.Types.ObjectId(roadmapId as string),
     });

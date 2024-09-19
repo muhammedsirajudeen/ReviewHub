@@ -6,6 +6,7 @@ const backendUrl="http://localhost:3000/"
 import { hashPassword,comparePasswords } from "../../helper/bcryptHelper";
 import { randomUUID } from "crypto";
 import transporter from "../../config/nodemailerConfig";
+import Wallet from "../../model/Wallet";
 
 //storing it in dict
 let UuidMapping:Map<string,string>=new Map()
@@ -34,8 +35,17 @@ const CredentialSignup = async (req: Request, res: Response) => {
         profileImage:filename ?? "https://img.icons8.com/ios-glyphs/30/1A1A1A/user--v1.png",
 
       });
-      await newUser.save();
-      res.status(200).json({ message: "success" });
+      const createdUser=await newUser.save();
+      const newWallet=new Wallet(
+        {
+          userId:createdUser.id
+        }
+      )
+      //referencing it the other way too  
+      const createdWallet=await newWallet.save()
+      createdUser.walletId=createdWallet.id
+      await createdUser.save()
+      res.status(201).json({ message: "success" });
     }
 
   } catch (error) {

@@ -46,8 +46,9 @@ export default function Signup(): ReactElement {
         userToken: codeResponse.access_token,
       });
       console.log(response);
-      if (response.status === 200 && response.data.message === "success") {
-        navigate("/signin");
+      if (response.status === 201 && response.data.message === "success") {
+        toast("success")
+        setTimeout(() => navigate("/signin"), 1000);
       } else {
         toast(response.data.message);
       }

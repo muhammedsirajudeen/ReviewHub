@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Mongoose, Schema } from 'mongoose';
 
 export interface IUser extends Document {
   email: string; // Optional field for user's name
@@ -7,7 +7,10 @@ export interface IUser extends Document {
   phone: string;
   address: string;
   authorization: string;
-  enrolledCourses:Array<mongoose.Types.ObjectId>
+  enrolledCourses: Array<mongoose.Types.ObjectId>;
+  rewardPoints: number;
+  walletId:mongoose.Types.ObjectId;
+  attendedQuizes:mongoose.Types.ObjectId[]
 }
 
 const userSchema: Schema<IUser> = new Schema({
@@ -42,12 +45,29 @@ const userSchema: Schema<IUser> = new Schema({
     required: false,
     unique: false,
   },
-  enrolledCourses:{
+  enrolledCourses: {
+    type: [mongoose.Schema.ObjectId],
+    required: false,
+    unique: false,
+  },
+  rewardPoints: {
+    type: Number,
+    required: false,
+    unique: false,
+    default: 0,
+  },
+  walletId:{
+    type:mongoose.Schema.ObjectId,
+    required:false,
+    unique:true,
+    ref:'wallets'
+  },
+  attendedQuizes:{
     type:[mongoose.Schema.ObjectId],
     required:false,
-    unique:false
+    default:[]
   }
-  
+
 });
-const User = mongoose.model<IUser>("User", userSchema);
+const User = mongoose.model<IUser>('User', userSchema);
 export default User;

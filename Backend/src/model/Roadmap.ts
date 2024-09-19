@@ -30,6 +30,7 @@ const RoadmapSchema = new Schema<IRoadmap>({
     type: mongoose.Schema.ObjectId,
     required: true,
     unique: false,
+    ref:'courses'
   },
   postedDate: {
     type: Date,
