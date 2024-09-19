@@ -5,17 +5,20 @@ import classNames from 'classnames';
 import axios from 'axios';
 import url from '../../../helper/backendUrl';
 import { toast, ToastContainer } from 'react-toastify';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function QuizForm({
   dialogRef,
   closeHandler,
   quiz,
-  quizId
+  quizId,
+  method
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   quiz: quizProps | undefined;
   quizId:string
+  method:string
 }): ReactElement {
     const [options,setOptions]=useState<Array<string>>(quiz?.options ?? [])
 
@@ -36,17 +39,36 @@ export default function QuizForm({
     setOptions([...options,"one"])
   }
   const deleteHandler=(optionName:string)=>{
-    console.log(optionName)
     const modified=options.filter((option)=>option!==optionName)
-    console.log(modified)
     setOptions(modified)
     setValue('options',modified)
   }
   //form submission handler here
   const onSubmit = async  (data: quizProps) => {
     console.log(data);
+    
+    if(method==="post"){
+      data._id=uuidv4()
+      const response=(
+        await axios.post(`${url}/admin/quiz/${quizId}`,
+          data,
+          {
+            headers:{
+              Authorization:`Bearer ${window.localStorage.getItem("token")}`
+            }
+          }
+        )
+      ).data
+      if(response.message==="success"){
+        toast("created successfully")
+        setTimeout(()=>window.location.reload(),1000)
+      }else{
+        toast(response.message)
+      }
+      return        
+    }
     const response=(
-      await axios.put(`${url}/admin/quiz/${quizId}`,
+      await axios.put(`${url}/admin/quiz/${quizId}/${quiz?._id}`,
         data,
         {
           headers:{
@@ -57,6 +79,7 @@ export default function QuizForm({
     ).data
     if(response.message==="success"){
       toast("edited successfully")
+      setTimeout(()=>window.location.reload(),1000)
     }else{
       toast(response.message)
     }

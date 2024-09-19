@@ -108,24 +108,48 @@ router.get(
   ResourceController.GetResource
 );
 
+router.post(
+  '/resource/:resourceId',
+  passport.authenticate('jwt',{session:false}),
+  ResourceController.AddResource
+)
+
 router.put(
   '/resource/:resourceId/:sectionId',
   passport.authenticate('jwt',{session:false}),
   ResourceController.EditResource
 )
 
+router.delete(
+  '/resource/:resourceId/:sectionId',
+  passport.authenticate('jwt',{session:false}),
+  ResourceController.DeleteResource
+)
+
+//quiz management
 router.get(
   '/quiz/:chapterId',
   passport.authenticate('jwt', { session: false }),
   ResourceController.GetQuiz
 );
 
-//quiz id identified the entire document and question id identifies the question it belongs to
-router.put(
+router.post(
   '/quiz/:quizId',
+  passport.authenticate('jwt',{session:false}),
+  ResourceController.AddQuiz
+)
+
+router.put(
+  '/quiz/:quizId/:questionId',
   passport.authenticate('jwt',{session:false}),
   ResourceController.EditQuiz
 
+)
+
+router.delete(
+  '/quiz/:quizId/:questionId',
+  passport.authenticate('jwt',{session:false}),
+  ResourceController.DeleteQuiz
 )
 
 export default router;

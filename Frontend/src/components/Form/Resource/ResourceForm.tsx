@@ -5,6 +5,7 @@ import classNames from 'classnames'; // optional for conditional classes
 import axios from 'axios';
 import url from '../../../helper/backendUrl';
 import { toast, ToastContainer } from 'react-toastify';
+import { v4 as uuidv4 } from 'uuid';
 
 type Inputs = {
   sectionName: string;
@@ -15,12 +16,14 @@ export default function ResourceForm({
   dialogRef,
   closeHandler,
   section,
-  sectionId,
+  resourceId,
+  method
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   section: sectionProps | undefined;
-  sectionId: string;
+  resourceId: string;
+  method:string
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
 
@@ -36,15 +39,34 @@ export default function ResourceForm({
     },
   });
 
-  const { fields } = useFieldArray({
+  const { fields,append,remove } = useFieldArray({
     name: 'content',
     control,
   });
+  const addHandler=()=>{
+    append({subheading:"",article:"",_id:uuidv4()})
+  }
 
   const onSubmit = async (data: Inputs) => {
     console.log(data);
+    if(method==="post"){
+        const response = (
+            await axios.post(`${url}/admin/resource/${resourceId}`, data, {
+              headers: {
+                Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+              },
+            })
+          ).data;
+          if (response.message === 'success') {
+            toast('created successfully');
+            setTimeout(()=>window.location.reload(),1000)
+          } else {
+            toast(response.message);
+          }
+          return 
+    } 
     const response = (
-      await axios.put(`${url}/admin/resource/${sectionId}/${section?._id}`, data, {
+      await axios.put(`${url}/admin/resource/${resourceId}/${section?._id}`, data, {
         headers: {
           Authorization: `Bearer ${window.localStorage.getItem('token')}`,
         },
@@ -105,6 +127,13 @@ export default function ResourceForm({
               },
             })}
           />
+            <button
+            type='button'
+            onClick={addHandler}
+            className="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
+            >
+            +
+            </button>
           {errors.sectionName && (
             <span className="text-red-500 text-sm">
               {errors.sectionName.message}
@@ -145,6 +174,7 @@ export default function ResourceForm({
                       },
                     })}
                   />
+
                   {errors?.content?.[index]?.subheading && (
                     <span className="text-red-500 text-sm">
                       {errors.content[index].subheading.message}
@@ -190,7 +220,14 @@ export default function ResourceForm({
                     </span>
                   )}
                 </div>
-              </div>
+                    <button
+                    onClick={()=>remove(index)}
+                    className="bg-red-500 text-white h-10 w-10 p-1 flex items-center justify-center rounded-full shadow-lg hover:bg-red-600 transition duration-200"
+                    aria-label="Delete Item"
+                    >
+                    <img className="h-6 w-6" src="/delete.png" alt="Delete" />
+                    </button>              
+                </div>
             </Fragment>
           ))}
           <button

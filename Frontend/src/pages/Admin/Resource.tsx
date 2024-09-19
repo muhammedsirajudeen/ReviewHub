@@ -11,6 +11,7 @@ import {
 import ResourceForm from '../../components/Form/Resource/ResourceForm';
 import { flushSync } from 'react-dom';
 import QuizForm from '../../components/Form/Resource/QuizForm';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function Resource(): ReactElement {
   const [resource, setResource] = useState<resourceProps>();
@@ -21,6 +22,7 @@ export default function Resource(): ReactElement {
   const [activequiz, setActivequiz] = useState<quizProps>();
   const [resourceEdit, setResourceEdit] = useState<boolean>(false);
   const [quizedit, setQuizedit] = useState<boolean>(false);
+  const [method, setMethod] = useState<string>('');
   //refactor this
   const dialogRef = useRef<HTMLDialogElement>(null);
   const quizdialogRef = useRef<HTMLDialogElement>(null);
@@ -65,6 +67,8 @@ export default function Resource(): ReactElement {
     setActiveresource(section);
   };
   const editHandler = () => {
+    setMethod('put');
+
     flushSync(() => {
       setResourceEdit(true);
     });
@@ -73,8 +77,11 @@ export default function Resource(): ReactElement {
   const closeEditHandler = () => {
     dialogRef.current?.close();
     setResourceEdit(false);
+    //reload when we clear the active resource
+    if (!activeresource) window.location.reload();
   };
   const quizEditHandler = (quiz: quizProps) => {
+    setMethod('put');
     setActivequiz(quiz);
     flushSync(() => {
       setQuizedit(true);
@@ -84,10 +91,63 @@ export default function Resource(): ReactElement {
   const closeQuizEditHandler = () => {
     quizdialogRef.current?.close();
     setQuizedit(false);
+    // if(!activequiz) window.location.reload()
   };
-  const addHandler = () => {
-    alert('chapter add handler');
+  //handling adding here
+  const addResourceHandler = () => {
+    flushSync(() => {
+      setMethod('post');
+      setActiveresource(undefined);
+      setResourceEdit(true);
+    });
+    dialogRef.current?.showModal();
   };
+
+  const deleteResourceHandler = async (id: string) => {
+    //we have access to the curent resource id as well as the section id here
+    const response = (
+      await axios.delete(`${url}/admin/resource/${resource?._id}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+        },
+      })
+    ).data;
+    if (response.message === 'success') {
+      toast('deleted successfully');
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      toast(response.message);
+    }
+  };
+
+  //rest of the operations on the quiz module
+  const addQuizHandler = () => {
+    flushSync(() => {
+      setMethod('post');
+      setActivequiz(undefined);
+      setQuizedit(true);
+    });
+    quizdialogRef.current?.showModal();
+  };
+  const deleteQuizHandler=async (id:string)=>{
+    console.log(id)
+    //we can access the main id here
+    const response=(
+      await axios.delete(`${url}/admin/quiz/${quiz?._id}/${id}`,
+        {
+          headers:{
+            Authorization:`Bearer ${window.localStorage.getItem("token")}`
+          }
+        }
+      )
+    ).data
+    if(response.message==="success"){
+      toast("deleted successfully")
+      setTimeout(()=>window.location.reload(),1000)
+    }else{
+      toast(response.message)
+    }
+  }
 
   return (
     <>
@@ -109,19 +169,25 @@ export default function Resource(): ReactElement {
                   <div
                     key={section.sectionName}
                     onClick={() => activeHandler(section)}
-                    className={`cursor-pointer w-full p-3 flex items-start justify-start rounded-lg mb-2 transition-all duration-200 
+                    className={`cursor-pointer w-full p-3 flex items-start justify-between rounded-lg mb-2 transition-all duration-200 
                   ${
                     active === section.sectionName
                       ? 'bg-blue-500 text-white font-bold'
                       : 'bg-white hover:bg-blue-100'
                   }`}
                   >
-                    {section.sectionName}
+                    <span>{section.sectionName}</span>
+                    <button
+                      onClick={() => deleteResourceHandler(section._id)}
+                      className="bg-red-400 p-1 rounded-full"
+                    >
+                      <img className="h-3 w-3" src="/delete.png" />
+                    </button>
                   </div>
                 ))}
               </div>
               <button
-                onClick={addHandler}
+                onClick={addResourceHandler}
                 className="w-full h-12 flex items-center justify-center bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 font-bold mt-4"
               >
                 <p className="text-sm">Add Chapter +</p>
@@ -148,6 +214,13 @@ export default function Resource(): ReactElement {
             <h1 className="text-3xl text-gray-600 font-semibold mb-4">
               {quiz?.chapterName}
             </h1>
+            <button
+              onClick={addQuizHandler}
+              className="bg-blue-600 text-white h-10 w-10 flex items-center justify-center rounded-full shadow-md hover:bg-blue-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label="Add Quiz"
+            >
+              +
+            </button>
             {quiz?.Quiz.map((quiz) => (
               <div
                 key={quiz._id}
@@ -181,6 +254,16 @@ export default function Resource(): ReactElement {
                   >
                     Check
                   </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteQuizHandler(quiz._id);
+                    }}
+                    className="flex items-center text-xs mt-2 justify-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow transition duration-200"
+                  >
+                    <img src="/delete.png" alt="Delete" className="w-3 h-3" />
+                  </button>
                 </form>
               </div>
             ))}
@@ -189,8 +272,9 @@ export default function Resource(): ReactElement {
       </div>
       {resourceEdit && (
         <ResourceForm
+          method={method}
           //passing resource Id
-          sectionId={resource?._id ?? ""}
+          resourceId={resource?._id ?? ''}
           section={activeresource}
           closeHandler={closeEditHandler}
           dialogRef={dialogRef}
@@ -198,12 +282,14 @@ export default function Resource(): ReactElement {
       )}
       {quizedit && (
         <QuizForm
-          quizId={quiz?._id ?? ""}
+          method={method}
+          quizId={quiz?._id ?? ''}
           quiz={activequiz}
           closeHandler={closeQuizEditHandler}
           dialogRef={quizdialogRef}
         />
       )}
+      <ToastContainer />
     </>
   );
 }
