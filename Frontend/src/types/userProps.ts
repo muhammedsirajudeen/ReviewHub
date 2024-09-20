@@ -2,6 +2,7 @@ interface HistoryProps {
   paymentDate: string;
   type: string;
   amount: number;
+  status:boolean
 }
 
 interface walletProps {

@@ -14,15 +14,19 @@ export async function addMessageToQueue(queueName: string, message: string) {
   }
 }
 
-export async function addValueToCache(value:string){
+
+export async function addValueToCache(email:string,value:number,time:number){
   const client=createClient()
   try{
     await client.connect()
-    await client.set(value,1)
-    console.log('Order Id added to cache:', value);
+    await client.set(email,value)
+    await client.expire(email, time);
+
+    console.log('otp added to cache:', value);
 
   }catch(error){
     console.log("error occured while adding to cache")
+    throw "errror while adding to cache"
   }finally{
     client.disconnect()
   }

@@ -91,7 +91,8 @@ const OrderVerifier = async (req: Request, res: Response) => {
       process.env.RAZORPAY_KEY_SECRET as string
     );
     console.log(verifiedStatus);
-    if (!verifiedStatus) {
+    //checking verified status and also to see if the payment is also verified
+    if (!verifiedStatus || updatePayment?.status===true ) {
       res.status(400).json({ message: 'request malformed' });
       return;
     }

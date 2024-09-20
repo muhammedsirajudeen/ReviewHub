@@ -7,13 +7,42 @@ import { hashPassword,comparePasswords } from "../../helper/bcryptHelper";
 import { randomUUID } from "crypto";
 import transporter from "../../config/nodemailerConfig";
 import Wallet from "../../model/Wallet";
+import { addValueToCache, getValueFromCache } from "../../helper/redisHelper";
 
 //storing it in dict
 let UuidMapping:Map<string,string>=new Map()
 
+const randomNumberGenerator = () => {
+  const randomNumbers = [];
+  for (let i = 0; i < 4; i++) {
+    randomNumbers.push(Math.floor(Math.random() * 9) + 1); // Generates numbers between 1 and 9
+  }
+  return randomNumbers.join('');
+};
+
+
+const emailGenerator=(email:string,otp:string)=>{
+  let mailOptions = {
+    from: 'muhammedsirajudeen29@gmail.com',
+    to: email,
+    subject: 'Reset Password',
+    text: `Your OTP is${otp}`
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log('Error occurred:', error);
+      throw "Error while sending message"
+    } else {
+      console.log('Email sent:', info.response);
+      return true      
+    }
+  });
+}
+
 //dont forget to hash the password being stored
 const CredentialSignup = async (req: Request, res: Response) => {
   try {
+    
     const { email, password,phone,address } = req.body;
     const checkUser = await User.findOne({ email: email });
     let filename;
@@ -27,13 +56,13 @@ const CredentialSignup = async (req: Request, res: Response) => {
       res.status(200).json({ message: "user already exists" });
     } else {
       let hashedPassword=await hashPassword(password)
+      
       const newUser = new User({
         email: email,
         password: hashedPassword,
         phone,
         address,
         profileImage:filename ?? "https://img.icons8.com/ios-glyphs/30/1A1A1A/user--v1.png",
-
       });
       const createdUser=await newUser.save();
       const newWallet=new Wallet(
@@ -45,12 +74,17 @@ const CredentialSignup = async (req: Request, res: Response) => {
       const createdWallet=await newWallet.save()
       createdUser.walletId=createdWallet.id
       await createdUser.save()
+      //sending the otp too
+      
+      const otp = randomNumberGenerator();
+      addValueToCache(createdUser.email, parseInt(otp), 3600);
+      emailGenerator(createdUser.email,randomNumberGenerator())
       res.status(201).json({ message: "success" });
     }
 
   } catch (error) {
     // console.log(error);
-    res.status(501).json({ message: "server error occured" });
+    res.status(500).json({ message: "server error occured" });
   }
 };
 
@@ -60,7 +94,7 @@ const CredentialSignin = async (req: Request, res: Response) => {
     const checkUser = await User.findOne({ email: email });
     if (checkUser) {
       
-      if (checkUser.email === email && await comparePasswords(password,checkUser.password)) {
+      if (checkUser.email === email && await comparePasswords(password,checkUser.password) && checkUser.verified ) {
         const token = jwt.sign(
           {
             id: checkUser.id,
@@ -141,11 +175,60 @@ const CredentialPasswordChange=async (req:Request,res:Response)=>{
 
 }
 
+const OtpResend=async (req:Request,res:Response)=>{
+  try{
+    const {email}=req.body
+    const checkUser=await User.findOne({email:email})
+    if(checkUser){
+      const otp=randomNumberGenerator()
+      emailGenerator(email,otp)
+      addValueToCache(email,parseInt(otp),3600)
+      res.status(200).json({message:"success"})
+
+    }else{
+      res.status(404).json({message:"user not found"})
+    }
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message:"server error occured"})
+  }
+}
+
+const OtpVerifier=async (req:Request,res:Response)=>{
+  try{
+    const {otp,email}=req.body
+    const checkUser=await User.findOne({email:email})
+    if(checkUser){      
+      const value=await getValueFromCache(email)
+      if(otp.toString()===value.toString()){
+        await User.findOneAndUpdate(
+          {
+            email
+          },
+          {
+            verified:true
+          }
+        )
+        res.status(200).json({message:"success"})
+      }else{
+        res.status(401).json({message:"unauthorized"})
+      }
+    }else{
+      res.status(404).json({message:"requested user not found"})
+    }
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message:"server error occured"})
+  }
+}
+
 
 
 export default {
   CredentialSignup,
   CredentialSignin,
   CredentialForgot,
-  CredentialPasswordChange
+  CredentialPasswordChange,
+  OtpResend,
+  OtpVerifier
 };

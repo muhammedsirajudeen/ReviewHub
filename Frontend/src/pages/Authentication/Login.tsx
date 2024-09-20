@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { ReactElement, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   TokenResponse,
@@ -14,6 +14,8 @@ import { tokenVerifier } from "../../helper/tokenVerifier";
 // import userProps from "../../types/userProps";
 import { ClipLoader } from "react-spinners";
 import { useNavigate } from "react-router";
+import { flushSync } from "react-dom";
+import OtpForm from "../../components/Form/Authentication/OtpForm";
 interface FormValues {
   email: string;
   password: string;
@@ -28,22 +30,14 @@ export default function Login(): ReactElement {
   } = useForm<FormValues>();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  // const data = useLoaderData() as userProps;
+  const [otpdialog,setOtpdialog]=useState<boolean>(false)
+  const otpDialogRef=useRef<HTMLDialogElement>(null)
   const [submit, setSubmit] = useState<boolean>(false);
   const [loading,setLoading]=useState<boolean>(false);
-  // useEffect(() => {
-  //   if (data) {
-  //     if (data.authorization === "admin") {
-  //       navigate("/admin/dashboard");
-  //     } else {
-  //       navigate("/user/dashboard");
-  //     }
-  //   }
-  // }, [navigate, data]);
+  const [type,setType]=useState<string>("")
+
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    // Handle form submission
-    // console.log(data);
     setSubmit(true);
     const response = await axios.post(url + "/auth/credential/signin", {
       email: data.email,
@@ -97,19 +91,36 @@ export default function Login(): ReactElement {
     if (!email) {
       toast("enter an email first");
     } else {
-      const response = (
-        await axios.post(url + "/auth/forgot", {
-          email: email,
-        })
-      ).data;
-      if (response.message === "success") {
-        window.localStorage.setItem("email",email)
-        toast("check your email");
-      } else {
-        toast(response.message);
+      try{
+        const response = (
+          await axios.post(url + "/auth/resend", {
+            email: email,
+          })
+        ).data;
+        if (response.message === "success") {
+          window.localStorage.setItem("email",email)
+          toast("check your email");
+          setTimeout(()=>{
+            flushSync(()=>{
+              setType("forgot")
+              setOtpdialog(true)
+            })
+            otpDialogRef.current?.showModal()
+          },1000)
+        } else {
+          toast(response.message);
+        }
+
+      }catch(error){
+        console.log(error)
+        setLoading(false)
       }
     }
     setLoading(false)
+  }
+  const closeHandler=()=>{
+    setOtpdialog(false)
+    otpDialogRef.current?.close()
   }
   return (
     <>
@@ -203,8 +214,14 @@ export default function Login(): ReactElement {
             </a>
           </form>
         </div>
-        <ToastContainer />
       </div>
+      {
+        otpdialog && 
+        (
+          <OtpForm type={type} dialogRef={otpDialogRef} closeHandler={closeHandler} email={watch("email")}/>
+        )
+      }
+      <ToastContainer />
     </>
   );
 }

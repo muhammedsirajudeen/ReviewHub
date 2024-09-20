@@ -84,6 +84,7 @@ const GoogleSignup = async (req: Request, res: Response) => {
         email: userData.email,
         password: await hashPassword(userData.id),
         profileImage: userData.picture,
+        verified:true
       });
       const createdUser=await newUser.save();
       const newWallet=new Wallet(

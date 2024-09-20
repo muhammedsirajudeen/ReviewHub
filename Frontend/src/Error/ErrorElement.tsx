@@ -4,7 +4,7 @@ import SideBar from '../components/SideBar';
 
 export default function ErrorElement(): ReactElement {
   const error = useRouteError() as ErrorResponse;
-
+  
   return (
     <>
       <SideBar />

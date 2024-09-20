@@ -10,7 +10,8 @@ export interface IUser extends Document {
   enrolledCourses: Array<mongoose.Types.ObjectId>;
   rewardPoints: number;
   walletId:mongoose.Types.ObjectId;
-  attendedQuizes:mongoose.Types.ObjectId[]
+  attendedQuizes:mongoose.Types.ObjectId[];
+  verified:boolean
 }
 
 const userSchema: Schema<IUser> = new Schema({
@@ -59,14 +60,19 @@ const userSchema: Schema<IUser> = new Schema({
   walletId:{
     type:mongoose.Schema.ObjectId,
     required:false,
-    unique:true,
+    unique:false,
     ref:'wallets'
   },
   attendedQuizes:{
     type:[mongoose.Schema.ObjectId],
     required:false,
     default:[]
+  },
+  verified:{
+    type:Boolean,
+    default:false
   }
+  
 
 });
 const User = mongoose.model<IUser>('User', userSchema);

@@ -29,4 +29,14 @@ router.get(
   TokenVerifier.TokenVerifier
 );
 
+router.post(
+  '/resend',
+  CredentialAuthController.OtpResend
+)
+
+router.post(
+  '/otp/verify',
+  CredentialAuthController.OtpVerifier
+)
+
 export default router;

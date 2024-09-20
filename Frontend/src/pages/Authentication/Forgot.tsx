@@ -1,5 +1,4 @@
 import { ReactElement } from "react";
-
 import { useForm, SubmitHandler } from "react-hook-form";
 import { passwordStrength } from "check-password-strength";
 import { useNavigate } from "react-router";
@@ -12,6 +11,7 @@ type Inputs = {
   password: string;
   confirmPassword: string;
 };
+
 export default function Forgot(): ReactElement {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -21,10 +21,9 @@ export default function Forgot(): ReactElement {
     watch,
     formState: { errors },
   } = useForm<Inputs>();
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
     const email = window.localStorage.getItem("email");
-    console.log(email)
     const response = (await axios.post(
       `${url}/auth/password?id=${searchParams.get("token")}`,
       {
@@ -32,97 +31,80 @@ export default function Forgot(): ReactElement {
         email: email,
       }
     )).data;
-    if(response.message==="success"){
-        toast("Password Changed Successfully")
-        setTimeout(()=>navigate('/signin'),1000)
-    }else{
-        toast(response.message)
+
+    if (response.message === "success") {
+      toast("Password Changed Successfully");
+      setTimeout(() => navigate('/signin'), 1000);
+    } else {
+      toast(response.message);
     }
   };
-  return (
-    <div className="flex items-center justify-center mt-72">
-      <div className="flex w-96 h-auto p-10 shadow-2xl items-center justify-center flex-col ">
-        <h1 className="text-xl font-light text-center">Reset Password?</h1>
-        <form
-          className="flex flex-col items-center justify-center"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <input
-            className="h-8 mt-10 w-80 border border-gray-500 placeholder:text-xs"
-            placeholder="enter the password"
-            type="password"
-            {...register("password", {
-              required: { value: true, message: "please enter the password" },
-              minLength: {
-                value: 8,
-                message: "password should be atleast 8 characters",
-              },
 
-              validate: (password) => {
-                if (password.trim() === "") {
-                  return "password cannot be empty";
-                } else {
+  return (
+    <>
+
+      <img src="login/loginperson.png" className="absolute left-1/4 top-0 -z-10" />
+      <div className="flex items-center justify-center min-h-screen ">
+
+        <div className="bg-white rounded-lg shadow-lg p-8 w-96 flex flex-col">
+          <h1 className="text-2xl font-semibold text-center mb-6">ReviewHub</h1>
+          <h1 className="text-xs font-semibold text-center mb-6">Forgot Password</h1>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-4">
+            <input
+              className="h-12 border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500 transition"
+              placeholder="Enter new password"
+              type="password"
+              {...register("password", {
+                required: { value: true, message: "Please enter a password" },
+                minLength: { value: 8, message: "Password must be at least 8 characters" },
+                validate: (password) => {
+                  if (password.trim() === "") {
+                    return "Password cannot be empty";
+                  }
                   const strength = passwordStrength(password).value;
-                  console.log(strength);
                   if (strength === "Weak") {
                     return "Enter a strong password";
-                  } else {
-                    return true;
                   }
-                }
-              },
-            })}
-          />
+                  return true;
+                },
+              })}
+            />
+            {errors.password && <span className="text-red-500 text-xs">{errors.password.message}</span>}
 
-          {errors.password && (
-            <span className="text-xs text-red-500">
-              {errors.password.message}
-            </span>
-          )}
-
-          <input
-            type="password"
-            className="h-8 mt-10 w-full border border-gray-500 placeholder:text-xs"
-            placeholder="confirm the entered password"
-            {...register("confirmPassword", {
-              required: { value: true, message: "please enter the password" },
-              minLength: {
-                value: 8,
-                message: "please enter minimum character",
-              },
-              validate: (confirmPassword) => {
-                if (confirmPassword.trim() === "") {
-                  return "password cannot be empty";
-                } else {
-                  // console.log(watch("password"))
+            <input
+              type="password"
+              className="h-12 border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500 transition"
+              placeholder="Confirm new password"
+              {...register("confirmPassword", {
+                required: { value: true, message: "Please confirm your password" },
+                validate: (confirmPassword) => {
                   if (confirmPassword !== watch("password")) {
-                    return "password should match";
-                  } else {
-                    return true;
+                    return "Passwords do not match";
                   }
-                }
-              },
-            })}
-          />
-          {errors.confirmPassword && (
-            <span className="text-xs text-red-500">
-              {errors.confirmPassword.message}
-            </span>
-          )}
-          <input
-            type="submit"
-            className="bg-gray-500 text-white p-2 font-light mt-8 w-full"
-          />
-          <button
-            type="button"
-            onClick={() => navigate("/signin")}
-            className="bg-white border border-black p-2 font-light mt-8 w-full"
-          >
-            Back To Login
-          </button>
-        </form>
+                  return true;
+                },
+              })}
+            />
+            {errors.confirmPassword && <span className="text-red-500 text-xs">{errors.confirmPassword.message}</span>}
+
+            <button
+              type="submit"
+              className="bg-gray-600 text-white h-12 rounded-md transition hover:bg-blue-700 focus:outline-none"
+            >
+              Change Password
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/signin")}
+              className="border border-gray-300 text-gray-600 h-12 rounded-md transition hover:bg-gray-200"
+            >
+              Back to Login
+            </button>
+          </form>
+        </div>
+        <ToastContainer />
       </div>
-      <ToastContainer/>
-    </div>
+    </>
   );
 }
