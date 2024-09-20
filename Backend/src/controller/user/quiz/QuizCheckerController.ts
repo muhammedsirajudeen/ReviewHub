@@ -40,6 +40,7 @@ const QuizChecker = async (req: Request, res: Response) => {
             paymentDate: new Date(),
             type: 'reward',
             amount: finalReward,
+            status:true
           });
           await updateWallet.save();
         } else {

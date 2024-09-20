@@ -4,6 +4,7 @@ interface HistoryProps {
   paymentDate: Date;
   type: string;
   amount: number;
+  status:boolean;
 }
 
 interface IWallet extends Document {
@@ -27,6 +28,11 @@ const HistorySchema = new Schema<HistoryProps>({
     type: Number,
     required: true,
   },
+  status:{
+    type:Boolean,
+    required:false,
+    default:false
+  }
 });
 
 const WalletSchema = new Schema<IWallet>({
@@ -51,6 +57,7 @@ const WalletSchema = new Schema<IWallet>({
     required: false,
     default: [],
   },
+  
 });
 
 const Wallet = mongoose.model<IWallet>('wallets', WalletSchema);

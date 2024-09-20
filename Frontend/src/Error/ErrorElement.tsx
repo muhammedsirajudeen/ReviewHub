@@ -1,13 +1,14 @@
 import { ReactElement } from 'react';
 import { ErrorResponse, useRouteError } from 'react-router';
-import Navbar from '../components/SideBar';
+import SideBar from '../components/SideBar';
 
 export default function ErrorElement(): ReactElement {
   const error = useRouteError() as ErrorResponse;
 
   return (
     <>
-      <Navbar />
+      <SideBar />
+
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
         {/* <h1 className="text-4xl font-bold text-center text-red-600 mt-10">
           Application Error

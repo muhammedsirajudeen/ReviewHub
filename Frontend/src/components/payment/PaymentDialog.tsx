@@ -22,6 +22,20 @@ interface RazorpayResponse {
   razorpay_signature: string;
 }
 
+interface RazorpayPaymentError {
+    error:{
+        code: string;                 // The error code
+        description: string;          // A human-readable description of the error
+        source: string;               // The source of the error (e.g., Razorpay)
+        step: string;                 // The step at which the error occurred
+        reason: string;               // The reason for the failure
+        metadata: {
+            order_id: string;         // The ID of the order associated with the payment
+            payment_id: string;       // The ID of the payment attempt
+        };
+    }
+}
+
 export default function PaymentDialog({
   dialogRef,
   closeHandler,
@@ -69,7 +83,7 @@ export default function PaymentDialog({
             );
             toastHandler()
             
-            // window.location.reload();
+            window.location.reload();
           } catch (err) {
             toast('Payment failed: ' + err);
           }
@@ -87,7 +101,28 @@ export default function PaymentDialog({
         },
       };
       const rzpay = new Razorpay(options);
+      rzpay.on('payment.failed',async (response:RazorpayPaymentError)=>{
+        // alert(response.error.code);
+        // alert(response.error.description);
+        // alert(response.error.source);
+        // alert(response.error.step);
+        // alert(response.error.reason);
+        // alert(response.error.metadata.order_id);
+        // alert(response.error.metadata.payment_id);
+        if(response.error.metadata.payment_id){
+            const serverResponse=(
+                await axios.put(`${url}/user/payment/order/failure/${response.error.metadata.order_id}`,{},{
+                    headers:{
+                        Authorization:`Bearer ${window.localStorage.getItem("token")}`
+                    }
+                })
+            ).data
+            console.log(serverResponse)      
+            window.location.reload()      
+        }
+      })
       rzpay.open();
+
     } catch (err) {
       toast('Error creating order: ' + err);
     }

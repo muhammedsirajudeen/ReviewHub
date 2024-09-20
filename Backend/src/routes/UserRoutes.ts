@@ -82,4 +82,9 @@ router.post(
   PaymentController.OrderVerifier
 )
 
+router.put(
+  '/payment/order/failure/:orderId',
+  passport.authenticate('jwt',{session:false}),
+  PaymentController.OrderFailure
+)
 export default router;

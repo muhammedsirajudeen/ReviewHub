@@ -99,11 +99,11 @@ export default function Wallet(): ReactElement {
               {user.walletId?.history?.map((history, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between w-full border-b border-gray-200 py-2"
+                  className={`${history.status ? "text-green-400" :"text-red-500" }  flex items-center justify-between w-full border-b border-gray-200 py-2`}
                 >
-                  <p className="w-2/3 text-gray-700">{history.paymentDate}</p>
-                  <p className="w-1/4 text-gray-700">{history.amount}</p>
-                  <p className="w-1/4 text-gray-700">{history.type}</p>
+                  <p className="w-2/3">{history.paymentDate}</p>
+                  <p className="w-1/4">{history.amount}</p>
+                  <p className="w-1/4">{history.type}</p>
                 </div>
               ))}
             </div>

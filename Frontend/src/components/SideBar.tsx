@@ -59,10 +59,17 @@ export default function SideBar(): ReactElement {
           src="/sidebar/logout.png"
         />
         <a href="/user/profile">
-          <img
-            className="bg-white h-8 w-8 rounded-full mt-10"
-            src={user.profileImage ? `${url}/profile/${user.profileImage}` : '/user.png'}
-          />
+        <img
+          className="bg-white h-8 w-8 rounded-full mt-10"
+          src={
+            user.profileImage?.includes('http')
+              ? user.profileImage
+              : (user.profileImage
+                ? `${url}/profile/${user.profileImage}`
+                : '/user.png'
+              )
+              } 
+        />
         </a>
       </nav>
       <Outlet />

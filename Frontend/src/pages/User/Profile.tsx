@@ -150,10 +150,13 @@ export default function Profile(): ReactElement {
         <img
           ref={imageRef}
           src={
-            user?.profileImage
-              ? `${url}/profile/${user.profileImage}`
-              : 'user.png'
-          }
+            user.profileImage?.includes('http')
+              ? user.profileImage
+              : (user.profileImage
+                ? `${url}/profile/${user.profileImage}`
+                : '/user.png'
+              )
+              } 
           className="h-48 w-48 rounded-full mt-4 border-4 border-gray-300 cursor-pointer transition-transform hover:scale-105"
           onClick={imageHandler}
           alt="Profile"
