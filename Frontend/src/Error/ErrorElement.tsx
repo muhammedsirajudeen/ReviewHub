@@ -4,21 +4,30 @@ import Navbar from '../components/SideBar';
 
 export default function ErrorElement(): ReactElement {
   const error = useRouteError() as ErrorResponse;
-  console.log(error);
+
   return (
     <>
       <Navbar />
-      <div className="flex ml-36 items-center justify-center flex-col">
-        <h1 className="w-full text-center text-3xl mt-10 font-bold">
-          APPLICATION ERROR
-        </h1>
-        <img className="mt-20 scale-150" src="/error/error.gif" />
-        <p className="text-3xl ml-36 font-bold mt-10">{error.status}</p>
-        <p className="text-sm font-light mt-5">{error.statusText}</p>
-        <p className="text-xs font-normal mt-5">{error.data}</p>
-        {/* {error.data} */}
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
+        {/* <h1 className="text-4xl font-bold text-center text-red-600 mt-10">
+          Application Error
+        </h1> */}
+        <img
+          className="mt-10 w-96 h-96 rounded-xl object-cover"
+          src="/error/error.jpg"
+          alt="Error illustration"
+        />
+        <div className="mt-6 bg-white shadow-lg rounded-lg p-6 text-center w-full max-w-md">
+          <p className="text-5xl font-extrabold text-gray-800">{error.status}</p>
+          <p className="text-lg font-semibold text-gray-600 mt-2">{error.statusText}</p>
+          {error.data && (
+            <p className="text-sm text-gray-500 mt-4">{error.data}</p>
+          )}
+        </div>
+        <p className="text-sm font-light text-gray-500 mt-5">
+          Something went wrong. Please try again later.
+        </p>
       </div>
-      {/* {error.status} */}
     </>
   );
 }

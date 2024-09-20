@@ -2,6 +2,7 @@ import { ReactElement } from "react";
 import { Outlet,  useNavigate } from "react-router";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { clearAuthenticated, setUser } from "../store/globalSlice";
+import url from "../helper/backendUrl";
 export default function SideBar(): ReactElement {
   // const authenticated = useAppSelector((state) => state.global.authenticated);
   const user = useAppSelector((state) => state.global.user);
@@ -60,7 +61,7 @@ export default function SideBar(): ReactElement {
         <a href="/user/profile">
           <img
             className="bg-white h-8 w-8 rounded-full mt-10"
-            src={user.profileImage ?? '/user.png'}
+            src={user.profileImage ? `${url}/profile/${user.profileImage}` : '/user.png'}
           />
         </a>
       </nav>

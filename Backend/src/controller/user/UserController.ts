@@ -14,7 +14,7 @@ const UserUpdate = async (req: Request, res: Response) => {
     const checkUser = await User.findOne({ email });
     let filename;
     if (req.file?.filename) {
-      filename = backendUrl + req.file.filename;
+      filename = req.file.filename;
     } else if (checkUser?.profileImage) {
       filename = checkUser.profileImage;
     }

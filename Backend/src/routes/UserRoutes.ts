@@ -10,7 +10,7 @@ import RoadmapController from '../controller/user/RoadmapController';
 import ResourceController from '../controller/user/ResourceController';
 import EnrollmentController from '../controller/user/EnrollmentController';
 import QuizCheckerController from '../controller/user/quiz/QuizCheckerController';
-
+import PaymentController from '../controller/user/payment/PaymentController';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -67,6 +67,13 @@ router.post(
   '/quiz/check/:quizId',
   passport.authenticate('jwt',{session:false}),
   QuizCheckerController.QuizChecker
+)
+
+//payment handlers
+router.post(
+  '/payment/order',
+  passport.authenticate('jwt',{session:false}),
+  PaymentController.OrderCreator
 )
 
 export default router;

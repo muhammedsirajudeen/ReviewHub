@@ -1,13 +1,27 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+interface HistoryProps {
+  paymentDate: string;
+  type: string;
+  amount: number;
+}
+
+interface walletProps {
+  userId?: string;
+  redeemable?: number;
+  balance?: number;
+  history?: HistoryProps[];
+}
 interface userProps {
   email?: string;
   password?: string;
   profileImage?: string;
   _id?: string;
-  address?: string;
-  phone?: string;
   authorization?: string;
+  address?:string,
+  phone?:string,
+  walletId?:walletProps;
+
 }
 
 export interface GlobalState {
@@ -32,6 +46,7 @@ export const globalSlice = createSlice({
     },
     clearAuthenticated: (state) => {
       state.authenticated = false;
+      state.user={}
     },
     setUser: (state, action: PayloadAction<userProps>) => {
       state.user = action.payload;

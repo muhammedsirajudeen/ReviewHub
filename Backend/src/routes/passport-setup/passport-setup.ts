@@ -17,7 +17,7 @@ passport.use(
   new JwtStrategy(options, async (jwtPayload, done) => {
     try {
       // Find the user specified in the token
-      const user = await User.findById(jwtPayload.id);
+      const user = await User.findById(jwtPayload.id).populate('walletId').select('-password');
       if (user) {
         // If user exists, pass user to `req.user`
         done(null, user);

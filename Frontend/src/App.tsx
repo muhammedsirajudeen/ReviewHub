@@ -29,6 +29,7 @@ import Course from './pages/User/Course';
 import Roadmap from './pages/User/Roadmap';
 import Profile from './pages/User/Profile';
 import Resource from './pages/User/Resource';
+import Wallet from './pages/User/Wallet';
 const router = createBrowserRouter([
   //authentication routes
   {
@@ -127,6 +128,11 @@ const router = createBrowserRouter([
         element: <UserPrivateRoute Component={Resource} />,
         loader: tokenVerifier,
       },
+      {
+        path:'/user/wallet',
+        element:<UserPrivateRoute Component={Wallet}/>,
+        loader:tokenVerifier
+      }
     ],
   },
 ]);
