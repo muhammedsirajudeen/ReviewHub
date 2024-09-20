@@ -76,4 +76,10 @@ router.post(
   PaymentController.OrderCreator
 )
 
+router.post(
+  '/payment/order/verify',
+  passport.authenticate('jwt',{session:false}),
+  PaymentController.OrderVerifier
+)
+
 export default router;

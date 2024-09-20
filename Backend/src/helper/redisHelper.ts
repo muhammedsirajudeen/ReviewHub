@@ -13,3 +13,32 @@ export async function addMessageToQueue(queueName: string, message: string) {
     client.disconnect();
   }
 }
+
+export async function addValueToCache(value:string){
+  const client=createClient()
+  try{
+    await client.connect()
+    await client.set(value,1)
+    console.log('Order Id added to cache:', value);
+
+  }catch(error){
+    console.log("error occured while adding to cache")
+  }finally{
+    client.disconnect()
+  }
+}
+
+export async function getValueFromCache(value:string):Promise<string>{
+  const client=createClient()
+  try{
+    await client.connect()
+    const cacheValue=await client.get(value)
+    if(cacheValue) return cacheValue
+    return ""
+  }catch(error){
+    console.log(error)
+    return ""
+  }finally{
+    client.disconnect()
+  }
+}

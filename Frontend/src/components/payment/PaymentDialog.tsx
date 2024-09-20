@@ -1,0 +1,182 @@
+import { ReactElement, Ref, useState } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import url from '../../helper/backendUrl';
+import { toast, ToastContainer } from 'react-toastify';
+import axios from 'axios';
+import { ClipLoader } from 'react-spinners';
+import useRazorpay from 'react-razorpay';
+import { useAppSelector } from '../../store/hooks';
+
+type Inputs = {
+  amount: string;
+};
+
+interface orderProps {
+  id: string;
+  amount: string;
+}
+
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+export default function PaymentDialog({
+  dialogRef,
+  closeHandler,
+}: {
+  dialogRef: Ref<HTMLDialogElement>;
+  closeHandler: VoidFunction;
+}): ReactElement {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [Razorpay] = useRazorpay();
+  const user = useAppSelector((state) => state.global.user);
+  const toastHandler=()=>{
+    toast("added successfully")
+  }
+  const handlePayment = async (order: orderProps) => {
+    try {
+      const RAZORPAY_KEY_ID = 'rzp_test_wOLYOIp9WVnFFr';
+      const options = {
+        key: RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: 'INR',
+        name: 'Your Company Name',
+        description: 'Payment for your order',
+        order_id: order.id,
+        handler: async (response: RazorpayResponse) => {
+          try {
+            await axios.post(
+              'http://localhost:3000/user/payment/order/verify',
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${window.localStorage.getItem(
+                    'token'
+                  )}`,
+                },
+              }
+            );
+            toastHandler()
+            
+            // window.location.reload();
+          } catch (err) {
+            toast('Payment failed: ' + err);
+          }
+        },
+        prefill: {
+          name: user.email,
+          email: user.email,
+          contact: user.phone,
+        },
+        notes: {
+          address: 'Razorpay Corporate Office',
+        },
+        theme: {
+          color: '#001C27',
+        },
+      };
+      const rzpay = new Razorpay(options);
+      rzpay.open();
+    } catch (err) {
+      toast('Error creating order: ' + err);
+    }
+  };
+
+  const createOrder = async (amount: string): Promise<orderProps | null> => {
+    try {
+      const response = (
+        await axios.post(
+          `${url}/user/payment/order`,
+          { amount: (parseInt(amount) * 100).toString() },
+          {
+            headers: {
+              Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+            },
+          }
+        )
+      ).data;
+      return response.message === 'success' ? response.order : null;
+    } catch (error) {
+      console.log(error);
+      toast('Error creating order: ' + error);
+      return null;
+    }
+  };
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    setLoading(true);
+    const response = await createOrder(data.amount);
+    if (response) {
+      handlePayment(response);
+      closeHandler();
+    } else {
+      toast('Please try again');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <>
+      <dialog
+        className="h-96 w-96 bg-white shadow-lg rounded-lg p-6 flex flex-col"
+        ref={dialogRef}
+      >
+        <button
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 transition-colors"
+          onClick={closeHandler}
+        >
+          <span className="material-icons">close</span>
+        </button>
+        <h2 className="text-xl font-bold mb-4 text-center">Payment Amount</h2>
+        <form
+          className="flex flex-col justify-center h-full w-full"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <input
+            type="number"
+            className={`border rounded-md p-3 w-full mb-3 transition-colors duration-200 ${
+              errors.amount ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter amount (INR)"
+            {...register('amount', {
+              required: { value: true, message: 'Please enter the amount' },
+              min: { value: 10, message: 'Minimum amount is 10' },
+              validate: (value: string) =>
+                value.trim() === '' ? 'Please enter a valid amount' : true,
+            })}
+          />
+          {errors.amount && (
+            <span className="text-xs text-red-500 mb-2">
+              {errors.amount.message}
+            </span>
+          )}
+          <ClipLoader loading={loading} />
+          <button
+            type="submit"
+            className="mt-4 bg-blue-500 text-white font-semibold rounded-md py-2 transition-colors duration-200 hover:bg-blue-600"
+          >
+            {loading ? 'Processing...' : 'Top Up'}
+          </button>
+        </form>
+      </dialog>
+      <ToastContainer
+        style={{
+          backgroundColor: 'gray',
+          color: 'white',
+          borderRadius: '10px',
+        }}
+      />
+    </>
+  );
+}

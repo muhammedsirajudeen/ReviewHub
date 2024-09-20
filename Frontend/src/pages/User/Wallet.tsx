@@ -1,23 +1,17 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { useAppSelector } from '../../store/hooks';
 import {  ToastContainer } from 'react-toastify';
-import PaymentButton from '../../components/payment/RazorpayComponent';
+import PaymentDialog from '../../components/payment/PaymentDialog';
+import { flushSync } from 'react-dom';
+// import PaymentButton from '../../components/payment/RazorpayComponent';
 
 
 
 export default function Wallet(): ReactElement {
   const [active, setActive] = useState<string>('All');
   const user = useAppSelector((state) => state.global.user);
- 
-
-  const handlePayment = async ()=>{
-
-    };
-
-  
-    //create this order
-  
-
+  const paymentdialogRef=useRef<HTMLDialogElement>(null)
+  const [payment,setPayment]=useState<boolean>(false)
   useEffect(() => {
     setActive('All');
   }, []);
@@ -25,14 +19,19 @@ export default function Wallet(): ReactElement {
   const activeHandler = (section: string) => {
     setActive(section);
   };
-  const topupHandler = () => {
-        handlePayment();    
-  };
+  const topupHandler=()=>{
+    flushSync(()=>setPayment(true))
+    paymentdialogRef.current?.showModal()
+  }
+  const closeHandler=()=>{
+    setPayment(false)
+    paymentdialogRef.current?.close()
+  }
 
   return (
     <>
       <div className="flex flex-col items-center justify-center ml-36 mb-10 relative">
-        <div className="h-64 w-80 shadow-xl rounded-lg transition-transform transform hover:scale-105 flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 cursor-pointer absolute right-0 mr-10 top-20">
+        <div className="h-64 w-80 shadow-xl rounded-lg transition-transform transform hover:scale-105 flex flex-col items-center justify-center bg-gradient-to-r from-green-500 to-green-600 text-white p-6 cursor-pointer absolute right-0 mr-10 top-20">
           <div className="text-center text-xs font-bold mb-3">
             <span className="font-bold text-4xl">
               {new Date().getDate()}
@@ -54,8 +53,14 @@ export default function Wallet(): ReactElement {
             </p>
           </div>
           <div className="flex items-center w-full justify-between mt-4">
-             <PaymentButton/>
-
+             {/* <PaymentButton/> */}
+             <button
+                onClick={topupHandler}
+                className="flex flex-col items-center justify-center font-bold bg-white text-blue-600 py-2 px-4 rounded shadow hover:bg-gray-200 transition"
+            >
+            <img src="/wallet/topup.png" className="h-8 w-8" alt="Top Up" />
+            <p className="text-xs font-semibold mt-1">Top Up</p>
+            </button>
             <button className="flex flex-col items-center justify-center font-bold bg-white text-blue-600 py-2 px-4 rounded shadow hover:bg-gray-200 transition">
               <img
                 src="/wallet/withdraw.png"
@@ -117,7 +122,12 @@ export default function Wallet(): ReactElement {
           color: 'white',
           borderRadius: '10px',
         }}
-      />{' '}
+      />
+      {
+        payment && (
+            <PaymentDialog dialogRef={paymentdialogRef}  closeHandler={closeHandler}/>
+        )
+      }
     </>
   );
 }
