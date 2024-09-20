@@ -24,19 +24,25 @@ export default function Forgot(): ReactElement {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const email = window.localStorage.getItem("email");
-    const response = (await axios.post(
-      `${url}/auth/password?id=${searchParams.get("token")}`,
-      {
-        password: data.password,
-        email: email,
+    try{
+      const response = (await axios.post(
+        `${url}/auth/password?id=${searchParams.get("token")}`,
+        {
+          password: data.password,
+          email: email,
+        }
+      )).data;
+  
+      if (response.message === "success") {
+        toast("Password Changed Successfully");
+        
+        setTimeout(() => navigate('/signin'), 1000);
+      } else {
+        toast(response.message);
       }
-    )).data;
-
-    if (response.message === "success") {
-      toast("Password Changed Successfully");
-      setTimeout(() => navigate('/signin'), 1000);
-    } else {
-      toast(response.message);
+    }catch(error){
+      console.log(error)
+      toast("error changing password")
     }
   };
 

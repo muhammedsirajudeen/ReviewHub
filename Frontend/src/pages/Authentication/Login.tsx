@@ -7,7 +7,7 @@ import {
 } from "@react-oauth/google";
 import axios from "axios";
 // import { useLoaderData, useNavigate } from "react-router";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from 'react-toastify';
 import { useAppDispatch } from "../../store/hooks";
 import { setAuthenticated, setUser } from "../../store/globalSlice";
 import { tokenVerifier } from "../../helper/tokenVerifier";
@@ -221,7 +221,14 @@ export default function Login(): ReactElement {
           <OtpForm type={type} dialogRef={otpDialogRef} closeHandler={closeHandler} email={watch("email")}/>
         )
       }
-      <ToastContainer />
-    </>
+      <ToastContainer
+        style={{
+          backgroundColor: 'gray',
+          color: 'white',
+          borderRadius: '10px',
+        }}
+      />
+
+      </>
   );
 }

@@ -1,12 +1,12 @@
-import { ReactElement, useEffect, useRef, useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import { useLoaderData, useNavigate } from "react-router";
-import { toast, ToastContainer } from "react-toastify";
-import url from "../../helper/backendUrl";
-import OtpForm from "../../components/Form/Authentication/OtpForm";
-import { flushSync } from "react-dom";
+import { ReactElement, useEffect, useRef, useState } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { TokenResponse, useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+import { useLoaderData, useNavigate } from 'react-router';
+import { toast, ToastContainer } from 'react-toastify';
+import url from '../../helper/backendUrl';
+import OtpForm from '../../components/Form/Authentication/OtpForm';
+import { flushSync } from 'react-dom';
 interface FormValues {
   email: string;
   password: string;
@@ -21,67 +21,72 @@ export default function Signup(): ReactElement {
   const navigate = useNavigate();
   const data = useLoaderData();
   const [submit, setSubmit] = useState<boolean>(false);
-  const [otpdialog,setOtpdialog]=useState<boolean>(false)
-  const otpDialogRef=useRef<HTMLDialogElement>(null)
+  const [otpdialog, setOtpdialog] = useState<boolean>(false);
+  const otpDialogRef = useRef<HTMLDialogElement>(null);
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-
     // Handle form submission
     setSubmit(true);
-    const response = await axios.post(url + "/auth/credential/signup", {
+    const response = await axios.post(url + '/auth/credential/signup', {
       email: data.email,
       password: data.password,
     });
-    if (response.data.message === "success") {
-
-      flushSync(()=>{
-        toast("user created successfully");
-        setOtpdialog(true)
-      })
-      otpDialogRef.current?.showModal()
+    if (response.data.message === 'success') {
+      flushSync(() => {
+        toast('user created successfully');
+        setOtpdialog(true);
+      });
+      otpDialogRef.current?.showModal();
       // setTimeout(() => navigate("/signin"), 1000);
     } else {
-      console.log(response)
+      console.log(response);
       toast(response.data.message);
     }
     setSubmit(false);
   };
-  const closeHandler=()=>{
-    otpDialogRef.current?.close()
-    setOtpdialog(false)
-  }
+  const closeHandler = () => {
+    otpDialogRef.current?.close();
+    setOtpdialog(false);
+  };
 
   useEffect(() => {
     if (data) {
-      navigate("/dashboard");
+      navigate('/dashboard');
     }
   }, [navigate, data]);
   const googleHandler = useGoogleLogin({
     onSuccess: async (codeResponse: TokenResponse) => {
       console.log(codeResponse);
-      const response = await axios.post(url + "/auth/google/signup", {
+      const response = await axios.post(url + '/auth/google/signup', {
         userToken: codeResponse.access_token,
       });
       console.log(response);
-      if (response.status === 201 && response.data.message === "success") {
-        toast("success")
-        setTimeout(() => navigate("/signin"), 1000);
+      if (response.status === 201 && response.data.message === 'success') {
+        toast('success');
+        setTimeout(() => navigate('/signin'), 1000);
       } else {
         toast(response.data.message);
       }
     },
     onError: (error) => console.log(error),
   });
-
+  
   return (
     <>
       <div className="flex items-center justify-center">
-        <img src="login/signupperson.png" className="absolute -z-10 right-96"/>
+      <ToastContainer
+        style={{
+          backgroundColor: 'gray',
+          color: 'white',
+          borderRadius: '10px',
+        }}
+      />
+        <img src="login/signupperson.png" className="absolute -z-10 right-96" />
 
         <div className="h-auto flex flex-col items-center justify-start w-96 shadow-2xl mt-40 rounded-xl p-10">
           <p className="text-2xl text-gray-black font-bold mt-10">ReviewHub.</p>
           <p className="text-xs text-gray-500 mt-4">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          </p>{" "}
+          </p>{' '}
           <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
             <label htmlFor="email" className="text-xs mt-5">
               Email
@@ -91,10 +96,12 @@ export default function Signup(): ReactElement {
               type="email"
               className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
               placeholder="enter the email address"
-              {...register("email", { required: "Email is required" })}
+              {...register('email', { required: 'Email is required' })}
             />
             {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {errors.email.message}
+              </p>
             )}
 
             <label htmlFor="password" className="text-xs mt-5">
@@ -105,11 +112,11 @@ export default function Signup(): ReactElement {
               type="password"
               className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
               placeholder="enter the password"
-              {...register("password", {
-                required: "Password is required",
+              {...register('password', {
+                required: 'Password is required',
                 minLength: {
                   value: 8,
-                  message: "Password must be atleast 8 characters Long",
+                  message: 'Password must be atleast 8 characters Long',
                 },
               })}
             />
@@ -136,13 +143,14 @@ export default function Signup(): ReactElement {
           </form>
         </div>
       </div>
-        {
-          otpdialog && 
-          (
-            <OtpForm type="" email={watch("email")} closeHandler={closeHandler} dialogRef={otpDialogRef}/> 
-          )
-        }
-        <ToastContainer />
+      {otpdialog && (
+        <OtpForm
+          type=""
+          email={watch('email')}
+          closeHandler={closeHandler}
+          dialogRef={otpDialogRef}
+        />
+      )}
     </>
   );
 }

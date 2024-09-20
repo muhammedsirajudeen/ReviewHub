@@ -149,31 +149,27 @@ const CredentialForgot=async (req:Request,res:Response)=>{
 
 }
 
-const CredentialPasswordChange=async (req:Request,res:Response)=>{
-  let {password,email}=req.body
-  let {id}=req.query
-  let uuid=UuidMapping.get(email)
-  console.log(UuidMapping,email)
-  console.log(id,uuid)
-  try{
-    if(id===uuid){
-      let updateUser=await User.findOne({email:email})
-      if(updateUser){
-
-        updateUser.password=await hashPassword(password)
-        await updateUser.save()
-        res.status(200).json({message:"success"})
-      }else{
-        res.status(401).json({message:"unauthorized"})
+const CredentialPasswordChange = async (req: Request, res: Response) => {
+  let { password, email } = req.body;
+  try {
+    let updateUser = await User.findOne({ email: email });
+    const verifiedStatus=await getValueFromCache(email)
+    if(verifiedStatus==="1"){      
+      if (updateUser) {
+        updateUser.password = await hashPassword(password);
+        await updateUser.save();
+        addValueToCache(email,0,3600)
+        res.status(200).json({ message: 'success' });
+      } else {
+        res.status(401).json({ message: 'unauthorized' });
       }
     }else{
-      res.json({message:"invalid"})
+      res.status(401).json({message:"unauthorized"})
     }
-  }catch(error){
-    res.status(500).json({message:"server error occured"})
+  } catch (error) {
+    res.status(500).json({ message: 'server error occured' });
   }
-
-}
+};
 
 const OtpResend=async (req:Request,res:Response)=>{
   try{
@@ -209,6 +205,8 @@ const OtpVerifier=async (req:Request,res:Response)=>{
             verified:true
           }
         )
+        //1 is like a flag for verified
+        addValueToCache(email,1,3600)
         res.status(200).json({message:"success"})
       }else{
         res.status(401).json({message:"unauthorized"})

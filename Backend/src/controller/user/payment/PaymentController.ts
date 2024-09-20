@@ -96,6 +96,7 @@ const OrderVerifier = async (req: Request, res: Response) => {
       res.status(400).json({ message: 'request malformed' });
       return;
     }
+    console.log(updatePayment,userWallet)
     if (updatePayment && userWallet) {
       updatePayment.status = true;
       await updatePayment.save();
