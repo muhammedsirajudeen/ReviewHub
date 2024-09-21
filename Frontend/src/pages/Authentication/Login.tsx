@@ -1,26 +1,26 @@
-import { ReactElement, useRef, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { ReactElement, useEffect, useRef, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   TokenResponse,
   useGoogleLogin,
   UseGoogleLoginOptionsImplicitFlow,
-} from "@react-oauth/google";
-import axios from "axios";
+} from '@react-oauth/google';
+import axios from 'axios';
 // import { useLoaderData, useNavigate } from "react-router";
 import { ToastContainer, toast } from 'react-toastify';
-import { useAppDispatch } from "../../store/hooks";
-import { setAuthenticated, setUser } from "../../store/globalSlice";
-import { tokenVerifier } from "../../helper/tokenVerifier";
+import { useAppDispatch } from '../../store/hooks';
+import { setAuthenticated, setUser } from '../../store/globalSlice';
+import { tokenVerifier } from '../../helper/tokenVerifier';
 // import userProps from "../../types/userProps";
-import { ClipLoader } from "react-spinners";
-import { useNavigate } from "react-router";
-import { flushSync } from "react-dom";
-import OtpForm from "../../components/Form/Authentication/OtpForm";
+import { ClipLoader } from 'react-spinners';
+import { useLocation, useNavigate } from 'react-router';
+import { flushSync } from 'react-dom';
+import OtpForm from '../../components/Form/Authentication/OtpForm';
+import url from '../../helper/backendUrl';
 interface FormValues {
   email: string;
   password: string;
 }
-const url = "http://localhost:3000";
 export default function Login(): ReactElement {
   const {
     register,
@@ -30,29 +30,37 @@ export default function Login(): ReactElement {
   } = useForm<FormValues>();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [otpdialog,setOtpdialog]=useState<boolean>(false)
-  const otpDialogRef=useRef<HTMLDialogElement>(null)
+  const [otpdialog, setOtpdialog] = useState<boolean>(false);
+  const otpDialogRef = useRef<HTMLDialogElement>(null);
   const [submit, setSubmit] = useState<boolean>(false);
-  const [loading,setLoading]=useState<boolean>(false);
-  const [type,setType]=useState<string>("")
-
+  const [loading, setLoading] = useState<boolean>(false);
+  const [type, setType] = useState<string>('');
+  const location = useLocation();
+  const roleRef = useRef<string | null>(null);
+  useEffect(()=>{
+    roleRef.current=location.state ? location.state.role : null
+  },[location.state, roleRef])
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setSubmit(true);
-    const response = await axios.post(url + "/auth/credential/signin", {
+    const response = await axios.post(url + '/auth/credential/signin', {
       email: data.email,
       password: data.password,
+      role:roleRef.current
     });
-    if (response.data.message === "success") {
-      toast("signed in successfully");
+    if (response.data.message === 'success') {
+      toast('signed in successfully');
       dispatch(setAuthenticated());
 
-      window.localStorage.setItem("token", response.data.token);
+      window.localStorage.setItem('token', response.data.token);
       const user = await tokenVerifier();
-      console.log("the user is", user);
+      console.log('the user is', user);
       if (user) dispatch(setUser(user));
-
-      setTimeout(() => navigate("/user/dashboard"), 1000);
+      if (roleRef.current === 'reviewer') {
+        setTimeout(() => navigate('/reviewer/approval'), 1000);
+        return;
+      }
+      setTimeout(() => navigate('/user/dashboard'), 1000);
     } else {
       toast(response.data.message);
     }
@@ -61,67 +69,67 @@ export default function Login(): ReactElement {
   const googleHandler = useGoogleLogin({
     onSuccess: async (codeResponse: TokenResponse) => {
       console.log(codeResponse);
-      const response = await axios.post(url + "/auth/google/login", {
+      const response = await axios.post(url + '/auth/google/login', {
         userToken: codeResponse.access_token,
+        role:roleRef.current
       });
       console.log(response);
-      if (response.status === 200 && response.data.message === "success") {
-        window.localStorage.setItem("token", response.data.token);
+      if (response.status === 200 && response.data.message === 'success') {
+        window.localStorage.setItem('token', response.data.token);
         dispatch(setAuthenticated());
         const user = await tokenVerifier();
-
         if (user) dispatch(setUser(user));
+
         if (response.data.admin) {
-          navigate("/admin/dashboard");
+          navigate('/admin/dashboard');
           return;
         }
-        navigate("/user/dashboard");
+        navigate('/user/dashboard');
       } else {
         toast(response.data.message);
       }
     },
     onError: (error) => console.log(error),
     // ux_mode:'redirect',
-    prompt: "select_account",
+    prompt: 'select_account',
   } as UseGoogleLoginOptionsImplicitFlow);
 
   async function forgotHandler() {
-    setLoading(true)
-    const email = watch("email");
+    setLoading(true);
+    const email = watch('email');
     if (!email) {
-      toast("enter an email first");
+      toast('enter an email first');
     } else {
-      try{
+      try {
         const response = (
-          await axios.post(url + "/auth/resend", {
+          await axios.post(url + '/auth/resend', {
             email: email,
           })
         ).data;
-        if (response.message === "success") {
-          window.localStorage.setItem("email",email)
-          toast("check your email");
-          setTimeout(()=>{
-            flushSync(()=>{
-              setType("forgot")
-              setOtpdialog(true)
-            })
-            otpDialogRef.current?.showModal()
-          },1000)
+        if (response.message === 'success') {
+          window.localStorage.setItem('email', email);
+          toast('check your email');
+          setTimeout(() => {
+            flushSync(() => {
+              setType('forgot');
+              setOtpdialog(true);
+            });
+            otpDialogRef.current?.showModal();
+          }, 1000);
         } else {
           toast(response.message);
         }
-
-      }catch(error){
-        console.log(error)
-        setLoading(false)
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
       }
     }
-    setLoading(false)
+    setLoading(false);
   }
-  const closeHandler=()=>{
-    setOtpdialog(false)
-    otpDialogRef.current?.close()
-  }
+  const closeHandler = () => {
+    setOtpdialog(false);
+    otpDialogRef.current?.close();
+  };
   return (
     <>
       <img src="login/loginperson.png" className="absolute left-96 -z-10" />
@@ -140,11 +148,11 @@ export default function Login(): ReactElement {
               type="email"
               className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
               placeholder="enter the email address"
-              {...register("email", {
-                required: "Email is required",
+              {...register('email', {
+                required: 'Email is required',
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Invalid email address",
+                  message: 'Invalid email address',
                 },
               })}
             />
@@ -161,11 +169,11 @@ export default function Login(): ReactElement {
               type="password"
               className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
               placeholder="enter the password"
-              {...register("password", {
-                required: "Password is required",
+              {...register('password', {
+                required: 'Password is required',
                 minLength: {
                   value: 8,
-                  message: "Password must be atleast 8 characters Long",
+                  message: 'Password must be atleast 8 characters Long',
                 },
               })}
             />
@@ -183,7 +191,7 @@ export default function Login(): ReactElement {
             </button>
             <div className="flex items-center justify-center">
               <ClipLoader
-                color={"black"}
+                color={'black'}
                 loading={loading}
                 // cssOverride={override}
                 size={10}
@@ -215,12 +223,15 @@ export default function Login(): ReactElement {
           </form>
         </div>
       </div>
-      {
-        otpdialog && 
-        (
-          <OtpForm type={type} dialogRef={otpDialogRef} closeHandler={closeHandler} email={watch("email")}/>
-        )
-      }
+      {otpdialog && (
+        <OtpForm
+          role={roleRef.current}
+          type={type}
+          dialogRef={otpDialogRef}
+          closeHandler={closeHandler}
+          email={watch('email')}
+        />
+      )}
       <ToastContainer
         style={{
           backgroundColor: 'gray',
@@ -228,7 +239,6 @@ export default function Login(): ReactElement {
           borderRadius: '10px',
         }}
       />
-
-      </>
+    </>
   );
 }

@@ -83,6 +83,7 @@ const OrderVerifier = async (req: Request, res: Response) => {
     const userWallet = await Wallet.findOne({
       userId: new mongoose.Types.ObjectId(user.id as string),
     });
+    
 
     const verifiedStatus = verifyPayment(
       updatePayment?.orderId as string,
@@ -96,7 +97,6 @@ const OrderVerifier = async (req: Request, res: Response) => {
       res.status(400).json({ message: 'request malformed' });
       return;
     }
-    console.log(updatePayment,userWallet)
     if (updatePayment && userWallet) {
       updatePayment.status = true;
       await updatePayment.save();

@@ -30,6 +30,7 @@ import Roadmap from './pages/User/Roadmap';
 import Profile from './pages/User/Profile';
 import Resource from './pages/User/Resource';
 import Wallet from './pages/User/Wallet';
+import Approval from './pages/Reviewer/Approval';
 const router = createBrowserRouter([
   //authentication routes
   {
@@ -38,7 +39,6 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        // element:<Home/>,
         element: <AuthPrivateRoute Component={Home} />,
         loader: tokenVerifier,
       },
@@ -135,6 +135,21 @@ const router = createBrowserRouter([
       }
     ],
   },
+  {
+    path:'/reviewer',
+    element: <UserPrivateRoute Component={SideBar} />,
+    loader: tokenVerifier, // Use loader for asynchronous data fetching
+    errorElement: <ErrorElement />,
+    children:[
+      {
+        path:'/reviewer/approval',
+        element:<UserPrivateRoute Component={Approval}/>,
+        loader:tokenVerifier,
+      }
+    ]
+
+
+  }
 ]);
 
 const App: React.FC = () => {

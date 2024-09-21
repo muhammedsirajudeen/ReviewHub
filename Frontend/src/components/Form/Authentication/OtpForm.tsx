@@ -14,11 +14,13 @@ export default function OtpForm({
   closeHandler,
   email,
   type,
+  role,
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   email: string;
   type: string | undefined;
+  role: string | null;
 }): ReactElement {
   const {
     register,
@@ -57,6 +59,13 @@ export default function OtpForm({
           setTimeout(() => navigate('/forgot'), 1000);
           return;
         }
+        if (role) {
+          setTimeout(
+            () => navigate('/signin', { state: { role: 'reviewer' } }),
+            1000
+          );
+          return;
+        }
         setTimeout(() => navigate('/signin'), 1000);
       } else {
         toast(response.message);
@@ -87,7 +96,6 @@ export default function OtpForm({
         className="h-96 w-96 p-6 flex flex-col items-center"
         ref={dialogRef}
       >
-
         <button className="self-end" onClick={closeHandler}>
           x
         </button>

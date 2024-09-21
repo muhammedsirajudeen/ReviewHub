@@ -2,7 +2,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { TokenResponse, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import { useLoaderData, useNavigate } from 'react-router';
+import { useLoaderData, useLocation, useNavigate } from 'react-router';
 import { toast, ToastContainer } from 'react-toastify';
 import url from '../../helper/backendUrl';
 import OtpForm from '../../components/Form/Authentication/OtpForm';
@@ -23,6 +23,8 @@ export default function Signup(): ReactElement {
   const [submit, setSubmit] = useState<boolean>(false);
   const [otpdialog, setOtpdialog] = useState<boolean>(false);
   const otpDialogRef = useRef<HTMLDialogElement>(null);
+  const location=useLocation()
+  const roleRef=useRef<string | null>(location.state ? location.state.role : null)
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     // Handle form submission
     setSubmit(true);
@@ -62,6 +64,9 @@ export default function Signup(): ReactElement {
       console.log(response);
       if (response.status === 201 && response.data.message === 'success') {
         toast('success');
+        if(roleRef.current==="reviewer"){
+          setTimeout(()=>navigate('/signin',{state:{role:"reviewer"}}))
+        }
         setTimeout(() => navigate('/signin'), 1000);
       } else {
         toast(response.data.message);
@@ -146,6 +151,7 @@ export default function Signup(): ReactElement {
       {otpdialog && (
         <OtpForm
           type=""
+          role={roleRef.current}
           email={watch('email')}
           closeHandler={closeHandler}
           dialogRef={otpDialogRef}

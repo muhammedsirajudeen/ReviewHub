@@ -1,4 +1,5 @@
 import { ReactElement } from "react";
+import { Link } from "react-router-dom";
 
 
 export default function Home(): ReactElement {
@@ -22,9 +23,9 @@ export default function Home(): ReactElement {
           <button className="bg-navbar text-white text-xs p-2 mt-10">
             Signin
           </button>
-          <a href="/login" className="text-green-500 mt-4">
+          <Link to="/signup" state={{role:"reviewer"}} className="text-green-500 mt-4">
             Become A Reviewer
-          </a>
+          </Link>
         </div>
         <div className="flex w-1/2 items-center mr-20 justify-center">
           <img src="/home/illustration.png" />
