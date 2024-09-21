@@ -10,6 +10,10 @@ import './passport-setup/passport-setup';
 import UploadHandler from '../helper/fileuploadHelper';
 import ReviewerController from '../controller/reviewer/ReviewerController';
 
+router.get('/approval',
+    passport.authenticate('jwt',{session:false}),
+    ReviewerController.ApprovalStatus
+)
 
 router.post(
     '/approval',
