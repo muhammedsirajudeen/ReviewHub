@@ -4,7 +4,6 @@ import userProps from "../types/userProps";
 
 export default function AuthPrivateRoute({Component}:{Component:ComponentType}):ReactElement{
     const user=useLoaderData() as userProps
-    // console.log(user)
     if(Object.keys(user ?? {}).length!=0){
         if(user.authorization==="admin"){
             return <Navigate to="/admin/dashboard"/>
