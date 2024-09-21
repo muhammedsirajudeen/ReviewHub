@@ -7,7 +7,9 @@ import cors from "cors";
 import AuthRoute from "../src/routes/AuthRoutes";
 import UserRoutes from "./routes/UserRoutes"
 import AdminRoutes from "./routes/AdminRoutes"
+import ReviewerRoutes from "./routes/ReviewerRoutes"
 import ErrorController from "./controller/ErrorController";
+
 import path from "path";
 import passport from "passport";
 import corsOptions from "./helper/corsOptions";
@@ -29,6 +31,7 @@ app.use(express.static(path.join(__dirname, './public')));
 app.use("/auth", AuthRoute);
 app.use("/user",UserRoutes)
 app.use("/admin",AdminRoutes)
+app.use("/reviewer",ReviewerRoutes)
 
 app.use(ErrorController);
 

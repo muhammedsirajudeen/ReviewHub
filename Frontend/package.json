@@ -24,7 +24,6 @@
     "check-password-strength": "^2.0.10",
     "material-design-icons": "^3.0.1",
     "passport-google-oauth2": "^0.2.0",
-    "pdf-viewer-reactjs": "^2.2.3",
     "postcss": "^8.4.47",
     "postcss-cli": "^11.0.0",
     "prop-types": "^15.8.1",
@@ -49,6 +48,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@types/pdf-viewer-reactjs": "^2.2.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/react-toggle": "^4.0.5",
