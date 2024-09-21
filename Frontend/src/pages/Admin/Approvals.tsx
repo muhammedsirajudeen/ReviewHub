@@ -103,7 +103,9 @@ export default function Approvals(): ReactElement {
                     </button>
                     <button
                       onClick={() => approveHandler(approval._id)}
-                      className={`${approval.approvalStatus ? "bg-red-500" : 'bg-green-500' } text-white py-1 px-3 rounded hover:bg-green-700 transition`}
+                      className={`${
+                        approval.approvalStatus ? 'bg-red-500' : 'bg-green-500'
+                      } text-white py-1 px-3 rounded hover:bg-green-700 transition`}
                     >
                       {approval.approvalStatus ? 'Unapprove' : 'Approve'}
                     </button>

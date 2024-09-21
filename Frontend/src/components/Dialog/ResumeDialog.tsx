@@ -13,7 +13,7 @@ export default function ResumeDialog({
 }): ReactElement {
   return (
     <dialog
-      style={{ height: "80vh", width: "60vw", borderRadius: "8px" }}
+      style={{ height: '80vh', width: '60vw', borderRadius: '8px' }}
       className="flex flex-col items-center justify-center p-4 shadow-lg"
       ref={dialogRef}
     >
@@ -26,7 +26,7 @@ export default function ResumeDialog({
       </button>
       <h1 className="text-lg font-bold mb-2">Comments:</h1>
       <p className="text-gray-700 mb-4">{approval?.comment}</p>
-      
+
       {approval?.resumeFile ? (
         <iframe
           src={`${url}/pdf/${approval.resumeFile}`}
@@ -35,8 +35,12 @@ export default function ResumeDialog({
           className="border rounded-lg shadow-md"
           style={{ flex: 1 }}
         >
-          This browser does not support PDFs. Please download the PDF to view it:
-          <a href={`${url}/pdf/${approval.resumeFile}`} className="text-blue-500 underline">
+          This browser does not support PDFs. Please download the PDF to view
+          it:
+          <a
+            href={`${url}/pdf/${approval.resumeFile}`}
+            className="text-blue-500 underline"
+          >
             Download PDF
           </a>
         </iframe>

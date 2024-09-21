@@ -33,9 +33,10 @@ import Wallet from './pages/User/Wallet';
 import Approval from './pages/Reviewer/Approval';
 import ReviewerPrivateRoute from './components/PrivateRoute/ReviewerPrivateRoute';
 
-import ReviewerDashboard from "./pages/Reviewer/Dashboard"
+import ReviewerDashboard from './pages/Reviewer/Dashboard';
 import User from './pages/Admin/User';
 import Approvals from './pages/Admin/Approvals';
+import Blog from './pages/User/Blog';
 const router = createBrowserRouter([
   //authentication routes
   {
@@ -99,15 +100,15 @@ const router = createBrowserRouter([
         loader: tokenVerifier,
       },
       {
-        path:'/admin/users',
-        element:<AdminPrivateRoute Component={User}/>,
-        loader:tokenVerifier
+        path: '/admin/users',
+        element: <AdminPrivateRoute Component={User} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/admin/approvals',
-        element:<AdminPrivateRoute Component={Approvals}/>,
-        loader:tokenVerifier
-      }
+        path: '/admin/approvals',
+        element: <AdminPrivateRoute Component={Approvals} />,
+        loader: tokenVerifier,
+      },
     ],
   },
   //user routes
@@ -144,32 +145,35 @@ const router = createBrowserRouter([
         loader: tokenVerifier,
       },
       {
-        path:'/user/wallet',
-        element:<UserPrivateRoute Component={Wallet}/>,
+        path: '/user/wallet',
+        element: <UserPrivateRoute Component={Wallet} />,
+        loader: tokenVerifier,
+      },
+      {
+        path:'/user/blog',
+        element:<UserPrivateRoute Component={Blog}/>,
         loader:tokenVerifier
       }
     ],
   },
   {
-    path:'/reviewer',
+    path: '/reviewer',
     element: <ReviewerPrivateRoute Component={SideBar} />,
     loader: tokenVerifier, // Use loader for asynchronous data fetching
     errorElement: <ErrorElement />,
-    children:[
+    children: [
       {
-        path:'/reviewer/dashboard',
-        element:<ReviewerPrivateRoute Component={ReviewerDashboard}/>,
-        loader:tokenVerifier
+        path: '/reviewer/dashboard',
+        element: <ReviewerPrivateRoute Component={ReviewerDashboard} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/reviewer/approval',
-        element:<ReviewerPrivateRoute Component={Approval}/>,
-        loader:tokenVerifier,
-      }
-    ]
-
-
-  }
+        path: '/reviewer/approval',
+        element: <ReviewerPrivateRoute Component={Approval} />,
+        loader: tokenVerifier,
+      },
+    ],
+  },
 ]);
 
 const App: React.FC = () => {

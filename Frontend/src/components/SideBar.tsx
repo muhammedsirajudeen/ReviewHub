@@ -1,20 +1,20 @@
-import { ReactElement } from "react";
-import { Outlet,  useNavigate } from "react-router";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { clearAuthenticated, setUser } from "../store/globalSlice";
-import url from "../helper/backendUrl";
+import { ReactElement } from 'react';
+import { Outlet, useNavigate } from 'react-router';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { clearAuthenticated, setUser } from '../store/globalSlice';
+import url from '../helper/backendUrl';
 export default function SideBar(): ReactElement {
   // const authenticated = useAppSelector((state) => state.global.authenticated);
   const user = useAppSelector((state) => state.global.user);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const page=useAppSelector((state)=>state.global.page)
+  const page = useAppSelector((state) => state.global.page);
   // const location = useLocation();
   const signoutHandler = () => {
     window.localStorage.clear();
     dispatch(clearAuthenticated());
     dispatch(setUser({}));
-    navigate("/");
+    navigate('/');
   };
   return (
     <>
@@ -25,7 +25,13 @@ export default function SideBar(): ReactElement {
             page === 'dashboard' ? 'bg-blue-400' : ''
           } flex items-center justify-centerreview p-6 rounded-lg mt-10`}
         >
-          <a href={`${user.authorization==="reviewer" ? "/reviewer/dashboard" : "/user/dashboard" } `}>
+          <a
+            href={`${
+              user.authorization === 'reviewer'
+                ? '/reviewer/dashboard'
+                : '/user/dashboard'
+            } `}
+          >
             <img src="/sidebar/dashboard.png" />
           </a>
         </div>
@@ -38,8 +44,12 @@ export default function SideBar(): ReactElement {
             <img src="/sidebar/courses.png" />
           </a>
         </div>
-        <div className="flex items-center justify-center mt-14">
-          <a href="/user/resources">
+        <div
+          className={`${
+            page === 'blog' ? 'bg-blue-400' : ''
+          } flex items-center justify-center mt-10 p-6 rounded-lg`}
+        >
+          <a href="/user/blog">
             <img src="/sidebar/resource.png" />
           </a>
         </div>
@@ -59,17 +69,16 @@ export default function SideBar(): ReactElement {
           src="/sidebar/logout.png"
         />
         <a href="/user/profile">
-        <img
-          className="bg-white h-8 w-8 rounded-full mt-10"
-          src={
-            user.profileImage?.includes('http')
-              ? user.profileImage
-              : (user.profileImage
+          <img
+            className="bg-white h-8 w-8 rounded-full mt-10"
+            src={
+              user.profileImage?.includes('http')
+                ? user.profileImage
+                : user.profileImage
                 ? `${url}/profile/${user.profileImage}`
                 : '/user.png'
-              )
-              } 
-        />
+            }
+          />
         </a>
       </nav>
       <Outlet />

@@ -23,11 +23,11 @@ export default interface userProps {
 }
 
 export interface approvalProps {
-  _id:string
+  _id: string;
   userId: string;
   experience: number;
   domain: string;
   comment: string;
   resumeFile: string;
-  approvalStatus:boolean
+  approvalStatus: boolean;
 }

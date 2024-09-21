@@ -1,24 +1,24 @@
-import { ReactElement, useEffect, useState } from "react";
-import axiosInstance from "../../helper/axiosInstance";
-import userProps from "../../types/userProps";
-import url from "../../helper/backendUrl";
-import { useAppDispatch } from "../../store/hooks";
-import { setPage } from "../../store/globalSlice";
+import { ReactElement, useEffect, useState } from 'react';
+import axiosInstance from '../../helper/axiosInstance';
+import userProps from '../../types/userProps';
+import url from '../../helper/backendUrl';
+import { useAppDispatch } from '../../store/hooks';
+import { setPage } from '../../store/globalSlice';
 
 export default function User(): ReactElement {
   const [users, setUsers] = useState<Array<userProps>>([]);
   const [loading, setLoading] = useState<boolean>(true);
-    const dispatch=useAppDispatch()
+  const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(setPage('users'))
+    dispatch(setPage('users'));
     async function dataWrapper() {
       try {
         const response = (await axiosInstance.get('/admin/users')).data;
-        if (response.message === "success") {
+        if (response.message === 'success') {
           setUsers(response.users);
         }
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error('Error fetching users:', error);
       } finally {
         setLoading(false);
       }
