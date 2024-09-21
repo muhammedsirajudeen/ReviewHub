@@ -31,6 +31,7 @@ export default function Signup(): ReactElement {
     const response = await axios.post(url + '/auth/credential/signup', {
       email: data.email,
       password: data.password,
+      role:roleRef.current
     });
     if (response.data.message === 'success') {
       flushSync(() => {
@@ -60,6 +61,7 @@ export default function Signup(): ReactElement {
       console.log(codeResponse);
       const response = await axios.post(url + '/auth/google/signup', {
         userToken: codeResponse.access_token,
+        role:roleRef.current
       });
       console.log(response);
       if (response.status === 201 && response.data.message === 'success') {

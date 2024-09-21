@@ -71,8 +71,8 @@ const GoogleLogin = async (req: Request, res: Response) => {
 //dont forget to hash the password first
 const GoogleSignup = async (req: Request, res: Response) => {
   try {
-    const userToken = req.body.userToken;
-
+    const {userToken,role} = req.body;
+    
     let data = await getUserdata(userToken);
     let userData = data;
     const checkUser = await User.findOne({ email: userData.email });
@@ -84,7 +84,8 @@ const GoogleSignup = async (req: Request, res: Response) => {
         email: userData.email,
         password: await hashPassword(userData.id),
         profileImage: userData.picture,
-        verified:true
+        verified:true,
+        authorization:role
       });
       const createdUser=await newUser.save();
       const newWallet=new Wallet(

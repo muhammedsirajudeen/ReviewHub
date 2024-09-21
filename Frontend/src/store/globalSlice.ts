@@ -22,6 +22,7 @@ interface userProps {
   address?:string,
   phone?:string,
   walletId?:walletProps;
+  reviewerApproval?:boolean
 
 }
 

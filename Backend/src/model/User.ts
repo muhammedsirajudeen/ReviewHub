@@ -11,7 +11,8 @@ export interface IUser extends Document {
   rewardPoints: number;
   walletId:mongoose.Types.ObjectId;
   attendedQuizes:mongoose.Types.ObjectId[];
-  verified:boolean
+  verified:boolean;
+  reviewerApproval:boolean
 }
 
 const userSchema: Schema<IUser> = new Schema({
@@ -57,23 +58,25 @@ const userSchema: Schema<IUser> = new Schema({
     unique: false,
     default: 0,
   },
-  walletId:{
-    type:mongoose.Schema.ObjectId,
-    required:false,
-    unique:false,
-    ref:'wallets'
+  walletId: {
+    type: mongoose.Schema.ObjectId,
+    required: false,
+    unique: false,
+    ref: 'wallets',
   },
-  attendedQuizes:{
-    type:[mongoose.Schema.ObjectId],
-    required:false,
-    default:[]
+  attendedQuizes: {
+    type: [mongoose.Schema.ObjectId],
+    required: false,
+    default: [],
   },
-  verified:{
-    type:Boolean,
+  verified: {
+    type: Boolean,
+    default: false,
+  },
+  reviewerApproval: {
+    type: Boolean,
     default:false
-  }
-  
-
+  },
 });
 const User = mongoose.model<IUser>('User', userSchema);
 export default User;

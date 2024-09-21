@@ -25,7 +25,7 @@ export default function SideBar(): ReactElement {
             page === 'dashboard' ? 'bg-blue-400' : ''
           } flex items-center justify-centerreview p-6 rounded-lg mt-10`}
         >
-          <a href="/user/dashboard">
+          <a href={`${user.authorization==="reviewer" ? "/reviewer/dashboard" : "/user/dashboard" } `}>
             <img src="/sidebar/dashboard.png" />
           </a>
         </div>

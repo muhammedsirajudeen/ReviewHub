@@ -48,7 +48,7 @@ const ListChapter=async (req:Request,res:Response)=>{
     try{
 
         const user=req.user as IUser
-        if(user.authorization!=="admin"){
+        if(user.authorization!=="admin" ){
             return res.status(401).json({message:"Unauthorized"})
         }
         let { page } = req.query ?? '1';

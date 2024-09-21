@@ -43,7 +43,7 @@ const emailGenerator=(email:string,otp:string)=>{
 const CredentialSignup = async (req: Request, res: Response) => {
   try {
     
-    const { email, password,phone,address } = req.body;
+    const { email, password,phone,address,role } = req.body;
     const checkUser = await User.findOne({ email: email });
     let filename;
     if(req.file?.filename){
@@ -63,6 +63,7 @@ const CredentialSignup = async (req: Request, res: Response) => {
         phone,
         address,
         profileImage:filename ?? "https://img.icons8.com/ios-glyphs/30/1A1A1A/user--v1.png",
+        authorization:role ?? "user"
       });
       const createdUser=await newUser.save();
       const newWallet=new Wallet(

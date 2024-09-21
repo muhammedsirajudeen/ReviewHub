@@ -31,6 +31,9 @@ import Profile from './pages/User/Profile';
 import Resource from './pages/User/Resource';
 import Wallet from './pages/User/Wallet';
 import Approval from './pages/Reviewer/Approval';
+import ReviewerPrivateRoute from './components/PrivateRoute/ReviewerPrivateRoute';
+
+import ReviewerDashboard from "./pages/Reviewer/Dashboard"
 const router = createBrowserRouter([
   //authentication routes
   {
@@ -137,13 +140,18 @@ const router = createBrowserRouter([
   },
   {
     path:'/reviewer',
-    element: <UserPrivateRoute Component={SideBar} />,
+    element: <ReviewerPrivateRoute Component={SideBar} />,
     loader: tokenVerifier, // Use loader for asynchronous data fetching
     errorElement: <ErrorElement />,
     children:[
       {
+        path:'/reviewer/dashboard',
+        element:<ReviewerPrivateRoute Component={ReviewerDashboard}/>,
+        loader:tokenVerifier
+      },
+      {
         path:'/reviewer/approval',
-        element:<UserPrivateRoute Component={Approval}/>,
+        element:<ReviewerPrivateRoute Component={Approval}/>,
         loader:tokenVerifier,
       }
     ]

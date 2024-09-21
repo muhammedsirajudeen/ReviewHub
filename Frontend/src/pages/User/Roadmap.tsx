@@ -6,6 +6,7 @@ import FilterBarRoadmap from '../../components/FilterBarRoadmap';
 import TopBar from '../../components/TopBar';
 import { roadmapProps } from '../../types/courseProps';
 import { toast, ToastContainer } from 'react-toastify';
+import { useAppSelector } from '../../store/hooks';
 
 export default function Roadmap(): ReactElement {
   const location = useLocation();
@@ -17,6 +18,7 @@ export default function Roadmap(): ReactElement {
   const [currentpage, setCurrentpage] = useState<number>(1);
   const [enroll, setEnroll] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
+  const user=useAppSelector((state)=>state.global.user)
   let lessonCount = 1;
 
   useEffect(() => {
@@ -87,6 +89,9 @@ export default function Roadmap(): ReactElement {
   };
 
   const roadmapNavHandler = (roadmap: roadmapProps) => {
+    if(user.authorization==="reviewer"){
+      navigate('/user/resource', { state: { roadmapId: roadmap._id } });
+    }
     // console.log(roadmap)
     if (enroll) {
       navigate('/user/resource', { state: { roadmapId: roadmap._id } });
@@ -150,26 +155,31 @@ export default function Roadmap(): ReactElement {
         courseId={location.state ? location.state.courseId : ''}
         setRoadmaps={setRoadmaps}
       />
+      {user.authorization!=="reviewer" 
+      && 
+      (
+        <div className="flex justify-center mt-10">
+          {enroll ? (
+            <button
+              onClick={disenrollHandler}
+              className="bg-red-500 p-2 flex items-center rounded-lg shadow hover:bg-red-600 transition duration-300"
+            >
+              <img className="mr-2" src="/dashboard/school.png" alt="Disenroll" />
+              <p className="text-xs text-white font-bold">Disenroll</p>
+            </button>
+          ) : (
+            <button
+              onClick={enrollHandler}
+              className="bg-green-500 p-2 flex items-center rounded-lg shadow hover:bg-green-600 transition duration-300"
+            >
+              <img className="mr-2" src="/dashboard/school.png" alt="Enroll" />
+              <p className="text-xs text-white font-bold">Enroll</p>
+            </button>
+          )}
+        </div>
 
-      <div className="flex justify-center mt-10">
-        {enroll ? (
-          <button
-            onClick={disenrollHandler}
-            className="bg-red-500 p-2 flex items-center rounded-lg shadow hover:bg-red-600 transition duration-300"
-          >
-            <img className="mr-2" src="/dashboard/school.png" alt="Disenroll" />
-            <p className="text-xs text-white font-bold">Disenroll</p>
-          </button>
-        ) : (
-          <button
-            onClick={enrollHandler}
-            className="bg-green-500 p-2 flex items-center rounded-lg shadow hover:bg-green-600 transition duration-300"
-          >
-            <img className="mr-2" src="/dashboard/school.png" alt="Enroll" />
-            <p className="text-xs text-white font-bold">Enroll</p>
-          </button>
-        )}
-      </div>
+      )
+      }
 
       <div className="mt-10 flex justify-evenly flex-wrap">
         {roadmaps.map((roadmap) => (

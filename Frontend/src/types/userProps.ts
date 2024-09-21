@@ -2,7 +2,7 @@ interface HistoryProps {
   paymentDate: string;
   type: string;
   amount: number;
-  status:boolean
+  status: boolean;
 }
 
 interface walletProps {
@@ -16,8 +16,8 @@ export default interface userProps {
   profileImage: string;
   _id: string;
   authorization: string;
-  address:string,
-  phone:string,
-  walletId:walletProps;
-
+  address: string;
+  phone: string;
+  walletId: walletProps;
+  reviewerApproval: boolean;
 }
