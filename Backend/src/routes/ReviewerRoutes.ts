@@ -19,7 +19,7 @@ router.post(
     '/approval',
     passport.authenticate('jwt',{session:false}),
     UploadHandler('pdf').single('file'),
-    ReviewerController.ReviwerApproval
+    ReviewerController.ReviewerApproval
 )
 
 

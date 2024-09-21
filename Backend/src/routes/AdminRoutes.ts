@@ -17,18 +17,18 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   AdminController.AllUsers
 );
-router.delete(
-  '/user/:email',
-  passport.authenticate('jwt', { session: false }),
-  AdminController.DeleteUser
-);
+// router.delete(
+//   '/user/:email',
+//   passport.authenticate('jwt', { session: false }),
+//   AdminController.DeleteUser
+// );
 
-router.put(
-  '/user',
-  passport.authenticate('jwt', { session: false }),
-  UploadHandler('profile').single('file'),
-  AdminController.UpdateUser
-);
+// router.put(
+//   '/user',
+//   passport.authenticate('jwt', { session: false }),
+//   UploadHandler('profile').single('file'),
+//   AdminController.UpdateUser
+// );
 
 //Course Management
 router.post(
@@ -150,6 +150,13 @@ router.delete(
   '/quiz/:quizId/:questionId',
   passport.authenticate('jwt',{session:false}),
   ResourceController.DeleteQuiz
+)
+
+//approval management
+router.get(
+  '/reviewer/approvals',
+  passport.authenticate('jwt',{session:false}),
+  AdminController.AllApprovals
 )
 
 export default router;

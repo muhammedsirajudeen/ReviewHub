@@ -21,3 +21,12 @@ export default interface userProps {
   walletId: walletProps;
   reviewerApproval: boolean;
 }
+
+export interface approvalProps {
+  _id:string
+  userId: string;
+  experience: number;
+  domain: string;
+  comment: string;
+  resumeFile: string;
+}

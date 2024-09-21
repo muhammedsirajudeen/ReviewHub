@@ -4,7 +4,7 @@ import Approval from "../../model/Approval";
 import { IUser } from "../../model/User";
 
 
-const ReviwerApproval=async (req:Request,res:Response)=>{
+const ReviewerApproval=async (req:Request,res:Response)=>{
     try{
         const user=req.user as IUser
         const {experience,domain,comment}=req.body
@@ -43,6 +43,6 @@ const ApprovalStatus=async (req:Request,res:Response)=>{
 
 
 export default {
-    ReviwerApproval,
+    ReviewerApproval,
     ApprovalStatus
 }

@@ -34,6 +34,8 @@ import Approval from './pages/Reviewer/Approval';
 import ReviewerPrivateRoute from './components/PrivateRoute/ReviewerPrivateRoute';
 
 import ReviewerDashboard from "./pages/Reviewer/Dashboard"
+import User from './pages/Admin/User';
+import Approvals from './pages/Admin/Approvals';
 const router = createBrowserRouter([
   //authentication routes
   {
@@ -96,6 +98,16 @@ const router = createBrowserRouter([
         element: <AdminPrivateRoute Component={AdminResource} />,
         loader: tokenVerifier,
       },
+      {
+        path:'/admin/users',
+        element:<AdminPrivateRoute Component={User}/>,
+        loader:tokenVerifier
+      },
+      {
+        path:'/admin/approvals',
+        element:<AdminPrivateRoute Component={Approvals}/>,
+        loader:tokenVerifier
+      }
     ],
   },
   //user routes

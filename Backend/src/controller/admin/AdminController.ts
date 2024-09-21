@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../../model/User';
 import { IUser } from '../../model/User';
+import Approval from '../../model/Approval';
 
 const backendUrl = 'http://localhost:3000/';
 
@@ -10,12 +11,12 @@ const AllUsers = async (req: Request, res: Response) => {
     if (user.authorization !== 'admin') {
       return res.status(403).json({ message: 'insufficient permissions' });
     }
-    const users = await User.find();
+    const users = await User.find().select('-password');
     const excludeUsers = users.filter((user) => user.authorization !== 'admin');
     res.status(200).json({ message: 'success', users: excludeUsers });
   } catch (error) {
     console.log(error);
-    res.status(501).json({ message: 'server error occured' });
+    res.status(500).json({ message: 'server error occured' });
   }
 };
 
@@ -30,7 +31,7 @@ const DeleteUser = async (req: Request, res: Response) => {
     res.status(200).json({ message: 'success' });
   } catch (error) {
     console.log(error);
-    res.status(200).json({ message: 'server error occured' });
+    res.status(500).json({ message: 'server error occured' });
   }
 };
 
@@ -39,7 +40,7 @@ const UpdateUser = async (req: Request, res: Response) => {
     let userhere = req.user as IUser;
 
     if (userhere.authorization !== 'admin') {
-      return res.status(403).json({ message: 'insufficient permissions' });
+      return res.status(401).json({ message: 'insufficient permissions' });
     }
     const { email, currentemail, phone, address, profileImage } = req.body;
     const checkUser = await User.findOne({ email: currentemail });
@@ -68,8 +69,25 @@ const UpdateUser = async (req: Request, res: Response) => {
   }
 };
 
+const AllApprovals=async (req:Request,res:Response)=>{
+  try{
+    const user=req.user as IUser
+    if(user.authorization!=="admin"){
+      res.status(401).json({message:"success"})
+      return
+    }
+    const Approvals=await Approval.find().populate('userId')
+
+    res.status(200).json({message:"success",approvals:Approvals})
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message:"success"})
+  }
+}
+
 export default {
   AllUsers,
   DeleteUser,
   UpdateUser,
+  AllApprovals
 };
