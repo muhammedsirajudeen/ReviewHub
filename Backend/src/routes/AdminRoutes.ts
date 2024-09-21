@@ -159,4 +159,10 @@ router.get(
   AdminController.AllApprovals
 )
 
+router.put(
+  '/reviewer/approve/:approvalId',
+  passport.authenticate('jwt',{session:false}),
+  AdminController.ApproveReviewer
+)
+
 export default router;

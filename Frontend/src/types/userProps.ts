@@ -29,4 +29,5 @@ export interface approvalProps {
   domain: string;
   comment: string;
   resumeFile: string;
+  approvalStatus:boolean
 }

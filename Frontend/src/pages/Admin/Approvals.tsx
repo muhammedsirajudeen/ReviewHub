@@ -3,6 +3,9 @@ import userProps, { approvalProps } from '../../types/userProps';
 import axiosInstance from '../../helper/axiosInstance';
 import ResumeDialog from '../../components/Dialog/ResumeDialog';
 import { flushSync } from 'react-dom';
+import { useAppDispatch } from '../../store/hooks';
+import { setPage } from '../../store/globalSlice';
+import { toast, ToastContainer } from 'react-toastify';
 
 export interface ExtendedApprovalProps extends Omit<approvalProps, 'userId'> {
   userId: userProps;
@@ -11,10 +14,12 @@ export interface ExtendedApprovalProps extends Omit<approvalProps, 'userId'> {
 export default function Approvals(): ReactElement {
   const [approvals, setApprovals] = useState<Array<ExtendedApprovalProps>>([]);
   //this is the active approval
-  const [approval,setApproval]=useState<ExtendedApprovalProps>()
+  const [approval, setApproval] = useState<ExtendedApprovalProps>();
   const [open, setOpen] = useState<boolean>(false);
-    const resumeDialogRef=useRef<HTMLDialogElement>(null)
+  const dispatch = useAppDispatch();
+  const resumeDialogRef = useRef<HTMLDialogElement>(null);
   useEffect(() => {
+    dispatch(setPage('users'));
     async function dataWrapper() {
       try {
         const response = (await axiosInstance.get('/admin/reviewer/approvals'))
@@ -27,21 +32,35 @@ export default function Approvals(): ReactElement {
       }
     }
     dataWrapper();
-  }, []);
+  }, [dispatch]);
   const resumeHandler = (approval: ExtendedApprovalProps) => {
-    setApproval(approval)
-    flushSync(()=>{
-        setOpen(true)
-    })
-    resumeDialogRef.current?.showModal()
+    setApproval(approval);
+    flushSync(() => {
+      setOpen(true);
+    });
+    resumeDialogRef.current?.showModal();
   };
-  const closeHandler=()=>{
-    resumeDialogRef.current?.close()
-    setOpen(false)
-  }
-  const approveHandler=async (approvalId:string)=>{
-    console.log(approvalId)
-  }
+  const closeHandler = () => {
+    resumeDialogRef.current?.close();
+    setOpen(false);
+  };
+  const approveHandler = async (approvalId: string) => {
+    console.log(approvalId);
+    try {
+      const response = (
+        await axiosInstance.put(`/admin/reviewer/approve/${approvalId}`)
+      ).data;
+      console.log(response);
+      if (response.message === 'success') {
+        toast('success');
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        toast(response.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="flex flex-col items-center justify-start px-4 py-8">
       <h1 className="text-4xl font-bold mb-6">Approval Requests</h1>
@@ -82,8 +101,11 @@ export default function Approvals(): ReactElement {
                     >
                       Resume
                     </button>
-                    <button onClick={()=>approveHandler(approval._id)} className="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 transition">
-                      Approve
+                    <button
+                      onClick={() => approveHandler(approval._id)}
+                      className={`${approval.approvalStatus ? "bg-red-500" : 'bg-green-500' } text-white py-1 px-3 rounded hover:bg-green-700 transition`}
+                    >
+                      {approval.approvalStatus ? 'Unapprove' : 'Approve'}
                     </button>
                   </td>
                 </tr>
@@ -92,12 +114,20 @@ export default function Approvals(): ReactElement {
           </table>
         </div>
       </div>
-      {
-        open && 
-        (
-            <ResumeDialog approval={approval}  dialogRef={resumeDialogRef} closeHandler={closeHandler} />
-        )
-      }
+      {open && (
+        <ResumeDialog
+          approval={approval}
+          dialogRef={resumeDialogRef}
+          closeHandler={closeHandler}
+        />
+      )}
+      <ToastContainer
+        style={{
+          backgroundColor: 'gray',
+          color: 'white',
+          borderRadius: '10px',
+        }}
+      />
     </div>
   );
 }

@@ -2,12 +2,15 @@ import { ReactElement, useEffect, useState } from "react";
 import axiosInstance from "../../helper/axiosInstance";
 import userProps from "../../types/userProps";
 import url from "../../helper/backendUrl";
+import { useAppDispatch } from "../../store/hooks";
+import { setPage } from "../../store/globalSlice";
 
 export default function User(): ReactElement {
   const [users, setUsers] = useState<Array<userProps>>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
+    const dispatch=useAppDispatch()
   useEffect(() => {
+    dispatch(setPage('users'))
     async function dataWrapper() {
       try {
         const response = (await axiosInstance.get('/admin/users')).data;
@@ -21,7 +24,7 @@ export default function User(): ReactElement {
       }
     }
     dataWrapper();
-  }, []);
+  }, [dispatch]);
 
   const blockUser = (userId: string) => {
     // Implement block user functionality

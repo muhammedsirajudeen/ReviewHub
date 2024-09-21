@@ -85,9 +85,34 @@ const AllApprovals=async (req:Request,res:Response)=>{
   }
 }
 
+const ApproveReviewer=async (req:Request,res:Response)=>{
+  try {
+    const adminuser=req.user as IUser
+    const {approvalId}=req.params
+    if(adminuser.authorization!=="admin"){
+      res.status(401).json({message:"Unauthorized"})
+    }
+    const updateApproval=await Approval.findById(approvalId)
+    const user=await User.findById(updateApproval?.userId)
+    if(updateApproval && user ){
+      updateApproval.approvalStatus=!updateApproval.approvalStatus
+      await updateApproval.save()
+      user.reviewerApproval=!user.reviewerApproval
+      await user.save()
+      res.status(200).json({message:"success"})
+    }else{
+      res.status(404).json({messagae:"approval request not found"})
+    }    
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message:"success"})
+  }
+}
+
 export default {
   AllUsers,
   DeleteUser,
   UpdateUser,
-  AllApprovals
+  AllApprovals,
+  ApproveReviewer
 };
