@@ -90,6 +90,13 @@ router.put(
 )
 
 //blog manager
+
+router.get(
+  '/blog/manage',
+  passport.authenticate('jwt',{session:false}),
+  BlogController.UserBlog
+)
+
 router.get(
   '/blog',
   passport.authenticate('jwt',{session:false}),

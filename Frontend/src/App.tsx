@@ -37,6 +37,7 @@ import ReviewerDashboard from './pages/Reviewer/Dashboard';
 import User from './pages/Admin/User';
 import Approvals from './pages/Admin/Approvals';
 import Blog from './pages/User/Blog';
+import ManageBlog from './pages/User/ManageBlog';
 const router = createBrowserRouter([
   //authentication routes
   {
@@ -152,6 +153,11 @@ const router = createBrowserRouter([
       {
         path:'/user/blog',
         element:<UserPrivateRoute Component={Blog}/>,
+        loader:tokenVerifier
+      },
+      {
+        path:'/user/blog/manage',
+        element:<UserPrivateRoute Component={ManageBlog}/>,
         loader:tokenVerifier
       }
     ],
