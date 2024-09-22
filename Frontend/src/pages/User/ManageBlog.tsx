@@ -7,13 +7,18 @@ import url from '../../helper/backendUrl';
 import BlogForm from '../../components/Form/Blog/BlogForm';
 import { flushSync } from 'react-dom';
 import { ToastContainer } from 'react-toastify';
+import BlogDelete from '../../components/Form/Blog/BlogDelete';
+import { FaRegSadCry } from "react-icons/fa"; // Importing a sad icon from react-icons
 
 export default function ManageBlog(): ReactElement {
   const dispatch = useAppDispatch();
   const [blogs, setBlogs] = useState<Array<blogProps>>([]);
   const [blog, setBlog] = useState<blogProps>();
   const editDialogRef = useRef<HTMLDialogElement>(null);
+  const deleteDialogRef = useRef<HTMLDialogElement>(null);
+
   const [editdialog, setEditdialog] = useState<boolean>(false);
+  const [deletedialog, setDeletedialog] = useState<boolean>(false);
   useEffect(() => {
     dispatch(setPage('blog'));
     async function dataWrapper() {
@@ -37,15 +42,36 @@ export default function ManageBlog(): ReactElement {
     });
     editDialogRef.current?.showModal();
   };
+  const deleteHandler=(blog:blogProps)=>{
+      flushSync(()=>{
+        setBlog(blog)
+        setDeletedialog(true)
+    })
+    deleteDialogRef.current?.showModal()
+  }
   const editCloseHandler = () => {
     setEditdialog(false);
     editDialogRef.current?.close();
   };
+  const deleteCloseHandler=()=>{
+    setDeletedialog(false)
+    deleteDialogRef.current?.close()
+  }
+  
   return (
     <>
       <div className="ml-36 flex flex-col items-center justify-center">
         <h1 className="text-4xl w-full mb-6 mt-4">YOUR BLOGS</h1>
         <div className="w-full max-w-4xl space-y-4">
+          {blogs.length === 0 && (
+            <div className="flex flex-col items-center p-6 border rounded-lg shadow-lg bg-gray-100">
+              <FaRegSadCry className="text-6xl text-gray-400 mb-4" />
+              <p className="font-semibold text-lg text-gray-700">
+                No Blogs to show for now...
+              </p>
+              <p className="text-gray-500">Start writing your first blog!</p>
+            </div>
+          )}
           {blogs.map((blog) => (
             <div
               key={blog._id}
@@ -67,7 +93,10 @@ export default function ManageBlog(): ReactElement {
                 >
                   Edit
                 </button>
-                <button className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 transition-colors duration-300">
+                <button
+                  onClick={() => deleteHandler(blog)}
+                  className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 transition-colors duration-300"
+                >
                   Delete
                 </button>
               </div>
@@ -81,6 +110,13 @@ export default function ManageBlog(): ReactElement {
           blog={blog}
           dialogRef={editDialogRef}
           closeHandler={editCloseHandler}
+        />
+      )}
+      {deletedialog && (
+        <BlogDelete
+          dialogRef={deleteDialogRef}
+          closeHandler={deleteCloseHandler}
+          blog={blog}
         />
       )}
       <ToastContainer
