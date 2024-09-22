@@ -11,6 +11,7 @@ import ResourceController from '../controller/user/ResourceController';
 import EnrollmentController from '../controller/user/EnrollmentController';
 import QuizCheckerController from '../controller/user/quiz/QuizCheckerController';
 import PaymentController from '../controller/user/payment/PaymentController';
+import BlogController from '../controller/user/BlogController';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -87,4 +88,33 @@ router.put(
   passport.authenticate('jwt',{session:false}),
   PaymentController.OrderFailure
 )
+
+//blog manager
+router.get(
+  '/blog',
+  passport.authenticate('jwt',{session:false}),
+  BlogController.AllBlog
+)
+
+router.post(
+  '/blog',
+  passport.authenticate('jwt',{session:false}),
+  UploadHandler('blog').single('file'),
+  BlogController.AddBlog
+)
+
+router.put(
+  '/blog/:blogId',
+  passport.authenticate('jwt',{session:false}),
+  UploadHandler('blog').single('file'),
+  BlogController.UpdateBlog
+)
+
+router.delete(
+  '/blog/:blogId',
+  passport.authenticate('jwt',{session:false}),
+  BlogController.DeleteBlog
+)
+
+
 export default router;
