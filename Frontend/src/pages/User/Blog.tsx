@@ -25,10 +25,12 @@ export default function Blog(): ReactElement {
     dispatch(setPage('blog'));
     async function dataWrapper() {
       try {
-        const response = (await axiosInstance.get(`/user/blog?page=${currentpage}`)).data;
+        const response = (
+          await axiosInstance.get(`/user/blog?page=${currentpage}`)
+        ).data;
         if (response.message === 'success') {
           setBlogs(response.blogs);
-          setPagecount(10)
+          setPagecount(10);
         } else {
           console.log(response.message);
         }
@@ -37,7 +39,7 @@ export default function Blog(): ReactElement {
       }
     }
     dataWrapper();
-  }, [dispatch,currentpage]);
+  }, [dispatch, currentpage]);
 
   const createHandler = () => {
     flushSync(() => {
@@ -90,9 +92,14 @@ export default function Blog(): ReactElement {
   return (
     <>
       <div className="container mx-auto p-4">
-        <div className='flex w-full justify-between items-center'>
+        <div className="flex w-full justify-between items-center">
           <h1 className="text-4xl font-bold text-start my-6 w-full">BLOG</h1>
-          <a className='text-nowrap text-black border-b-black border-t-white border-l-white border-r-white border hover:underline' href='/user/blog/manage'>Your Blogs</a>
+          <a
+            className="text-nowrap text-black border-b-black border-t-white border-l-white border-r-white border hover:underline"
+            href="/user/blog/manage"
+          >
+            Your Blogs
+          </a>
         </div>
         <button
           className="bg-black text-white p-2 rounded-lg font-normal mb-2 hover:bg-gray-800 transition duration-200"
@@ -113,15 +120,29 @@ export default function Blog(): ReactElement {
                 className="w-full h-36 object-cover object-center"
               />
               <div className="p-4">
-                <h2 className="text-2xl font-semibold mb-2 text-gray-800">{blog.heading}</h2>
-                <p className="text-gray-500 text-sm mb-2">{new Date(blog.postedDate).toLocaleDateString()}</p>
-                <p className="h-12 overflow-hidden text-gray-700 text-sm">{blog.article}</p>
-                <p className="text-gray-500 text-xs mt-2">{blog.userId.email}</p>
+                <h2 className="text-2xl font-semibold mb-2 text-gray-800">
+                  {blog.heading}
+                </h2>
+                <p className="text-gray-500 text-sm mb-2">
+                  {new Date(blog.postedDate).toLocaleDateString()}
+                </p>
+                <p className="h-12 overflow-hidden text-gray-700 text-sm">
+                  {blog.article}
+                </p>
+                <p className="text-gray-500 text-xs mt-2">
+                  {blog.userId.email}
+                </p>
               </div>
             </div>
           ))}
         </div>
-        <PaginationComponent previouspageHandler={previouspageHandler} nextpageHandler={nextpageHandler} pageHandler={pageHandler} pagecount={pagecount} currentpage={currentpage}/>
+        <PaginationComponent
+          previouspageHandler={previouspageHandler}
+          nextpageHandler={nextpageHandler}
+          pageHandler={pageHandler}
+          pagecount={pagecount}
+          currentpage={currentpage}
+        />
       </div>
       {createblog && (
         <BlogForm
@@ -131,7 +152,11 @@ export default function Blog(): ReactElement {
         />
       )}
       {viewblog && (
-        <BlogDialog blog={blog} dialogRef={viewDialogRef} closeHandler={viewCloseHandler} />
+        <BlogDialog
+          blog={blog}
+          dialogRef={viewDialogRef}
+          closeHandler={viewCloseHandler}
+        />
       )}
       <ToastContainer
         style={{
