@@ -23,7 +23,7 @@ export default function ManageCourse(): ReactElement {
             }
         }
         dataWrapper();
-    }, []);
+    }, [currentpage]);
     const pageHandler = (count: number) => {
         const page = Math.ceil(count / 10) + 1;
         const array = [];
