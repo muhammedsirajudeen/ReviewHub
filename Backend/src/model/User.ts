@@ -13,6 +13,7 @@ export interface IUser extends Document {
   attendedQuizes:mongoose.Types.ObjectId[];
   verified:boolean;
   reviewerApproval:boolean
+  premiumMember:boolean
 }
 
 const userSchema: Schema<IUser> = new Schema({
@@ -77,6 +78,11 @@ const userSchema: Schema<IUser> = new Schema({
     type: Boolean,
     default:false
   },
+  premiumMember:{
+    type:Boolean,
+    required:false,
+    default:false
+  }
 });
 const User = mongoose.model<IUser>('User', userSchema);
 export default User;

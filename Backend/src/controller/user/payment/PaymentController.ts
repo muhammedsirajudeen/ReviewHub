@@ -21,13 +21,14 @@ const OrderFailure = async (req: Request, res: Response) => {
   try {
     const user = req.user as IUser;
     const {orderId} = req.params;
+    const {premium}=req.body
     const checkPayment=await Payment.findOne({orderId:orderId})
     if(checkPayment){
         const updateWallet=await Wallet.findOne({userId:new mongoose.Types.ObjectId(user.id as string)})
         updateWallet?.history.push(
             {
                 paymentDate:new Date(),
-                type:'payment',
+                type:premium ? 'premium':'payment',
                 status:false,
                 amount:checkPayment.amount
             }

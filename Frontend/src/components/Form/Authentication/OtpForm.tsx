@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import url from '../../../helper/backendUrl';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
+import axiosInstance from '../../../helper/axiosInstance';
 
 interface FormData {
   otp: string;
@@ -27,15 +28,31 @@ export default function OtpForm({
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
+  const timerInitializer=()=>{
+    const timer=localStorage.getItem('timer')
+    if(timer){
+      return parseInt(timer) 
+    }else{
+      return 20
+    }
+  }
   const navigate = useNavigate();
   const [resend, setResend] = useState<boolean>(true);
-  const [time, setTime] = useState<number>(5);
+  const [time, setTime] = useState<number>(timerInitializer);
+  useEffect(()=>{
+    const verifyEmail=window.localStorage.getItem("verifyemail")
+    if(!verifyEmail){
+      window.localStorage.setItem("verifyemail",email)
+    }
+  },[email])
   useEffect(() => {
     const timerid = setInterval(() => {
       if (time > 0) {
+        localStorage.setItem('timer',(time-1).toString())
         setTime((time) => time - 1);
       } else {
         setResend(false);
+        window.localStorage.removeItem("timer")
       }
     }, 1000);
     return () => {
@@ -49,11 +66,13 @@ export default function OtpForm({
       const response = (
         await axios.post(`${url}/auth/otp/verify`, {
           otp: data.otp,
-          email,
+          email:localStorage.getItem('verifyemail'),
         })
       ).data;
       if (response.message === 'success') {
         toast('otp verified');
+        window.localStorage.removeItem("timer")
+        window.localStorage.removeItem("verifyemail")
         console.log(type);
         if (type) {
           setTimeout(() => navigate('/forgot'), 1000);
@@ -77,13 +96,14 @@ export default function OtpForm({
   };
   const resendHandler = async () => {
     const response = (
-      await axios.post(`${url}/auth/resend`, {
-        email,
+      await axiosInstance.post(`/auth/resend`, {
+        email:localStorage.getItem("verifyemail"),
       })
     ).data;
     if (response.message === 'success') {
       toast('success');
-      setTime(5);
+      setTime(20);
+      localStorage.setItem('timer',"20")
       setResend(true);
     } else {
       toast(response.message);

@@ -180,13 +180,13 @@ export default function Profile(): ReactElement {
         />
 
         <p className="text-sm font-light mt-2">{user?.email}</p>
-        <button onClick={premiumHandler} className="m-10 flex items-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
+        <button disabled={user.premiumMember} onClick={premiumHandler} className="m-10 flex items-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
             <img
               src="/premium/premium.png"
               alt="Premium Logo"
               className="h-6 w-6 mr-2"
             />
-            Premium
+            {user.premiumMember ? "Premium Member"  : "Become Premium"}
           </button>
         <form
           className="flex flex-col items-start mt-4 w-full"

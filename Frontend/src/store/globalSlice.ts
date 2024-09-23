@@ -23,6 +23,7 @@ interface userProps {
   phone?:string,
   walletId?:walletProps;
   reviewerApproval?:boolean
+  premiumMember?:boolean
 
 }
 

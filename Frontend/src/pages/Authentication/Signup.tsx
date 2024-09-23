@@ -25,6 +25,19 @@ export default function Signup(): ReactElement {
   const otpDialogRef = useRef<HTMLDialogElement>(null);
   const location=useLocation()
   const roleRef=useRef<string | null>(location.state ? location.state.role : null)
+  useEffect(()=>{
+    const timer=localStorage.getItem("timer")
+    console.log(timer)
+    if(timer){
+      queueMicrotask(()=>{
+        flushSync(()=>{
+          setOtpdialog(true)
+        })
+        otpDialogRef.current?.showModal()
+
+      })
+    }
+  },[])
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     // Handle form submission
     setSubmit(true);
@@ -36,6 +49,8 @@ export default function Signup(): ReactElement {
     if (response.data.message === 'success') {
       flushSync(() => {
         toast('user created successfully');
+        localStorage.setItem("verifyemail",data.email)
+        window.localStorage.setItem("timer","20")
         setOtpdialog(true);
       });
       otpDialogRef.current?.showModal();

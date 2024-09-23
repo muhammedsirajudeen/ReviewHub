@@ -131,5 +131,11 @@ router.post(
   PremiumController.OrderPremium
 )
 
+router.post(
+  '/premium/verify',
+  passport.authenticate('jwt',{session:false}),
+  PremiumController.PremiumVerifer
+)
+
 
 export default router;

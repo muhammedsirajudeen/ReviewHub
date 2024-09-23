@@ -62,7 +62,20 @@ export default function PremiumDialog({
           try {
             //handle success here
             console.log(response);
-            window.location.reload();
+            try{
+                const apiResponse=(
+                    await axiosInstance.post('/user/premium/verify',response)
+                ).data
+                if(apiResponse.message==="success"){
+                    window.location.reload();
+                }else{
+                    console.log("error")
+                }
+            }catch(error){
+                console.log(error)
+                
+            }
+
           } catch (err) {
             toast('Payment failed: ' + err);
           }
@@ -89,8 +102,13 @@ export default function PremiumDialog({
         // alert(response.error.metadata.order_id);
         // alert(response.error.metadata.payment_id);
         if (response.error.metadata.payment_id) {
-          console.log('handle error here');
-        }
+            if(response.error.metadata.payment_id){
+                const serverResponse=(
+                    await axiosInstance.put(`/user/payment/order/failure/${response.error.metadata.order_id}`,{premium:true})
+                ).data
+                console.log(serverResponse)      
+                window.location.reload()      
+            }}
       });
       rzpay.open();
     } catch (err) {
