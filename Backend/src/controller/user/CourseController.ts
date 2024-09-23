@@ -9,16 +9,14 @@ interface dateProps {
   $gt: Date;
 }
 interface favoriteProps{
-  $in:string[]
+  $in:mongoose.Types.ObjectId[]
 }
 interface queryProps {
   domain?: string;
   postedDate?: dateProps;
   courseName?: RegExp;
   unlistStatus?: boolean;
-  favorite?:{
-    _id:favoriteProps
-  }
+  _id?:favoriteProps
 }
 
 //constructing the query as it goes
@@ -29,7 +27,6 @@ const CourseList = async (req: Request, res: Response) => {
     const { domain } = req.query;
     const { date, search, favorite } = req.query;
     console.log(user.favoriteCourses)
-    const favCourses=user.favoriteCourses.map((fav)=>fav.toHexString())
     const newDate: Date = new Date(date as string);
     const query: queryProps = {};
     if (user.authorization !== 'admin') {
@@ -39,7 +36,7 @@ const CourseList = async (req: Request, res: Response) => {
     if (date) query.postedDate = { $gt: newDate };
     if (search) query.courseName = new RegExp(search as string, 'i');
     if(favorite){
-      query.favorite={_id:{$in:favCourses}}
+      query._id={$in:user.favoriteCourses}
     }
     const length = (await Course.find(query)).length;
     const Courses = await Course.find(query)
