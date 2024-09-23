@@ -9,6 +9,7 @@ import { flushSync } from 'react-dom';
 import { ToastContainer } from 'react-toastify';
 import BlogDelete from '../../components/Form/Blog/BlogDelete';
 import { FaRegSadCry } from "react-icons/fa"; // Importing a sad icon from react-icons
+import PaginationComponent from '../../components/pagination/PaginationComponent';
 
 export default function ManageBlog(): ReactElement {
   const dispatch = useAppDispatch();
@@ -16,16 +17,18 @@ export default function ManageBlog(): ReactElement {
   const [blog, setBlog] = useState<blogProps>();
   const editDialogRef = useRef<HTMLDialogElement>(null);
   const deleteDialogRef = useRef<HTMLDialogElement>(null);
-
+  const [currentpage, setCurrentpage] = useState<number>(1);
+  const [pagecount, setPagecount] = useState<number>(0);
   const [editdialog, setEditdialog] = useState<boolean>(false);
   const [deletedialog, setDeletedialog] = useState<boolean>(false);
   useEffect(() => {
     dispatch(setPage('blog'));
     async function dataWrapper() {
       try {
-        const response = (await axiosInstance.get('/user/blog/manage')).data;
+        const response = (await axiosInstance.get(`/user/blog/manage?page=${currentpage}`)).data;
         if (response.message === 'success') {
           setBlogs(response.blogs);
+          setPagecount(response.pageLength)
         } else {
           console.log(response.message);
         }
@@ -34,7 +37,7 @@ export default function ManageBlog(): ReactElement {
       }
     }
     dataWrapper();
-  }, [dispatch]);
+  }, [dispatch,currentpage]);
   const editHandler = (blog: blogProps) => {
     flushSync(() => {
       setBlog(blog);
@@ -57,7 +60,30 @@ export default function ManageBlog(): ReactElement {
     setDeletedialog(false)
     deleteDialogRef.current?.close()
   }
-  
+  const pageHandler = (count: number) => {
+    const page = Math.ceil(count / 10) + 1;
+    const array = [];
+    for (let i = 0; i < page; i++) {
+      array.push(i + 1);
+    }
+    return array;
+  };
+  const previouspageHandler = () => {
+    const prev = currentpage - 1;
+    if (prev <= 0) {
+      setCurrentpage(1);
+      return;
+    }
+    setCurrentpage(prev);
+  };
+  const nextpageHandler = () => {
+    const next = currentpage + 1;
+    if (next > Math.ceil(pagecount / 10) + 1) {
+      setCurrentpage(Math.ceil(pagecount / 10) + 1);
+      return;
+    }
+    setCurrentpage(next);
+  };
   return (
     <>
       <div className="ml-36 flex flex-col items-center justify-center">
@@ -103,6 +129,13 @@ export default function ManageBlog(): ReactElement {
             </div>
           ))}
         </div>
+        <PaginationComponent
+          previouspageHandler={previouspageHandler}
+          nextpageHandler={nextpageHandler}
+          pageHandler={pageHandler}
+          pagecount={pagecount}
+          currentpage={currentpage}
+        />
       </div>
       {editdialog && (
         <BlogForm

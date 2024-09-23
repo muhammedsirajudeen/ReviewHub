@@ -6,8 +6,11 @@ import { PAGE_LIMIT } from './CourseController';
 const UserBlog = async (req: Request, res: Response) => {
   try {
     const user = req.user as IUser;
-    const userBlogs = await Blog.find({ userId: user.id });
-    res.status(200).json({ message: 'success', blogs: userBlogs });
+    let { page } = req.query ?? '1';
+    const length = (await Blog.find()).length;
+    const userBlogs = await Blog.find({ userId: user.id }).skip((parseInt(page as string) - 1) * PAGE_LIMIT)
+    .limit(PAGE_LIMIT);;
+    res.status(200).json({ message: 'success', blogs: userBlogs ,pageLength:length });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'server error occured' });

@@ -30,7 +30,7 @@ export default function Blog(): ReactElement {
         ).data;
         if (response.message === 'success') {
           setBlogs(response.blogs);
-          setPagecount(10);
+          setPagecount(response.pageLength);
         } else {
           console.log(response.message);
         }

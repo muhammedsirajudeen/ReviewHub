@@ -4,18 +4,22 @@ import userProps from '../../types/userProps';
 import url from '../../helper/backendUrl';
 import { useAppDispatch } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
+import PaginationComponent from '../../components/pagination/PaginationComponent';
 
 export default function User(): ReactElement {
   const [users, setUsers] = useState<Array<userProps>>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [currentpage, setCurrentpage] = useState<number>(1);
+  const [pagecount, setPagecount] = useState<number>(0);
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(setPage('users'));
     async function dataWrapper() {
       try {
-        const response = (await axiosInstance.get('/admin/users')).data;
+        const response = (await axiosInstance.get(`/admin/users?page=${currentpage}`)).data;
         if (response.message === 'success') {
           setUsers(response.users);
+          setPagecount(response.pageLength)
         }
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -24,11 +28,35 @@ export default function User(): ReactElement {
       }
     }
     dataWrapper();
-  }, [dispatch]);
+  }, [dispatch,currentpage]);
 
   const blockUser = (userId: string) => {
     // Implement block user functionality
     console.log(`Blocking user with ID: ${userId}`);
+  };
+  const pageHandler = (count: number) => {
+    const page = Math.ceil(count / 10) + 1;
+    const array = [];
+    for (let i = 0; i < page; i++) {
+      array.push(i + 1);
+    }
+    return array;
+  };
+  const previouspageHandler = () => {
+    const prev = currentpage - 1;
+    if (prev <= 0) {
+      setCurrentpage(1);
+      return;
+    }
+    setCurrentpage(prev);
+  };
+  const nextpageHandler = () => {
+    const next = currentpage + 1;
+    if (next > Math.ceil(pagecount / 10) + 1) {
+      setCurrentpage(Math.ceil(pagecount / 10) + 1);
+      return;
+    }
+    setCurrentpage(next);
   };
 
   return (
@@ -104,6 +132,13 @@ export default function User(): ReactElement {
               </tbody>
             </table>
           </div>
+          <PaginationComponent
+          previouspageHandler={previouspageHandler}
+          nextpageHandler={nextpageHandler}
+          pageHandler={pageHandler}
+          pagecount={pagecount}
+          currentpage={currentpage}
+        />
         </div>
       )}
     </div>

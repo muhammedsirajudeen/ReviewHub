@@ -6,6 +6,7 @@ import { flushSync } from 'react-dom';
 import { useAppDispatch } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
 import { toast, ToastContainer } from 'react-toastify';
+import PaginationComponent from '../../components/pagination/PaginationComponent';
 
 export interface ExtendedApprovalProps extends Omit<approvalProps, 'userId'> {
   userId: userProps;
@@ -16,23 +17,26 @@ export default function Approvals(): ReactElement {
   //this is the active approval
   const [approval, setApproval] = useState<ExtendedApprovalProps>();
   const [open, setOpen] = useState<boolean>(false);
+  const [currentpage, setCurrentpage] = useState<number>(1);
+  const [pagecount, setPagecount] = useState<number>(0);
   const dispatch = useAppDispatch();
   const resumeDialogRef = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     dispatch(setPage('users'));
     async function dataWrapper() {
       try {
-        const response = (await axiosInstance.get('/admin/reviewer/approvals'))
+        const response = (await axiosInstance.get(`/admin/reviewer/approvals?page=${currentpage}`))
           .data;
         if (response.message === 'success') {
           setApprovals(response.approvals);
+          setPagecount(response.pageLength)
         }
       } catch (error) {
         console.log(error);
       }
     }
     dataWrapper();
-  }, [dispatch]);
+  }, [dispatch,currentpage]);
   const resumeHandler = (approval: ExtendedApprovalProps) => {
     setApproval(approval);
     flushSync(() => {
@@ -60,6 +64,30 @@ export default function Approvals(): ReactElement {
     } catch (error) {
       console.log(error);
     }
+  };
+  const pageHandler = (count: number) => {
+    const page = Math.ceil(count / 10) + 1;
+    const array = [];
+    for (let i = 0; i < page; i++) {
+      array.push(i + 1);
+    }
+    return array;
+  };
+  const previouspageHandler = () => {
+    const prev = currentpage - 1;
+    if (prev <= 0) {
+      setCurrentpage(1);
+      return;
+    }
+    setCurrentpage(prev);
+  };
+  const nextpageHandler = () => {
+    const next = currentpage + 1;
+    if (next > Math.ceil(pagecount / 10) + 1) {
+      setCurrentpage(Math.ceil(pagecount / 10) + 1);
+      return;
+    }
+    setCurrentpage(next);
   };
   return (
     <div className="flex flex-col items-center justify-start px-4 py-8">
@@ -115,6 +143,13 @@ export default function Approvals(): ReactElement {
             </tbody>
           </table>
         </div>
+        <PaginationComponent
+          previouspageHandler={previouspageHandler}
+          nextpageHandler={nextpageHandler}
+          pageHandler={pageHandler}
+          pagecount={pagecount}
+          currentpage={currentpage}
+        />
       </div>
       {open && (
         <ResumeDialog
