@@ -12,6 +12,7 @@ import EnrollmentController from '../controller/user/EnrollmentController';
 import QuizCheckerController from '../controller/user/quiz/QuizCheckerController';
 import PaymentController from '../controller/user/payment/PaymentController';
 import BlogController from '../controller/user/BlogController';
+import PremiumController from '../controller/premium/PremiumController';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -121,6 +122,13 @@ router.delete(
   '/blog/:blogId',
   passport.authenticate('jwt',{session:false}),
   BlogController.DeleteBlog
+)
+
+//premium member management
+router.post(
+  '/premium',
+  passport.authenticate('jwt',{session:false}),
+  PremiumController.OrderPremium
 )
 
 

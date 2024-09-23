@@ -11,7 +11,7 @@ import { IUser } from '../../../model/User';
 import mongoose, { Document } from 'mongoose';
 import Wallet from '../../../model/Wallet';
 configDotenv();
-interface razorpayProps {
+export interface razorpayProps {
   razorpay_order_id: string;
   razorpay_payment_id: string;
   razorpay_signature: string;

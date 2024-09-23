@@ -1,10 +1,12 @@
 import axios from 'axios';
-import { ChangeEvent, ReactElement, useRef } from 'react';
+import { ChangeEvent, ReactElement, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import url from '../../helper/backendUrl';
 import { toast, ToastContainer } from 'react-toastify';
 import { useAppSelector } from '../../store/hooks';
 import { useNavigate } from 'react-router';
+import { flushSync } from 'react-dom';
+import PremiumDialog from '../../components/Dialog/PremiumDialog';
 
 interface FormValues {
   phone: string;
@@ -13,14 +15,16 @@ interface FormValues {
 }
 
 export default function Profile(): ReactElement {
-  const fileRef = useRef<HTMLInputElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
+  const [premiumdialog,setPremiumdialog]=useState<boolean>(false)
+  const premiumDialogRef=useRef<HTMLDialogElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const navigate = useNavigate();
   const user = useAppSelector((state) => state.global.user);
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -82,6 +86,17 @@ export default function Profile(): ReactElement {
     navigate('/user/wallet');
   };
 
+  const premiumHandler=()=>{
+    flushSync(()=>{
+      setPremiumdialog(true)
+    })
+    premiumDialogRef.current?.showModal()
+  }
+  const closePremiumHandler=()=>{
+    premiumDialogRef.current?.close()
+    setPremiumdialog(false)
+  }
+
   return (
     <div className="mt-20 flex items-center justify-center">
       <div className="h-auto p-8 w-96 bg-white shadow-xl rounded-2xl flex flex-col items-center">
@@ -140,30 +155,39 @@ export default function Profile(): ReactElement {
         </div>
 
         <h1 className="font-semibold text-2xl mt-4 mb-4">Profile</h1>
-        <button
-          className="self-end text-red-500 text-2xl"
-          onClick={() => window.location.reload()}
-        >
-          &times;
-        </button>
+        <div className="flex w-96 items-center justify-evenly">
+
+          <button
+            className="self-end text-red-500 text-2xl"
+            onClick={() => window.location.reload()}
+          >
+            &times;
+          </button>
+        </div>
 
         <img
           ref={imageRef}
           src={
             user.profileImage?.includes('http')
               ? user.profileImage
-              : (user.profileImage
-                ? `${url}/profile/${user.profileImage}`
-                : '/user.png'
-              )
-              } 
+              : user.profileImage
+              ? `${url}/profile/${user.profileImage}`
+              : '/user.png'
+          }
           className="h-48 w-48 rounded-full mt-4 border-4 border-gray-300 cursor-pointer transition-transform hover:scale-105"
           onClick={imageHandler}
           alt="Profile"
         />
 
         <p className="text-sm font-light mt-2">{user?.email}</p>
-
+        <button onClick={premiumHandler} className="m-10 flex items-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
+            <img
+              src="/premium/premium.png"
+              alt="Premium Logo"
+              className="h-6 w-6 mr-2"
+            />
+            Premium
+          </button>
         <form
           className="flex flex-col items-start mt-4 w-full"
           onSubmit={handleSubmit(onSubmit)}
@@ -231,6 +255,11 @@ export default function Profile(): ReactElement {
         </form>
       </div>
       <ToastContainer />
+      {
+        premiumdialog && (
+          <PremiumDialog dialogRef={premiumDialogRef} closeHandler={closePremiumHandler}/>
+        )
+      }
     </div>
   );
 }

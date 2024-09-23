@@ -16,13 +16,13 @@ interface orderProps {
   amount: string;
 }
 
-interface RazorpayResponse {
+export interface RazorpayResponse {
   razorpay_payment_id: string;
   razorpay_order_id: string;
   razorpay_signature: string;
 }
 
-interface RazorpayPaymentError {
+export interface RazorpayPaymentError {
     error:{
         code: string;                 // The error code
         description: string;          // A human-readable description of the error
@@ -56,12 +56,12 @@ export default function PaymentDialog({
   }
   const handlePayment = async (order: orderProps) => {
     try {
-      const RAZORPAY_KEY_ID = 'rzp_test_wOLYOIp9WVnFFr';
+      const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_ID;
       const options = {
         key: RAZORPAY_KEY_ID,
         amount: order.amount,
         currency: 'INR',
-        name: 'Your Company Name',
+        name: 'Review Hub',
         description: 'Payment for your order',
         order_id: order.id,
         handler: async (response: RazorpayResponse) => {
