@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Blog, { IBlog } from '../../model/Blog';
 import { IUser } from '../../model/User';
+import { PAGE_LIMIT } from './CourseController';
 
 const UserBlog = async (req: Request, res: Response) => {
   try {
@@ -15,8 +16,16 @@ const UserBlog = async (req: Request, res: Response) => {
 
 const AllBlog = async (req: Request, res: Response) => {
   try {
-    const Blogs = await Blog.find().populate('userId', 'email -_id');
-    res.status(200).json({ message: 'success', blogs: Blogs });
+    let { page } = req.query ?? '1';
+    const length = (await Blog.find()).length;
+
+    const Blogs = await Blog.find()
+      .populate('userId', 'email -_id')
+      .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
+      .limit(PAGE_LIMIT);
+    res
+      .status(200)
+      .json({ message: 'success', blogs: Blogs, pageLength: length });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'server error occured' });
@@ -26,6 +35,7 @@ const AllBlog = async (req: Request, res: Response) => {
 const AddBlog = async (req: Request, res: Response) => {
   try {
     const user = req.user as IUser;
+
     const blogBody = req.body as IBlog;
     const newBlog = new Blog({
       userId: user.id,
@@ -93,5 +103,5 @@ export default {
   AddBlog,
   UpdateBlog,
   DeleteBlog,
-  UserBlog
+  UserBlog,
 };

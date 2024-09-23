@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Course from '../../model/Course';
 import { IUser } from '../../model/User';
 
-const PAGE_LIMIT = 10;
+export const PAGE_LIMIT = 10;
 
 interface dateProps {
   $gt: Date;

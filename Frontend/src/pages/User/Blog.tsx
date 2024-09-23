@@ -8,6 +8,7 @@ import BlogForm from '../../components/Form/Blog/BlogForm';
 import { flushSync } from 'react-dom';
 import { ToastContainer } from 'react-toastify';
 import BlogDialog from '../../components/Dialog/BlogDialog';
+import PaginationComponent from '../../components/pagination/PaginationComponent';
 
 export default function Blog(): ReactElement {
   const [blogs, setBlogs] = useState<Array<blogProps>>([]);
@@ -16,15 +17,18 @@ export default function Blog(): ReactElement {
   const [createblog, setEditblog] = useState<boolean>(false);
   const createDialogRef = useRef<HTMLDialogElement>(null);
   const viewDialogRef = useRef<HTMLDialogElement>(null);
+  const [currentpage, setCurrentpage] = useState<number>(1);
+  const [pagecount, setPagecount] = useState<number>(0);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(setPage('blog'));
     async function dataWrapper() {
       try {
-        const response = (await axiosInstance.get('/user/blog')).data;
+        const response = (await axiosInstance.get(`/user/blog?page=${currentpage}`)).data;
         if (response.message === 'success') {
           setBlogs(response.blogs);
+          setPagecount(10)
         } else {
           console.log(response.message);
         }
@@ -33,7 +37,7 @@ export default function Blog(): ReactElement {
       }
     }
     dataWrapper();
-  }, [dispatch]);
+  }, [dispatch,currentpage]);
 
   const createHandler = () => {
     flushSync(() => {
@@ -59,7 +63,30 @@ export default function Blog(): ReactElement {
     });
     viewDialogRef.current?.showModal();
   };
-
+  const pageHandler = (count: number) => {
+    const page = Math.ceil(count / 10) + 1;
+    const array = [];
+    for (let i = 0; i < page; i++) {
+      array.push(i + 1);
+    }
+    return array;
+  };
+  const previouspageHandler = () => {
+    const prev = currentpage - 1;
+    if (prev <= 0) {
+      setCurrentpage(1);
+      return;
+    }
+    setCurrentpage(prev);
+  };
+  const nextpageHandler = () => {
+    const next = currentpage + 1;
+    if (next > Math.ceil(pagecount / 10) + 1) {
+      setCurrentpage(Math.ceil(pagecount / 10) + 1);
+      return;
+    }
+    setCurrentpage(next);
+  };
   return (
     <>
       <div className="container mx-auto p-4">
@@ -94,6 +121,7 @@ export default function Blog(): ReactElement {
             </div>
           ))}
         </div>
+        <PaginationComponent previouspageHandler={previouspageHandler} nextpageHandler={nextpageHandler} pageHandler={pageHandler} pagecount={pagecount} currentpage={currentpage}/>
       </div>
       {createblog && (
         <BlogForm
