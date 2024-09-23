@@ -13,6 +13,7 @@ import QuizCheckerController from '../controller/user/quiz/QuizCheckerController
 import PaymentController from '../controller/user/payment/PaymentController';
 import BlogController from '../controller/user/BlogController';
 import PremiumController from '../controller/premium/PremiumController';
+import FavoriteController from '../controller/user/FavoriteController';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -136,6 +137,15 @@ router.post(
   passport.authenticate('jwt',{session:false}),
   PremiumController.PremiumVerifer
 )
+
+
+//favorite management
+router.post(
+  '/favorite/:courseId',
+  passport.authenticate('jwt',{session:false}),
+  FavoriteController.AddFavorite
+)
+
 
 
 export default router;

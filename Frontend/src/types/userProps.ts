@@ -20,7 +20,9 @@ export default interface userProps {
   phone: string;
   walletId: walletProps;
   reviewerApproval: boolean;
-  premiumMember:boolean
+  premiumMember:boolean;
+  favoriteCourses?:string[]
+
 
 }
 

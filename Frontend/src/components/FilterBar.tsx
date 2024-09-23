@@ -19,7 +19,7 @@ export default function FilterBar({
   const [domain, setDomain] = useState<string>('');
   const [date, setDate] = useState<Value>(new Date());
   const [selectdate, setSelectdate] = useState<boolean>(false);
-
+  const [favorite,setFavorite]=useState<boolean>(false)
   useEffect(() => {
     const fetchData = async (endpoint: string) => {
       const response = (
@@ -32,14 +32,16 @@ export default function FilterBar({
       setResult(response.courses);
     };
 
-    if (selectdate && domain) {
-      fetchData(`/user/course?page=${currentpage}&date=${date}&domain=${domain}`);
+    if (selectdate && domain && favorite ) {
+      fetchData(`/user/course?page=${currentpage}&date=${date}&domain=${domain}&favorite=true`);
     } else if (domain) {
-      fetchData(`/user/course?page=${currentpage}&domain=${domain}`);
+      fetchData(`/user/course?page=${currentpage}&domain=${domain}&`);
     } else if (selectdate) {
       fetchData(`/user/course?page=${currentpage}&date=${date}`);
+    }else if(favorite){
+      fetchData(`/user/course?page=${currentpage}&favorite=true`);
     }
-  }, [selectdate, domain, date, currentpage, setResult]);
+  }, [selectdate, domain, date, currentpage, setResult, favorite]);
 
   const toggleActive = (selection: string) => {
     setActive(prev => (prev === selection ? '' : selection));
@@ -55,6 +57,9 @@ export default function FilterBar({
     setSelectdate(true);
     setDate(value);
   };
+  const favoriteSelector=()=>{
+    setFavorite((prev)=>!prev)
+  }
 
   return (
     <>
@@ -110,6 +115,17 @@ export default function FilterBar({
           onClick={() => toggleActive('category')}
         >
           <span className="text-xs font-light">Category</span>
+          <img
+            src={active === 'category' ? '/filterbar/up.png' : '/filterbar/down.png'}
+            className="h-3 w-3 ml-2"
+            alt="toggle"
+          />
+        </button>
+        <button
+          className={`border border-gray-300 text-gray-700 p-2 rounded-lg flex items-center justify-center transition-colors duration-300 hover:bg-gray-100 ${active === 'favorite' ? 'bg-gray-800 text-white' : ''}`}
+          onClick={() => {toggleActive('favorite');favoriteSelector()}}
+        >
+          <span className="text-xs font-light">Favorite</span>
           <img
             src={active === 'category' ? '/filterbar/up.png' : '/filterbar/down.png'}
             className="h-3 w-3 ml-2"

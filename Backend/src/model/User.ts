@@ -13,7 +13,8 @@ export interface IUser extends Document {
   attendedQuizes:mongoose.Types.ObjectId[];
   verified:boolean;
   reviewerApproval:boolean
-  premiumMember:boolean
+  premiumMember:boolean;
+  favoriteCourses:Array<mongoose.Types.ObjectId>
 }
 
 const userSchema: Schema<IUser> = new Schema({
@@ -82,6 +83,11 @@ const userSchema: Schema<IUser> = new Schema({
     type:Boolean,
     required:false,
     default:false
+  },
+  favoriteCourses:{
+    type:[mongoose.Schema.ObjectId],
+    required:false,
+    default:[]
   }
 });
 const User = mongoose.model<IUser>('User', userSchema);

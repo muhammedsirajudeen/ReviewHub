@@ -3,11 +3,12 @@ import { ReactElement, useEffect, useState } from 'react';
 import url from '../../helper/backendUrl';
 import { courseProps } from '../../types/courseProps';
 import { useNavigate } from 'react-router';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
 import TopBar from '../../components/TopBar';
 import FilterBar from '../../components/FilterBar';
 import { toast, ToastContainer } from 'react-toastify';
+import axiosInstance from '../../helper/axiosInstance';
 
 export default function Course(): ReactElement {
   const [courses, setCourses] = useState<Array<courseProps>>([]);
@@ -15,6 +16,7 @@ export default function Course(): ReactElement {
   const [pagecount, setPagecount] = useState<number>(0);
   const [search, setSearch] = useState<string>('');
   const [enrolledcourses, setEnrolledcourses] = useState<Array<string>>([]);
+  const user=useAppSelector((state)=>state.global.user)
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -61,9 +63,20 @@ export default function Course(): ReactElement {
     e.stopPropagation();
     alert('clicked here');
   };
-  const favHandler = (e: React.MouseEvent<HTMLImageElement>) => {
-    e.stopPropagation();
-    alert('favorite clicked');
+  const favHandler = async (id:string) => {
+    try{
+      const response=(
+        await axiosInstance.post(`/user/favorite/${id}`)
+      ).data
+      if(response.message==="success"){
+        toast.success("success")
+        setTimeout(()=>window.location.reload(),300)
+      }else{
+        toast.error(response.message)
+      }
+    }catch(error){
+      console.log(error)
+    }
   };
   const pageHandler = (count: number) => {
     const page = Math.ceil(count / 10) + 1;
@@ -118,8 +131,11 @@ export default function Course(): ReactElement {
               />
               <div className="flex justify-between w-full">
                 <img
-                  onClick={favHandler}
-                  src="/course/favorite.png"
+                  onClick={(e)=>{
+                    e.stopPropagation()
+                    favHandler(course._id)
+                  }}
+                  src={` ${user.favoriteCourses?.includes(course._id) ? "/course/favoritefilled.png"  :"/course/favorite.png"  } `}
                   className="h-5 w-5"
                 />
                 <img
