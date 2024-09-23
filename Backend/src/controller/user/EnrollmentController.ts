@@ -5,10 +5,19 @@ import mongoose from 'mongoose';
 const GetEnroll = async (req: Request, res: Response) => {
   try {
     const user = req.user as IUser;
-    const enrolledCourses = user.enrolledCourses;
+    const {progress}=req.query
+    let { page } = req.query ?? '1';
+    const length = user.enrolledCourses.length;
+    //implement pagination here as its coming as a nested element has to perform directly on the array
+    let enrolledCourses
+    if(progress){
+        enrolledCourses=(await User.findById(user.id).populate('enrolledCourses'))?.enrolledCourses
+    }else{
+        enrolledCourses = user.enrolledCourses;
+    }
     res
       .status(200)
-      .json({ message: 'success', enrolledCourses: enrolledCourses });
+      .json({ message: 'success', enrolledCourses: enrolledCourses, pageLength:length });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'server error occured' });

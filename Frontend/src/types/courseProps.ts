@@ -6,6 +6,7 @@ export interface courseProps {
   courseImage: string;
   tagline: string;
   unlistStatus: boolean;
+  postedDate:string
 }
 
 export interface roadmapProps {

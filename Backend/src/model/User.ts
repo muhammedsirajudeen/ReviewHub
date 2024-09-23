@@ -53,6 +53,7 @@ const userSchema: Schema<IUser> = new Schema({
     type: [mongoose.Schema.ObjectId],
     required: false,
     unique: false,
+    ref:'courses'
   },
   rewardPoints: {
     type: Number,

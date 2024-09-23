@@ -146,12 +146,12 @@ export default function Profile(): ReactElement {
           >
             Reviews
           </a>
-          <a
+          {/* <a
             className="text-blue-600 font-bold text-lg hover:text-blue-800 transition-colors"
             href="/user/feedback"
           >
             Favorite
-          </a>
+          </a> */}
         </div>
 
         <h1 className="font-semibold text-2xl mt-4 mb-4">Profile</h1>
