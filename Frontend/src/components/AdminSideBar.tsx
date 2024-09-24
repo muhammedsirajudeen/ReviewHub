@@ -24,7 +24,7 @@ export default function AdminSideBar(): ReactElement {
             page === 'dashboard' ? 'bg-blue-400' : ''
           } flex items-center justify-centerreview p-6 rounded-lg mt-10`}
         >
-          <a href="/user/dashboard">
+          <a href="/admin/dashboard">
             <img src="/sidebar/dashboard.png" />
           </a>
         </div>
@@ -66,7 +66,7 @@ export default function AdminSideBar(): ReactElement {
         </div>
         {/* this interface is also basically same */}
         <div className="flex items-center justify-center mt-14">
-          <a href="/user/resources">
+          <a href="/admin/blog">
             <img src="/sidebar/resource.png" />
           </a>
         </div>

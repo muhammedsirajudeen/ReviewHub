@@ -155,7 +155,6 @@ export default function Profile(): ReactElement {
 
         <h1 className="font-semibold text-2xl mt-4 mb-4">Profile</h1>
         <div className="flex w-96 items-center justify-evenly">
-
           <button
             className="self-end text-red-500 text-2xl"
             onClick={() => window.location.reload()}
@@ -179,14 +178,20 @@ export default function Profile(): ReactElement {
         />
 
         <p className="text-sm font-light mt-2">{user?.email}</p>
-        <button disabled={user.premiumMember} onClick={premiumHandler} className="m-10 flex items-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
+        {user.authorization !== 'reviewer' && (
+          <button
+            disabled={user.premiumMember}
+            onClick={premiumHandler}
+            className="m-10 flex items-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200"
+          >
             <img
               src="/premium/premium.png"
               alt="Premium Logo"
               className="h-6 w-6 mr-2"
             />
-            {user.premiumMember ? "Premium Member"  : "Become Premium"}
+            {user.premiumMember ? 'Premium Member' : 'Become Premium'}
           </button>
+        )}
         <form
           className="flex flex-col items-start mt-4 w-full"
           onSubmit={handleSubmit(onSubmit)}
@@ -254,11 +259,12 @@ export default function Profile(): ReactElement {
         </form>
       </div>
       <ToastContainer />
-      {
-        premiumdialog && (
-          <PremiumDialog dialogRef={premiumDialogRef} closeHandler={closePremiumHandler}/>
-        )
-      }
+      {premiumdialog && (
+        <PremiumDialog
+          dialogRef={premiumDialogRef}
+          closeHandler={closePremiumHandler}
+        />
+      )}
     </div>
   );
 }

@@ -111,6 +111,11 @@ const router = createBrowserRouter([
         element: <AdminPrivateRoute Component={Approvals} />,
         loader: tokenVerifier,
       },
+      {
+        path:'/admin/blog',
+        element:<AdminPrivateRoute Component={Blog}/>,
+        loader:tokenVerifier
+      }
     ],
   },
   //user routes
