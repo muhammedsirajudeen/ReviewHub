@@ -17,11 +17,10 @@ axiosInstance.interceptors.response.use(
       try {
         const refreshToken = window.localStorage.getItem("refresh_token")
         const response = await axios.post(`${url}/auth/refresh`, { refresh_token: refreshToken });
-       
+        
         const { token,refresh_token } = response.data;
         window.localStorage.setItem("token",token)
         window.localStorage.setItem("refresh_token",refresh_token)
-        window.localStorage.setItem("hey","hey")
         // Set the new access token in the original request's headers
         originalRequest.headers['Authorization'] = `Bearer ${token}`;
 
