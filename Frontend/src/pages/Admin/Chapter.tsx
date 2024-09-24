@@ -2,7 +2,6 @@ import { ReactElement, useEffect, useRef, useState } from 'react';
 import {  SubmitHandler, useForm } from 'react-hook-form';
 import { useLocation } from 'react-router';
 import { chapterProps, roadmapProps } from '../../types/courseProps';
-import axios from 'axios';
 import { ToastContainer } from 'react-toastify';
 import url from '../../helper/backendUrl';
 import { flushSync } from 'react-dom';
@@ -10,6 +9,7 @@ import ChapterForm from '../../components/Form/ChapterForm';
 import ChapterDelete from '../../components/Form/ChapterDelete';
 import TopBar from '../../components/TopBar';
 import FilterBarRoadmap from '../../components/FilterBarRoadmap';
+import axiosInstance from '../../helper/axiosInstance';
 
 type Inputs = {
     chapterName: string;
@@ -39,18 +39,11 @@ export default function Chapter(): ReactElement {
 
     useEffect(() => {
         async function dataWrapper() {
-            let urlconstructor=`${url}/admin/chapter/${roadmap._id}?page=${currentpage}`
-            if(search) urlconstructor=`${url}/admin/chapter/${roadmap._id}?page=${currentpage}&search=${search}`
+            let urlconstructor=`/admin/chapter/${roadmap._id}?page=${currentpage}`
+            if(search) urlconstructor=`/admin/chapter/${roadmap._id}?page=${currentpage}&search=${search}`
             const response = (
-                await axios.get(
+                await axiosInstance.get(
                         urlconstructor,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${window.localStorage.getItem(
-                                'token'
-                            )}`,
-                        },
-                    }
                 )
             ).data;
             console.log(response)

@@ -1,7 +1,5 @@
-import axios from 'axios';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router';
-import url from '../../helper/backendUrl';
 import {
   quizProps,
   QuizProps,
@@ -14,6 +12,7 @@ import QuizForm from '../../components/Form/Resource/QuizForm';
 import { ToastContainer } from 'react-toastify';
 import ResourceDelete from '../../components/Form/Resource/ResourceDelete';
 import QuizDelete from '../../components/Form/Resource/QuizDelete';
+import axiosInstance from '../../helper/axiosInstance';
 
 export default function Resource(): ReactElement {
   const [resource, setResource] = useState<resourceProps>();
@@ -38,11 +37,7 @@ export default function Resource(): ReactElement {
     async function dataWrapper() {
       if (!quizStatus) {
         const response = (
-          await axios.get(`${url}/admin/resource/${chapterId}`, {
-            headers: {
-              Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-            },
-          })
+          await axiosInstance.get(`/admin/resource/${chapterId}`)
         ).data;
         //   console.log(response.resource)
         if (response.resource) {
@@ -55,11 +50,7 @@ export default function Resource(): ReactElement {
       } else {
         //it is quiz
         const response = (
-          await axios.get(`${url}/admin/quiz/${chapterId}`, {
-            headers: {
-              Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-            },
-          })
+          await axiosInstance.get(`/admin/quiz/${chapterId}`)
         ).data;
         if (response.quiz) {
           setQuiz(response.quiz);

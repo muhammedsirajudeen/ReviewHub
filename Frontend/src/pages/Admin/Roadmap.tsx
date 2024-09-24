@@ -3,11 +3,11 @@ import { useLocation, useNavigate } from 'react-router';
 import RoadmapForm from '../../components/Form/RoadmapForm';
 import { flushSync } from 'react-dom';
 import url from '../../helper/backendUrl';
-import axios from 'axios';
 import RoadmapDeleteForm from '../../components/Form/RoadmapDelete.form';
 import FilterBarRoadmap from '../../components/FilterBarRoadmap';
 import TopBar from '../../components/TopBar';
 import { roadmapProps } from '../../types/courseProps';
+import axiosInstance from '../../helper/axiosInstance';
 
 
 
@@ -27,20 +27,13 @@ export default function Roadmap(): ReactElement {
     let lessonCount=1
     useEffect(() => {
         async function dataWrapper() {
-          let urlconstructor=`${url}/user/roadmap/${location.state.id}?page=${currentpage}`
+          let urlconstructor=`/user/roadmap/${location.state.id}?page=${currentpage}`
           if(search){
-            urlconstructor=`${url}/user/roadmap/${location.state.id}?page=${currentpage}&search=${search}`
+            urlconstructor=`/user/roadmap/${location.state.id}?page=${currentpage}&search=${search}`
           }
             const response = (
-                await axios.get(
+                await axiosInstance.get(
                     urlconstructor,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${window.localStorage.getItem(
-                                'token'
-                            )}`,
-                        },
-                    }
                 )
             ).data;
             console.log(response)

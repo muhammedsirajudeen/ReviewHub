@@ -1,8 +1,7 @@
 import { ReactElement, Ref } from 'react';
 import { chapterProps } from '../../types/courseProps';
-import axios from 'axios';
-import url from '../../helper/backendUrl';
 import { toast } from 'react-toastify';
+import axiosInstance from '../../helper/axiosInstance';
 
 export default function ChapterDelete({
   dialogRef,
@@ -15,13 +14,7 @@ export default function ChapterDelete({
 }): ReactElement {
     const deleteHandler=async ()=>{
         const response=(
-            await axios.delete(`${url}/admin/chapter/${chapter?._id}`,
-                {
-                    headers:{
-                        Authorization:`Bearer ${window.localStorage.getItem("token")}`
-                    }
-                }
-            )
+            await axiosInstance.delete(`/admin/chapter/${chapter?._id}`)
         ).data
         if(response.message==="success"){
             toast("deleted successfully")

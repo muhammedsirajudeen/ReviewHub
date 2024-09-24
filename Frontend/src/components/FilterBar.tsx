@@ -2,8 +2,7 @@ import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from "rea
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import { courseProps } from "../types/courseProps";
-import axios from "axios";
-import url from "../helper/backendUrl";
+import axiosInstance from "../helper/axiosInstance";
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -23,11 +22,7 @@ export default function FilterBar({
   useEffect(() => {
     const fetchData = async (endpoint: string) => {
       const response = (
-        await axios.get(url + endpoint, {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-          },
-        })
+        await axiosInstance.get(endpoint)
       ).data;
       setResult(response.courses);
     };

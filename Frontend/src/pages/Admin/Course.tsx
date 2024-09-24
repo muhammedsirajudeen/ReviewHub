@@ -1,7 +1,6 @@
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import CourseForm from '../../components/Form/CourseForm';
 import { flushSync } from 'react-dom';
-import axios from 'axios';
 import url from '../../helper/backendUrl';
 import { useNavigate } from 'react-router';
 import { courseProps } from '../../types/courseProps';
@@ -10,6 +9,7 @@ import { setPage } from '../../store/globalSlice';
 import CourseDeleteForm from '../../components/Form/CourseDeleteForm';
 import FilterBar from '../../components/FilterBar';
 import TopBar from '../../components/TopBar';
+import axiosInstance from '../../helper/axiosInstance';
 export default function Course(): ReactElement {
     const [open, setOpen] = useState<boolean>(false);
     const [courses, setCourses] = useState<Array<courseProps>>([]);
@@ -25,18 +25,12 @@ export default function Course(): ReactElement {
     const navigate = useNavigate();
     useEffect(() => {
         async function dataWrapper() {
-            let urlconstructor=`${url}/user/course?page=${currentpage}`  
+            let urlconstructor=`/user/course?page=${currentpage}`  
             if(search){
-               urlconstructor = `${url}/user/course?page=${currentpage}&search=${search}`;   
+               urlconstructor = `/user/course?page=${currentpage}&search=${search}`;   
             }
             const response = (
-                await axios.get(urlconstructor, {
-                    headers: {
-                        Authorization: `Bearer ${window.localStorage.getItem(
-                            'token'
-                        )}`,
-                    },
-                })
+                await axiosInstance.get(urlconstructor)
             ).data;
             setCourses(response.courses);
             setPagecount(response.pageLength);

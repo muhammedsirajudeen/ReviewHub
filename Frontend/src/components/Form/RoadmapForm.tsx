@@ -1,10 +1,10 @@
-import axios from 'axios';
 import { ChangeEvent, ReactElement, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import url from '../../helper/backendUrl';
 import { roadmapProps } from '../../types/courseProps';
 import Toggle from 'react-toggle';
+import axiosInstance from '../../helper/axiosInstance';
 
 interface Inputs {
   roadmapName: string;
@@ -78,15 +78,13 @@ export default function RoadmapForm({
     }
 
     const response = method === 'put'
-      ? await axios.put(`${url}/admin/roadmap/${roadmap?._id}`, formData, {
+      ? await axiosInstance.put(`/admin/roadmap/${roadmap?._id}`, formData, {
           headers: {
-            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
             'Content-Type': 'multipart/form-data',
           },
         })
-      : await axios.post(`${url}/admin/roadmap`, formData, {
+      : await axiosInstance.post(`/admin/roadmap`, formData, {
           headers: {
-            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
             "Content-Type": 'multipart/form-data'
           },
         });

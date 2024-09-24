@@ -1,12 +1,11 @@
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { TokenResponse, useGoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
 import { useLoaderData, useLocation, useNavigate } from 'react-router';
 import { toast, ToastContainer } from 'react-toastify';
-import url from '../../helper/backendUrl';
 import OtpForm from '../../components/Form/Authentication/OtpForm';
 import { flushSync } from 'react-dom';
+import axiosInstance from '../../helper/axiosInstance';
 interface FormValues {
   email: string;
   password: string;
@@ -41,7 +40,7 @@ export default function Signup(): ReactElement {
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     // Handle form submission
     setSubmit(true);
-    const response = await axios.post(url + '/auth/credential/signup', {
+    const response = await axiosInstance.post('/auth/credential/signup', {
       email: data.email,
       password: data.password,
       role:roleRef.current
@@ -74,7 +73,7 @@ export default function Signup(): ReactElement {
   const googleHandler = useGoogleLogin({
     onSuccess: async (codeResponse: TokenResponse) => {
       console.log(codeResponse);
-      const response = await axios.post(url + '/auth/google/signup', {
+      const response = await axiosInstance.post('/auth/google/signup', {
         userToken: codeResponse.access_token,
         role:roleRef.current
       });

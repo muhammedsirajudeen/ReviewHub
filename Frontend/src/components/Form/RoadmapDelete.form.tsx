@@ -1,8 +1,7 @@
 import { ReactElement, Ref } from 'react';
 import { roadmapProps } from '../../types/courseProps';
-import axios from 'axios';
-import url from '../../helper/backendUrl';
 import { toast, ToastContainer } from 'react-toastify';
+import axiosInstance from '../../helper/axiosInstance';
 
 export default function RoadmapDeleteForm({
   deletedialogRef,
@@ -16,13 +15,7 @@ export default function RoadmapDeleteForm({
 
   const deleteHandler=async ()=>{
    const response=(
-    await axios.delete(`${url}/admin/roadmap/${roadmap?._id}`,
-        {
-            headers:{
-                Authorization:`Bearer ${window.localStorage.getItem("token")}`
-            }
-        }
-    )
+    await axiosInstance.delete(`/admin/roadmap/${roadmap?._id}`)
    ).data
    if(response.message==="success"){
     toast("deleted successfully")

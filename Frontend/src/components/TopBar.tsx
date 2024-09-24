@@ -1,8 +1,7 @@
 import { Dispatch, memo, ReactElement, SetStateAction, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { chapterProps, courseProps, roadmapProps } from '../types/courseProps';
-import axios from 'axios';
-import url from '../helper/backendUrl';
+import axiosInstance from '../helper/axiosInstance';
 
 type Inputs = {
   search: string;
@@ -43,45 +42,21 @@ function TopBar({
       async function dataWrapper() {
         if(setCourses){
           const response = (
-            await axios.get(
-              url + `/user/course?page=${currentpage}&search=${search}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-                },
-              }
-            )
+            await axiosInstance.get(
+              `/user/course?page=${currentpage}&search=${search}`)
           ).data;
           setCourses(response.courses);
         }else if(setRoadmaps){
           const response = (
-            await axios.get(
-                url +
-                    `/user/roadmap/${courseId}?page=${currentpage}&search=${search}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${window.localStorage.getItem(
-                            'token'
-                        )}`,
-                    },
-                }
-            )
+            await axiosInstance.get(
+                    `/user/roadmap/${courseId}?page=${currentpage}&search=${search}`)
         ).data;
         console.log(response)
         setRoadmaps(response.roadmaps);
         }else if(setChapters){
           const response = (
-            await axios.get(
-              url +
-                `/admin/chapter/${roadmapId}?page=${currentpage}&search=${search}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${window.localStorage.getItem(
-                    'token'
-                  )}`,
-                },
-              }
-            )
+            await axiosInstance.get(
+                `/admin/chapter/${roadmapId}?page=${currentpage}&search=${search}`)
           ).data;
         console.log(response)
         setChapters(response.chapters);

@@ -1,8 +1,7 @@
 import { ReactElement, Ref } from 'react';
 import { courseProps } from '../../types/courseProps';
-import axios from 'axios';
-import url from '../../helper/backendUrl';
 import { toast, ToastContainer } from 'react-toastify';
+import axiosInstance from '../../helper/axiosInstance';
 
 export default function CourseDeleteForm({
   deletedialogRef,
@@ -16,13 +15,7 @@ export default function CourseDeleteForm({
 
   const deleteHandler=async ()=>{
    const response=(
-    await axios.delete(`${url}/admin/course/${course?._id}`,
-        {
-            headers:{
-                Authorization:`Bearer ${window.localStorage.getItem("token")}`
-            }
-        }
-    )
+    await axiosInstance.delete(`/admin/course/${course?._id}`)
    ).data
    if(response.message==="success"){
     toast("deleted successfully")

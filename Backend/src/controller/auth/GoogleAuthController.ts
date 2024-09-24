@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
 import { hashPassword } from "../../helper/bcryptHelper";
 import Wallet from "../../model/Wallet";
+import { addValueToCache } from "../../helper/redisHelper";
+import { randomUUID } from "crypto";
 dotenv.config();
 interface responseProps {
   email: string;
@@ -36,35 +38,33 @@ const GoogleLogin = async (req: Request, res: Response) => {
     let userData = data;
     const checkUser = await User.findOne({ email: userData.email });
     if (checkUser) {
-      if(checkUser.authorization==="admin"){
-        const token = jwt.sign(
-          {
-            id: checkUser.id,
-            email: checkUser.email,
-            password: checkUser.password,
-            admin:true
-          },
-          process.env.SECRET_KEY ?? "",
-          { expiresIn: "12h" } //decresae in production
-        );
-        //temporary solution thinking of better approaches
-        return res.status(200).json({ message: "success", token: token ,admin:true});
-      }
       const token = jwt.sign(
         {
           id: checkUser.id,
           email: checkUser.email,
-          password: checkUser.password,
         },
-        process.env.SECRET_KEY ?? "",
-        { expiresIn: "12h" } //dont forget to decrease in production
+        process.env.SECRET_KEY as string,
+        { expiresIn: "5m" } //dont forget to decrease in production
       );
-      res.status(200).json({ message: "success", token: token });
+      const refresh_token= jwt.sign(
+        {
+          id:checkUser.id,
+          email:checkUser.email,
+          random:randomUUID()
+
+        },
+        process.env.REFRESH_SECRET_KEY as string,
+        {expiresIn:"7d"}
+      ) 
+      addValueToCache(`refresh-${checkUser.email}`,refresh_token,10000)
+
+      res.status(200).json({ message: "success", token: token, refresh_token:refresh_token });
     } else {
-      res.status(200).json({ message: "user doesnt exist" });
+      res.status(404).json({ message: "user doesnt exist" });
     }
   } catch (error) {
-    res.status(501).json({ message: "server error occured" });
+    console.log(error)
+    res.status(500).json({ message: "server error occured" });
   }
 };
 

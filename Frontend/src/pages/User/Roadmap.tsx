@@ -1,12 +1,12 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import url from '../../helper/backendUrl';
-import axios from 'axios';
 import FilterBarRoadmap from '../../components/FilterBarRoadmap';
 import TopBar from '../../components/TopBar';
 import { roadmapProps } from '../../types/courseProps';
 import { toast, ToastContainer } from 'react-toastify';
 import { useAppSelector } from '../../store/hooks';
+import axiosInstance from '../../helper/axiosInstance';
 
 export default function Roadmap(): ReactElement {
   const location = useLocation();
@@ -28,15 +28,11 @@ export default function Roadmap(): ReactElement {
     }
     console.log('loaded');
     async function dataWrapper() {
-      let urlconstructor = `${url}/user/roadmap/${location.state.courseId}?page=${currentpage}`;
+      let urlconstructor = `/user/roadmap/${location.state.courseId}?page=${currentpage}`;
       if (search)
-        urlconstructor = `${url}/user/roadmap/${location.state.courseId}?page=${currentpage}&search=${search}`;
+        urlconstructor = `/user/roadmap/${location.state.courseId}?page=${currentpage}&search=${search}`;
       const response = (
-        await axios.get(urlconstructor, {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-          },
-        })
+        await axiosInstance.get(urlconstructor)
       ).data;
       console.log(response);
       setRoadmaps(response.roadmaps);
@@ -45,13 +41,9 @@ export default function Roadmap(): ReactElement {
     dataWrapper();
 
     async function enrolledWrapper() {
-      const urlconstructor = `${url}/user/enroll/${location.state.courseId}`;
+      const urlconstructor = `/user/enroll/${location.state.courseId}`;
       const response = (
-        await axios.get(urlconstructor, {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-          },
-        })
+        await axiosInstance.get(urlconstructor)
       ).data;
       if (response.message === 'success') {
         setEnroll(true);
@@ -105,16 +97,11 @@ export default function Roadmap(): ReactElement {
   };
   const enrollHandler = async () => {
     const response = (
-      await axios.post(
-        `${url}/user/enroll`,
+      await axiosInstance.post(
+        `/user/enroll`,
         {
           courseId: location.state.courseId,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-          },
-        }
       )
     ).data;
     if (response.message === 'success') {
@@ -126,11 +113,7 @@ export default function Roadmap(): ReactElement {
   };
   const disenrollHandler = async () => {
     const response = (
-      await axios.delete(`${url}/user/enroll/${location.state.courseId}`, {
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-        },
-      })
+      await axiosInstance.delete(`/user/enroll/${location.state.courseId}`)
     ).data;
     if (response.message === 'success') {
       toast('disenrolled successfully');

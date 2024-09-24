@@ -28,6 +28,11 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   TokenVerifier.TokenVerifier
 );
+//refresh oken
+router.post(
+  '/refresh',
+  TokenVerifier.RefreshToken
+)
 
 router.post(
   '/resend',

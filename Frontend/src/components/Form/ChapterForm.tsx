@@ -1,12 +1,11 @@
 import { ReactElement, Ref, useState } from 'react';
 import { chapterProps } from '../../types/courseProps';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import axios from 'axios';
-import url from '../../helper/backendUrl';
 import { toast } from 'react-toastify';
 import "react-toggle/style.css";
 import Toggle from "react-toggle";
 import { Link } from 'react-router-dom';
+import axiosInstance from '../../helper/axiosInstance';
 
 type Inputs = {
   chapterName: string;
@@ -41,26 +40,19 @@ export default function ChapterForm({
     try {
       let response;
       if (method === 'post') {
-        response = await axios.post(`${url}/admin/chapter`, {
+        response = await axiosInstance.post(`/admin/chapter`, {
           roadmapId,
           chapterName,
           quizStatus: quiz,
           additionalPrompt: data.additionalPrompt,
-        }, {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-          },
         });
       } else {
-        response = await axios.put(`${url}/admin/chapter/${chapter?._id}`, {
+        response = await axiosInstance.put(`/admin/chapter/${chapter?._id}`, {
           chapterName: data.chapterName,
           quizStatus: quiz,
           additionalPrompt: data.additionalPrompt,
-        }, {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-          },
-        });
+        }
+        );
       }
 
       if (response.data.message === "success") {

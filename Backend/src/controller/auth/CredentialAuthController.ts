@@ -100,12 +100,22 @@ const CredentialSignin = async (req: Request, res: Response) => {
           {
             id: checkUser.id,
             email: checkUser.email,
-            password: checkUser.password,
           },
           process.env.SECRET_KEY ?? "",
-          { expiresIn: "1h" }
+          { expiresIn: "5m" }
         );
-        res.status(200).json({ message: "success", token: token });
+        const refresh_token= jwt.sign(
+          {
+            id:checkUser.id,
+            email:checkUser.email,
+            random:randomUUID()
+          },
+          process.env.REFRESH_SECRET_KEY as string,
+          {expiresIn:"7d"}
+        ) 
+        addValueToCache(`refresh-${checkUser.email}`,refresh_token,10000)
+
+        res.status(200).json({ message: "success", token: token, refresh_token:refresh_token });
       } else {
         res.status(200).json({ message: "invalid credentials" });
       }

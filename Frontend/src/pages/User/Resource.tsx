@@ -1,12 +1,11 @@
-import axios from 'axios';
 import { FormEvent, Fragment, ReactElement, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import url from '../../helper/backendUrl';
 import { QuizProps, resourceProps, responseProps } from '../../types/courseProps';
 import { toast, ToastContainer } from 'react-toastify';
 import QuizCheck from '../../components/Form/Resource/user/QuizCheck';
 import { flushSync } from 'react-dom';
 import ConfettiExplosion from 'react-confetti-explosion';
+import axiosInstance from '../../helper/axiosInstance';
 
 export default function Resource(): ReactElement {
   const location = useLocation();
@@ -29,11 +28,7 @@ export default function Resource(): ReactElement {
     }
     async function dataWrapper() {
       const response = (
-        await axios.get(`${url}/user/resource/${location.state.roadmapId}`, {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-          },
-        })
+        await axiosInstance.get(`/user/resource/${location.state.roadmapId}`)
       ).data;
       if (response.message === 'success') {
         setResources(response.resource);
@@ -73,13 +68,8 @@ export default function Resource(): ReactElement {
     }else{
       try{
         const response=(
-          await axios.post(`${url}/user/quiz/check/${activequiz?._id}`,
+          await axiosInstance.post(`/user/quiz/check/${activequiz?._id}`,
             formValues,
-            {
-              headers:{
-                Authorization:`Bearer ${window.localStorage.getItem("token")}`
-              }
-            }
           )
         ).data
         if(response.message==="success"){

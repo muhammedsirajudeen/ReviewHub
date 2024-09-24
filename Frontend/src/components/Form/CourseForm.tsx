@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { ChangeEvent, ReactElement, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Select from 'react-select';
@@ -6,6 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import url from '../../helper/backendUrl';
 import { courseProps } from '../../types/courseProps';
 import Toggle from 'react-toggle';
+import axiosInstance from '../../helper/axiosInstance';
 
 interface Inputs {
   courseName: string;
@@ -94,16 +94,14 @@ export default function CourseForm({
 
     try {
       const response = course
-        ? await axios.put(url + '/admin/course', formData, {
+        ? await axiosInstance.put('/admin/course', formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
-              Authorization: `Bearer ${window.localStorage.getItem('token')}`,
             },
           })
-        : await axios.post(url + '/admin/course', formData, {
+        : await axiosInstance.post('/admin/course', formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
-              Authorization: `Bearer ${window.localStorage.getItem('token')}`,
             },
           });
       

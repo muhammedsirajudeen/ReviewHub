@@ -1,11 +1,10 @@
 import { ReactElement, Ref, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import url from '../../helper/backendUrl';
 import { toast, ToastContainer } from 'react-toastify';
-import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import useRazorpay from 'react-razorpay';
 import { useAppSelector } from '../../store/hooks';
+import axiosInstance from '../../helper/axiosInstance';
 
 type Inputs = {
   amount: string;
@@ -66,20 +65,13 @@ export default function PaymentDialog({
         order_id: order.id,
         handler: async (response: RazorpayResponse) => {
           try {
-            await axios.post(
-              'http://localhost:3000/user/payment/order/verify',
+            await axiosInstance.post(
+              '/user/payment/order/verify',
               {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
               },
-              {
-                headers: {
-                  Authorization: `Bearer ${window.localStorage.getItem(
-                    'token'
-                  )}`,
-                },
-              }
             );
             toastHandler()
             
@@ -111,11 +103,7 @@ export default function PaymentDialog({
         // alert(response.error.metadata.payment_id);
         if(response.error.metadata.payment_id){
             const serverResponse=(
-                await axios.put(`${url}/user/payment/order/failure/${response.error.metadata.order_id}`,{},{
-                    headers:{
-                        Authorization:`Bearer ${window.localStorage.getItem("token")}`
-                    }
-                })
+                await axiosInstance.put(`/user/payment/order/failure/${response.error.metadata.order_id}`,{})
             ).data
             console.log(serverResponse)      
             window.location.reload()      
@@ -131,14 +119,9 @@ export default function PaymentDialog({
   const createOrder = async (amount: string): Promise<orderProps | null> => {
     try {
       const response = (
-        await axios.post(
-          `${url}/user/payment/order`,
+        await axiosInstance.post(
+          `/user/payment/order`,
           { amount: (parseInt(amount) * 100).toString() },
-          {
-            headers: {
-              Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-            },
-          }
         )
       ).data;
       return response.message === 'success' ? response.order : null;

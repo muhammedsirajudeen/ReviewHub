@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { ReactElement, useEffect, useState } from 'react';
 import url from '../../helper/backendUrl';
 import { courseProps } from '../../types/courseProps';
@@ -23,15 +22,11 @@ export default function Course(): ReactElement {
   useEffect(() => {
     dispatch(setPage('course'));
     async function dataWrapper() {
-      let urlconstructor = `${url}/user/course?page=${currentpage}`;
+      let urlconstructor = `/user/course?page=${currentpage}`;
       if (search)
-        urlconstructor = `${url}/user/course?page=${currentpage}&search=${search}`;
+        urlconstructor = `/user/course?page=${currentpage}&search=${search}`;
       const response = (
-        await axios.get(urlconstructor, {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-          },
-        })
+        await axiosInstance.get(urlconstructor)
       ).data;
       console.log(response);
       setCourses(response.courses);
@@ -39,13 +34,9 @@ export default function Course(): ReactElement {
     }
     dataWrapper();
     async function enrollWrapper() {
-      const urlconstructor = `${url}/user/enroll`;
+      const urlconstructor = `/user/enroll`;
       const response = (
-        await axios.get(urlconstructor, {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-          },
-        })
+        await axiosInstance.get(urlconstructor)
       ).data;
       if (response.message === 'success') {
         console.log(response);

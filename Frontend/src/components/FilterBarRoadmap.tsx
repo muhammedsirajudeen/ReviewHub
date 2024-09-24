@@ -1,8 +1,7 @@
 import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import { chapterProps, roadmapProps } from "../types/courseProps";
-import axios from "axios";
-import url from "../helper/backendUrl";
+import axiosInstance from "../helper/axiosInstance";
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -34,11 +33,7 @@ export default function FilterBarRoadmap({
                     : `/admin/chapter/${roadmapId}?page=${currentpage}&date=${date}`;
 
                 const response = (
-                    await axios.get(url + endpoint, {
-                        headers: {
-                            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-                        },
-                    })
+                    await axiosInstance.get(endpoint)
                 ).data;
 
                 console.log(response);

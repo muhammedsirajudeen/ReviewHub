@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { ChangeEvent, ReactElement, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import url from '../../helper/backendUrl';
@@ -7,6 +6,7 @@ import { useAppSelector } from '../../store/hooks';
 import { useNavigate } from 'react-router';
 import { flushSync } from 'react-dom';
 import PremiumDialog from '../../components/Dialog/PremiumDialog';
+import axiosInstance from '../../helper/axiosInstance';
 
 interface FormValues {
   phone: string;
@@ -37,10 +37,9 @@ export default function Profile(): ReactElement {
     }
 
     try {
-      const response = await axios.post(url + '/user/update', formData, {
+      const response = await axiosInstance.post('/user/update', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${window.localStorage.getItem('token')}`,
         },
       });
       if (response.data.message === 'success') {

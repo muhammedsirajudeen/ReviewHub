@@ -15,7 +15,7 @@ export async function addMessageToQueue(queueName: string, message: string) {
 }
 
 
-export async function addValueToCache(email:string,value:number,time:number){
+export async function addValueToCache(email:string,value:string | number,time:number){
   const client=createClient()
   try{
     await client.connect()

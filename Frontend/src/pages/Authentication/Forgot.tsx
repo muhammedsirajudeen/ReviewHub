@@ -2,10 +2,9 @@ import { ReactElement } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { passwordStrength } from "check-password-strength";
 import { useNavigate } from "react-router";
-import axios from "axios";
-import url from "../../helper/backendUrl";
 import { useSearchParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import axiosInstance from "../../helper/axiosInstance";
 
 type Inputs = {
   password: string;
@@ -25,8 +24,8 @@ export default function Forgot(): ReactElement {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const email = window.localStorage.getItem("email");
     try{
-      const response = (await axios.post(
-        `${url}/auth/password?id=${searchParams.get("token")}`,
+      const response = (await axiosInstance.post(
+        `/auth/password?id=${searchParams.get("token")}`,
         {
           password: data.password,
           email: email,

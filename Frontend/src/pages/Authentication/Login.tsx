@@ -5,7 +5,6 @@ import {
   useGoogleLogin,
   UseGoogleLoginOptionsImplicitFlow,
 } from '@react-oauth/google';
-import axios from 'axios';
 // import { useLoaderData, useNavigate } from "react-router";
 import { ToastContainer, toast } from 'react-toastify';
 import { useAppDispatch } from '../../store/hooks';
@@ -16,7 +15,7 @@ import { ClipLoader } from 'react-spinners';
 import { useLocation, useNavigate } from 'react-router';
 import { flushSync } from 'react-dom';
 import OtpForm from '../../components/Form/Authentication/OtpForm';
-import url from '../../helper/backendUrl';
+import axiosInstance from '../../helper/axiosInstance';
 interface FormValues {
   email: string;
   password: string;
@@ -43,7 +42,7 @@ export default function Login(): ReactElement {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setSubmit(true);
-    const response = await axios.post(url + '/auth/credential/signin', {
+    const response = await axiosInstance.post('/auth/credential/signin', {
       email: data.email,
       password: data.password,
     });
@@ -52,6 +51,7 @@ export default function Login(): ReactElement {
       dispatch(setAuthenticated());
 
       window.localStorage.setItem('token', response.data.token);
+      window.localStorage.setItem('refresh_token',response.data.refresh_token)
       const user = await tokenVerifier();
       console.log('the user is', user);
       if (user) dispatch(setUser(user));
@@ -68,12 +68,14 @@ export default function Login(): ReactElement {
   const googleHandler = useGoogleLogin({
     onSuccess: async (codeResponse: TokenResponse) => {
       console.log(codeResponse);
-      const response = await axios.post(url + '/auth/google/login', {
+      const response = await axiosInstance.post('/auth/google/login', {
         userToken: codeResponse.access_token,
       });
       console.log(response);
       if (response.status === 200 && response.data.message === 'success') {
         window.localStorage.setItem('token', response.data.token);
+        window.localStorage.setItem('refresh_token',response.data.refresh_token)
+
         dispatch(setAuthenticated());
         const user = await tokenVerifier();
         if (user) dispatch(setUser(user));
@@ -100,7 +102,7 @@ export default function Login(): ReactElement {
     } else {
       try {
         const response = (
-          await axios.post(url + '/auth/resend', {
+          await axiosInstance.post('/auth/resend', {
             email: email,
           })
         ).data;
