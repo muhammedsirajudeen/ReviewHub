@@ -27,20 +27,17 @@ const AdminMiddleware=(req:Request,res:Response,next:NextFunction)=>{
 router.get(
   '/users',
   passport.authenticate('jwt', { session: false }),
+  AdminMiddleware,
   AdminController.AllUsers
 );
-// router.delete(
-//   '/user/:email',
-//   passport.authenticate('jwt', { session: false }),
-//   AdminController.DeleteUser
-// );
 
-// router.put(
-//   '/user',
-//   passport.authenticate('jwt', { session: false }),
-//   UploadHandler('profile').single('file'),
-//   AdminController.UpdateUser
-// );
+router.patch(
+  '/user/block/:userId',
+  passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+  AdminController.BlockUser
+)
+
 
 //Course Management
 router.post(

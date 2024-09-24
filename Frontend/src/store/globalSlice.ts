@@ -25,6 +25,7 @@ interface userProps {
   reviewerApproval?:boolean
   premiumMember?:boolean;
   favoriteCourses?:string[]
+  verified?:boolean
 
 }
 

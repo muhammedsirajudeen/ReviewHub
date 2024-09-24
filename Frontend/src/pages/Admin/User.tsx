@@ -5,6 +5,8 @@ import url from '../../helper/backendUrl';
 import { useAppDispatch } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
 import PaginationComponent from '../../components/pagination/PaginationComponent';
+import { toast, ToastContainer } from 'react-toastify';
+import UserTopBar from '../../components/Topbar/UserTopBar';
 
 export default function User(): ReactElement {
   const [users, setUsers] = useState<Array<userProps>>([]);
@@ -16,10 +18,12 @@ export default function User(): ReactElement {
     dispatch(setPage('users'));
     async function dataWrapper() {
       try {
-        const response = (await axiosInstance.get(`/admin/users?page=${currentpage}`)).data;
+        const response = (
+          await axiosInstance.get(`/admin/users?page=${currentpage}`)
+        ).data;
         if (response.message === 'success') {
           setUsers(response.users);
-          setPagecount(response.pageLength)
+          setPagecount(response.pageLength);
         }
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -28,11 +32,26 @@ export default function User(): ReactElement {
       }
     }
     dataWrapper();
-  }, [dispatch,currentpage]);
+  }, [dispatch, currentpage]);
 
-  const blockUser = (userId: string) => {
+  const blockUser = async (userId: string) => {
     // Implement block user functionality
     console.log(`Blocking user with ID: ${userId}`);
+    try {
+      const response = (
+        await axiosInstance.patch(`/admin/user/block/${userId}`)
+      ).data;
+      if (response.message === 'success') {
+        toast.success('success');
+        setTimeout(()=>{
+          window.location.reload()
+        },1000)
+      } else {
+        toast.error('error');
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   const pageHandler = (count: number) => {
     const page = Math.ceil(count / 10) + 1;
@@ -60,87 +79,102 @@ export default function User(): ReactElement {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center px-4 py-8">
-      <h1 className="text-4xl mb-6 w-full ml-52">USER MANAGEMENT</h1>
-      <a className="mb-4" href="/admin/approvals">
-        <button className="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
-          Approvals
-        </button>
-      </a>
+    <>
+      <UserTopBar setResults={setUsers} />
+      <h1 className="text-4xl mb-6 w-full ml-36">USER MANAGEMENT</h1>
+      <div className="flex flex-col items-center justify-center px-4 py-8">
+        <a className="mb-4" href="/admin/approvals">
+          <button className="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
+            Approvals
+          </button>
+        </a>
 
-      {loading ? (
-        <div className="loader">Loading...</div> // Add a spinner or loading animation here
-      ) : (
-        <div className="w-full max-w-4xl bg-white rounded-lg shadow-md">
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white">
-              <thead>
-                <tr className="w-full bg-gray-200">
-                  <th className="py-2 text-left px-4 font-semibold text-gray-700">
-                    Profile
-                  </th>
-                  <th className="py-2 text-left px-4 font-semibold text-gray-700">
-                    Email
-                  </th>
-                  <th className="py-2 text-left px-4 font-semibold text-gray-700">
-                    Address
-                  </th>
-                  <th className="py-2 text-left px-4 font-semibold text-gray-700">
-                    Authorization
-                  </th>
-                  <th className="py-2 text-left px-4 font-semibold text-gray-700">
-                    View
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user, index) => (
-                  <tr
-                    key={user._id}
-                    className={`border-t ${
-                      index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-                    }`}
-                  >
-                    <td>
-                      <img
-                        src={
-                          user.profileImage?.includes('http')
-                            ? user.profileImage
-                            : user.profileImage
-                            ? `${url}/profile/${user.profileImage}`
-                            : '/user.png'
-                        }
-                        className="h-10 w-10 rounded-full mt-4 border-4 border-gray-300 cursor-pointer transition-transform hover:scale-105"
-                        alt="Profile"
-                      />{' '}
-                    </td>
-                    <td className="py-2 px-4 text-lg">{user.email}</td>
-                    <td className="py-2 px-4">{user.address}</td>
-                    <td className="py-2 px-4">
-                      {user.authorization ?? 'user'}
-                    </td>
-                    <td className="py-2 px-4">
-                      <button
-                        onClick={() => blockUser(user._id)}
-                        className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition"
-                      >
-                        Block
-                      </button>
-                    </td>
+        {loading ? (
+          <div className="loader">Loading...</div> // Add a spinner or loading animation here
+        ) : (
+          <div className="w-full max-w-4xl bg-white rounded-lg shadow-md">
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white">
+                <thead>
+                  <tr className="w-full bg-gray-200">
+                    <th className="py-2 text-left px-4 font-semibold text-gray-700">
+                      Profile
+                    </th>
+                    <th className="py-2 text-left px-4 font-semibold text-gray-700">
+                      Email
+                    </th>
+                    <th className="py-2 text-left px-4 font-semibold text-gray-700">
+                      Address
+                    </th>
+                    <th className="py-2 text-left px-4 font-semibold text-gray-700">
+                      Authorization
+                    </th>
+                    <th className="py-2 text-left px-4 font-semibold text-gray-700">
+                      View
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {users.map((user, index) => (
+                    <tr
+                      key={user._id}
+                      className={`border-t ${
+                        index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                      }`}
+                    >
+                      <td>
+                        <img
+                          src={
+                            user.profileImage?.includes('http')
+                              ? user.profileImage
+                              : user.profileImage
+                              ? `${url}/profile/${user.profileImage}`
+                              : '/user.png'
+                          }
+                          className="h-10 w-10 rounded-full mt-4 border-4 border-gray-300 cursor-pointer transition-transform hover:scale-105"
+                          alt="Profile"
+                        />{' '}
+                      </td>
+                      <td className="py-2 px-4 text-lg">{user.email}</td>
+                      <td className="py-2 px-4">{user.address}</td>
+                      <td className="py-2 px-4">
+                        {user.authorization ?? 'user'}
+                      </td>
+                      <td className="py-2 px-4">
+                        <button
+                          onClick={() => blockUser(user._id)}
+                          className={`${
+                            user.verified
+                              ? 'bg-red-500 hover:bg-red-600 '
+                              : 'bg-green-500 hover:bg-green-700'
+                          }  text-white py-1 px-2 w-20 rounded transition`}
+                        >
+                          {user.verified ? 'Block' : 'Unblock'}
+                          {/* Block */}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <PaginationComponent
+              previouspageHandler={previouspageHandler}
+              nextpageHandler={nextpageHandler}
+              pageHandler={pageHandler}
+              pagecount={pagecount}
+              currentpage={currentpage}
+            />
+            <ToastContainer
+              style={{
+                backgroundColor: 'gray',
+                color: 'white',
+                borderRadius: '10px',
+              }}
+            />
           </div>
-          <PaginationComponent
-          previouspageHandler={previouspageHandler}
-          nextpageHandler={nextpageHandler}
-          pageHandler={pageHandler}
-          pagecount={pagecount}
-          currentpage={currentpage}
-        />
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }

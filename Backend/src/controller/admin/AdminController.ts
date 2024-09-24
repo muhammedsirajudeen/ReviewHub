@@ -6,21 +6,29 @@ import { PAGE_LIMIT } from '../user/CourseController';
 
 const backendUrl = 'http://localhost:3000/';
 
+interface queryProps{
+  email?:RegExp
+}
+
 const AllUsers = async (req: Request, res: Response) => {
   try {
     let user = req.user as IUser;
-    let { page } = req.query ?? '1';
+    let { page, search } = req.query ?? '1';
     const length = (await User.find()).length;
     if (user.authorization !== 'admin') {
       return res.status(403).json({ message: 'insufficient permissions' });
     }
-    const users = await User.find()
-      .select('-password')
-      .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
+    const query:queryProps={}
+    if(search){
+      query.email=new RegExp(search as string,'i')
+    }
+    const users = await User.find(query)
+    .select('-password')
+    .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
       .limit(PAGE_LIMIT);
-    const excludeUsers = users.filter((user) => user.authorization !== 'admin');
-
-    res
+      const excludeUsers = users.filter((user) => user.authorization !== 'admin');
+      
+      res
       .status(200)
       .json({ message: 'success', users: excludeUsers, pageLength: length });
   } catch (error) {
@@ -29,6 +37,24 @@ const AllUsers = async (req: Request, res: Response) => {
   }
 };
 
+//block a certain user
+const BlockUser=async (req:Request,res:Response)=>{
+  try{
+    const {userId}=req.params
+    const updateUser=await User.findById(userId)
+    if(updateUser){
+      updateUser.verified=!updateUser.verified
+      await updateUser.save()
+      res.status(200).json({message:"success"})
+    }else{
+      res.status(404).json({message:"requested course not found"})
+
+    }
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message:"server error occured"})
+  }
+}
 const DeleteUser = async (req: Request, res: Response) => {
   try {
     let user = req.user as IUser;
@@ -126,15 +152,6 @@ const ApproveReviewer = async (req: Request, res: Response) => {
   }
 };
 
-const BlockUser=async (req:Request,res:Response)=>{
-  try{
-    const {userId}=req.params
-    res.status(200).json({message:"success"})
-  }catch(error){
-    console.log(error)
-    res.status(500).json({message:"server error occured"})
-  }
-}
 
 export default {
   AllUsers,
@@ -142,4 +159,5 @@ export default {
   UpdateUser,
   AllApprovals,
   ApproveReviewer,
+  BlockUser
 };

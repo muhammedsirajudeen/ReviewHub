@@ -65,7 +65,9 @@ export default function AdminSideBar(): ReactElement {
           </a>
         </div>
         {/* this interface is also basically same */}
-        <div className="flex items-center justify-center mt-14">
+        <div className={`${
+            page === 'blog' ? 'bg-blue-400' : ''
+          } flex items-center justify-center mt-10 p-6 rounded-lg`}>
           <a href="/admin/blog">
             <img src="/sidebar/resource.png" />
           </a>
