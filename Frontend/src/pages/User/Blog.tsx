@@ -9,6 +9,8 @@ import { flushSync } from 'react-dom';
 import { ToastContainer } from 'react-toastify';
 import BlogDialog from '../../components/Dialog/BlogDialog';
 import PaginationComponent from '../../components/pagination/PaginationComponent';
+import BlogTopBar from '../../components/Topbar/BlogTopBar';
+import BlogFilterBar from '../../components/Filter/BlogFilter';
 
 export default function Blog(): ReactElement {
   const [blogs, setBlogs] = useState<Array<blogProps>>([]);
@@ -91,16 +93,18 @@ export default function Blog(): ReactElement {
   };
   return (
     <>
-      <div className="container mx-auto p-4">
+      <BlogTopBar setResults={setBlogs} />
         <div className="flex w-full justify-between items-center">
-          <h1 className="text-4xl font-bold text-start my-6 w-full">BLOG</h1>
+          <h1 className="text-4xl ml-36  text-start my-6 w-full">BLOG</h1>
           <a
-            className="text-nowrap text-black border-b-black border-t-white border-l-white border-r-white border hover:underline"
+            className="text-nowrap mr-2 text-black border-b-black border-t-white border-l-white border-r-white border hover:underline"
             href="/user/blog/manage"
           >
             Your Blogs
           </a>
         </div>
+      <BlogFilterBar setResult={setBlogs} currentpage={currentpage}  />
+      <div className="container mx-auto p-4 -z-10">
         <button
           className="bg-black text-white p-2 rounded-lg font-normal mb-2 hover:bg-gray-800 transition duration-200"
           onClick={createHandler}

@@ -61,7 +61,7 @@ export default function User(): ReactElement {
 
   return (
     <div className="flex flex-col items-center justify-center px-4 py-8">
-      <h1 className="text-4xl font-bold mb-6">User Management</h1>
+      <h1 className="text-4xl mb-6 w-full ml-52">USER MANAGEMENT</h1>
       <a className="mb-4" href="/admin/approvals">
         <button className="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
           Approvals

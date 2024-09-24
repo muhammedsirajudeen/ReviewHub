@@ -182,14 +182,19 @@ export default function Profile(): ReactElement {
           <button
             disabled={user.premiumMember}
             onClick={premiumHandler}
-            className="m-10 flex items-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200"
+            className={`m-10 flex items-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 
+              transition duration-200
+              ${user.premiumMember && "bg-navbar text-gold-400"}
+              `}
           >
             <img
-              src="/premium/premium.png"
+              src={ user.premiumMember ? "/premium/premiumgold.png" : "/premium/premium.png"}
               alt="Premium Logo"
               className="h-6 w-6 mr-2"
             />
+            <p className={`${user.premiumMember && "text-gold-400"}`} >
             {user.premiumMember ? 'Premium Member' : 'Become Premium'}
+            </p>
           </button>
         )}
         <form

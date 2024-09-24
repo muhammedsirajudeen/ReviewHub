@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import AdminController from '../controller/admin/AdminController';
 import CourseController from '../controller/admin/CourseController';
 import passport, { authenticate } from 'passport';
@@ -10,7 +10,19 @@ import UploadHandler from '../helper/fileuploadHelper';
 import RoadmapController from '../controller/admin/RoadmapController';
 import ChapterController from '../controller/admin/ChapterController';
 import ResourceController from '../controller/admin/ResourceController';
+
+import { IUser } from '../model/User';
 const router = express.Router();
+
+const AdminMiddleware=(req:Request,res:Response,next:NextFunction)=>{
+  const user=req.user as IUser
+  if(user.authorization!=="admin"){
+    res.status(403).json({message:"insufficient permissions"})
+  }else{
+    next()
+  }
+}
+
 //user Management
 router.get(
   '/users',
@@ -57,6 +69,7 @@ router.delete(
 router.post(
   '/roadmap',
   passport.authenticate('jwt', { session: false }),
+  AdminMiddleware,
   UploadHandler('roadmap').single('file'),
   resizeMiddlewareWrapper('roadmap'),
   RoadmapController.AddRoadmap
@@ -65,6 +78,8 @@ router.post(
 router.put(
   '/roadmap/:roadmapId',
   passport.authenticate('jwt', { session: false }),
+  AdminMiddleware,
+
   UploadHandler('roadmap').single('file'),
   resizeMiddlewareWrapper('roadmap'),
   RoadmapController.EditRoadmap
@@ -72,7 +87,9 @@ router.put(
 
 router.delete(
   '/roadmap/:roadmapId',
+  
   passport.authenticate('jwt', { session: false }),
+  AdminMiddleware,
   RoadmapController.DeleteRoadmap
 );
 
@@ -80,24 +97,32 @@ router.delete(
 router.get(
   '/chapter/:roadmapId',
   passport.authenticate('jwt', { session: false }),
+  AdminMiddleware,
+
   ChapterController.ListChapter
 );
 
 router.post(
   '/chapter/',
   passport.authenticate('jwt', { session: false }),
+  AdminMiddleware,
+
   ChapterController.AddChapter
 );
 
 router.put(
   '/chapter/:chapterId',
   passport.authenticate('jwt', { session: false }),
+  AdminMiddleware,
+
   ChapterController.UpdateChapter
 );
 
 router.delete(
   '/chapter/:chapterId',
   passport.authenticate('jwt', { session: false }),
+  AdminMiddleware,
+
   ChapterController.DeleteChapter
 );
 
@@ -105,24 +130,32 @@ router.delete(
 router.get(
   '/resource/:chapterId',
   passport.authenticate('jwt', { session: false }),
+  AdminMiddleware,
+
   ResourceController.GetResource
 );
 
 router.post(
   '/resource/:resourceId',
   passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+
   ResourceController.AddResource
 )
 
 router.put(
   '/resource/:resourceId/:sectionId',
   passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+
   ResourceController.EditResource
 )
 
 router.delete(
   '/resource/:resourceId/:sectionId',
   passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+
   ResourceController.DeleteResource
 )
 
@@ -130,18 +163,24 @@ router.delete(
 router.get(
   '/quiz/:chapterId',
   passport.authenticate('jwt', { session: false }),
+  AdminMiddleware,
+
   ResourceController.GetQuiz
 );
 
 router.post(
   '/quiz/:quizId',
   passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+
   ResourceController.AddQuiz
 )
 
 router.put(
   '/quiz/:quizId/:questionId',
   passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+
   ResourceController.EditQuiz
 
 )
@@ -149,6 +188,8 @@ router.put(
 router.delete(
   '/quiz/:quizId/:questionId',
   passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+
   ResourceController.DeleteQuiz
 )
 
@@ -156,12 +197,16 @@ router.delete(
 router.get(
   '/reviewer/approvals',
   passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+
   AdminController.AllApprovals
 )
 
 router.put(
   '/reviewer/approve/:approvalId',
   passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+
   AdminController.ApproveReviewer
 )
 

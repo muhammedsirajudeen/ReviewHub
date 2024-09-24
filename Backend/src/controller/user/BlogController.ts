@@ -3,6 +3,14 @@ import Blog, { IBlog } from '../../model/Blog';
 import { IUser } from '../../model/User';
 import { PAGE_LIMIT } from './CourseController';
 
+interface dateProps {
+  $gt: Date;
+}
+interface queryProps{
+  postedDate?:dateProps
+  heading?:RegExp
+}
+
 const UserBlog = async (req: Request, res: Response) => {
   try {
     const user = req.user as IUser;
@@ -19,10 +27,18 @@ const UserBlog = async (req: Request, res: Response) => {
 
 const AllBlog = async (req: Request, res: Response) => {
   try {
-    let { page } = req.query ?? '1';
+    let { page,date,search } = req.query ?? '1';
     const length = (await Blog.find()).length;
-
-    const Blogs = await Blog.find()
+    const query:queryProps={}
+    if(date){
+      const newDate=new Date(date as string)
+      query.postedDate={$gt:newDate}
+    }
+    if(search){
+      query.heading=new RegExp(search as string,'i')
+    }
+    
+    const Blogs = await Blog.find(query)
       .populate('userId', 'email -_id')
       .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
       .limit(PAGE_LIMIT);
