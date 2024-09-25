@@ -40,6 +40,7 @@ import Blog from './pages/User/Blog';
 import ManageBlog from './pages/User/ManageBlog';
 import ManageCourse from './pages/User/ManageCourse';
 import Payments from './pages/Admin/Payments';
+import Chat from './pages/User/Chat';
 const router = createBrowserRouter([
   //authentication routes
   {
@@ -177,6 +178,11 @@ const router = createBrowserRouter([
         element:<UserPrivateRoute Component={ManageCourse}/>,
         loader:tokenVerifier
       },
+      {
+        path:'/user/chat',
+        element:<UserPrivateRoute Component={Chat}/>,
+        loader:tokenVerifier
+      }
     ],
   },
   {

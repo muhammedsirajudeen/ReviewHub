@@ -53,8 +53,11 @@ export default function SideBar(): ReactElement {
             <img src="/sidebar/resource.png" />
           </a>
         </div>
-        <div className="flex items-center justify-center mt-14">
-          <a href="/user/chat">
+        <div
+          className={`${
+            page === 'chat' ? 'bg-blue-400' : ''
+          } flex items-center justify-center mt-10 p-6 rounded-lg`}
+        >          <a href="/user/chat">
             <img src="/sidebar/chat.png" />
           </a>
         </div>
