@@ -3,12 +3,18 @@ import Quiz from '../../../model/Quiz';
 import { IUser } from '../../../model/User';
 import Wallet from '../../../model/Wallet';
 import mongoose from 'mongoose';
+import Progress from '../../../model/Progress';
+import Roadmap from '../../../model/Roadmap';
 
 interface responseProps {
   question: string;
   reward: number;
 }
 
+/*
+  Include an option to update the progress as needed 
+  Migrate from existing method onto transaction based system
+*/
 const QuizChecker = async (req: Request, res: Response) => {
   try {
     const { quizId } = req.params;
@@ -30,8 +36,11 @@ const QuizChecker = async (req: Request, res: Response) => {
           resultJson.push({ question: quiz.question, reward: 0 });
         }
       });
-      //now from here onto wallet as well
       if (!attended) {
+        //to the progress module initial creation maybe three db queries be necessary
+
+        // console.log(updateProgress)
+        //now from here onto wallet as well
         user.rewardPoints += finalReward;
         const updateWallet = await Wallet.findOne({ userId: user.id });
         if (updateWallet) {
@@ -40,7 +49,7 @@ const QuizChecker = async (req: Request, res: Response) => {
             paymentDate: new Date(),
             type: 'reward',
             amount: finalReward,
-            status:true
+            status: true,
           });
           await updateWallet.save();
         } else {
@@ -50,6 +59,27 @@ const QuizChecker = async (req: Request, res: Response) => {
         user.attendedQuizes.push(checkQuiz.id);
         await user.save();
       }
+      const courseId = (await Roadmap.findById(checkQuiz.roadmapId))?.courseId;
+      if (!courseId)
+        return res.status(404).json({ message: 'course not found' });
+      const updateProgress = await Progress.findOne({ courseId: courseId });
+      if (updateProgress) {
+        updateProgress.progress.push({
+          roadmapId: checkQuiz.roadmapId,
+          quizes: [
+            {
+              quizId: quizId,
+              reward: finalReward,
+            },
+          ],
+        });
+        updateProgress.save();
+      } else {
+        return res
+          .status(404)
+          .json({ messsage: 'progress collection not found' });
+      }
+
       res.status(200).json({
         message: 'success',
         result: resultJson,
