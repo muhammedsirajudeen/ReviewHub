@@ -29,17 +29,29 @@ interface userProps {
 
 }
 
+type ValuePiece = Date | null;
+type Value = ValuePiece | [ValuePiece, ValuePiece];
+interface filterProps{
+  date:Value | Date | null,
+  status:boolean | null
+}
 export interface GlobalState {
   authenticated: boolean;
   user: userProps;
   page: string;
+  filterProps:filterProps
 }
+
 
 //here do jwt authentication
 const initialState: GlobalState = {
   authenticated: false,
   page: "",
   user: {},
+  filterProps:{
+    date:null,
+    status:null
+  }
 };
 
 export const globalSlice = createSlice({
@@ -59,11 +71,16 @@ export const globalSlice = createSlice({
     setPage: (state, action: PayloadAction<string>) => {
       state.page = action.payload;
     },
+    setDateSlice:(state, action: PayloadAction<Value | Date> )=>{
+      state.filterProps.date=action.payload
+    },
+    setStatus:(state,action: PayloadAction<boolean>)=>{
+      state.filterProps.status=action.payload
+    }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setAuthenticated, clearAuthenticated, setUser, setPage } =
-  globalSlice.actions;
+export const { setAuthenticated, clearAuthenticated, setUser, setPage, setDateSlice, setStatus } = globalSlice.actions;
 
 export default globalSlice.reducer;

@@ -6,6 +6,7 @@ interface IPayment extends Document {
   orderId: string;
   userId: mongoose.Types.ObjectId;
   type:string
+  paymentDate:Date
 }
 
 const PaymentSchema = new Schema<IPayment>({
@@ -31,6 +32,11 @@ const PaymentSchema = new Schema<IPayment>({
     type:String,
     required:false,
     default:'wallet'
+  },
+  paymentDate:{
+    type:Date,
+    required:false,
+    default:new Date()
   }
 });
 

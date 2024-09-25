@@ -1,22 +1,29 @@
 import { ReactElement, useEffect, useState } from 'react';
-import DashboardTopbar from '../../components/DashboardTopbar';
 import axiosInstance from '../../helper/axiosInstance';
 import paymentProps from '../../types/paymentProps';
 import PaginationComponent from '../../components/pagination/PaginationComponent';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
+import PaymentFilterBar from '../../components/Filter/PaymentFilter';
+import PaymentTopBar from '../../components/Topbar/PaymentTopBar';
 
 export default function Payments(): ReactElement {
   const [payments, setPayments] = useState<paymentProps[]>([]);
   const [currentpage, setCurrentpage] = useState<number>(1);
   const [pagecount, setPagecount] = useState<number>(0);
-    const dispatch=useAppDispatch()
+  const date=useAppSelector((state)=>state.global.filterProps.date)
+  const status=useAppSelector((state)=>state.global.filterProps.status)
+  const dispatch=useAppDispatch()
   useEffect(() => {
     dispatch(setPage('payments'))
     async function dataWrapper() {
       try {
+        let statusValue:string | null=null
+        if(status!=null){
+          statusValue=status ? "success" : "failed"
+        } 
         const response = (
-          await axiosInstance.get(`/admin/payments?page=${currentpage}`)
+          await axiosInstance.get(`/admin/payments?page=${currentpage}&date=${date ?? undefined}&status=${statusValue ??  undefined}`)
         ).data;
         if (response.message === 'success') {
           setPayments(response.payments);
@@ -29,7 +36,7 @@ export default function Payments(): ReactElement {
       }
     }
     dataWrapper();
-  }, [currentpage, dispatch]);
+  }, [currentpage, date, dispatch, status]);
 
   const pageHandler = (count: number) => {
     const page = Math.ceil(count / 10);
@@ -46,8 +53,9 @@ export default function Payments(): ReactElement {
 
   return (
     <>
-      <DashboardTopbar />
+      <PaymentTopBar setResults={setPayments} />
       <h1 className="text-4xl ml-36 mt-4 mb-6">Payments</h1>
+      <PaymentFilterBar currentpage={currentpage}/>
       <div className="ml-36 mb-6 border rounded-lg shadow-lg p-4 bg-white">
         <table className="min-w-full divide-y divide-gray-200">
           <thead>
