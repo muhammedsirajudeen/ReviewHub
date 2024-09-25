@@ -39,6 +39,7 @@ import Approvals from './pages/Admin/Approvals';
 import Blog from './pages/User/Blog';
 import ManageBlog from './pages/User/ManageBlog';
 import ManageCourse from './pages/User/ManageCourse';
+import Payments from './pages/Admin/Payments';
 const router = createBrowserRouter([
   //authentication routes
   {
@@ -114,6 +115,11 @@ const router = createBrowserRouter([
       {
         path:'/admin/blog',
         element:<AdminPrivateRoute Component={Blog}/>,
+        loader:tokenVerifier
+      },
+      {
+        path:'/admin/payments',
+        element:<AdminPrivateRoute Component={Payments}/>,
         loader:tokenVerifier
       }
     ],

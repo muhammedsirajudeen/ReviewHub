@@ -12,6 +12,7 @@ import ChapterController from '../controller/admin/ChapterController';
 import ResourceController from '../controller/admin/ResourceController';
 
 import { IUser } from '../model/User';
+import PaymentController from '../controller/admin/PaymentController';
 const router = express.Router();
 
 const AdminMiddleware=(req:Request,res:Response,next:NextFunction)=>{
@@ -205,6 +206,14 @@ router.put(
   AdminMiddleware,
 
   AdminController.ApproveReviewer
+)
+
+//payment management
+router.get(
+  '/payments',
+  passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+  PaymentController.GetPayments
 )
 
 export default router;
