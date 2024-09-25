@@ -47,8 +47,9 @@ export default function AdminSideBar(): ReactElement {
           </a>
         </div>
         {/* chat interface is the same for all the users */}
-        <div className="flex items-center justify-center mt-14">
-          <a href="/user/chat">
+        <div className={`${
+            page === 'chat' ? 'bg-blue-400' : ''
+          } flex items-center justify-center mt-10 p-6 rounded-lg`}>          <a href="/admin/chat">
             <img src="/sidebar/chat.png" />
           </a>
         </div>

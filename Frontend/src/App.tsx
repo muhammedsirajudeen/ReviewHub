@@ -22,7 +22,7 @@ import AdminRoadmap from './pages/Admin/Roadmap';
 import AdminChapter from './pages/Admin/Chapter';
 import AdminCourse from './pages/Admin/Course';
 import AdminResource from './pages/Admin/Resource';
-
+import AdminChat from './pages/Admin/Chat';
 import Forgot from './pages/Authentication/Forgot';
 
 import Course from './pages/User/Course';
@@ -41,6 +41,7 @@ import ManageBlog from './pages/User/ManageBlog';
 import ManageCourse from './pages/User/ManageCourse';
 import Payments from './pages/Admin/Payments';
 import Chat from './pages/User/Chat';
+
 const router = createBrowserRouter([
   //authentication routes
   {
@@ -121,6 +122,11 @@ const router = createBrowserRouter([
       {
         path:'/admin/payments',
         element:<AdminPrivateRoute Component={Payments}/>,
+        loader:tokenVerifier
+      },
+      {
+        path:'/admin/chat',
+        element:<AdminPrivateRoute Component={AdminChat}/>,
         loader:tokenVerifier
       }
     ],
