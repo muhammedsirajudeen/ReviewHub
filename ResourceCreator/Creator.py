@@ -85,7 +85,7 @@ def PromptResultGenerator(prompt,additionalPrompt,quizStatus):
                 ]
             }}
             Just the JSON, nothing else. Provide two sections with two entries each, nothing more sections should be in array called sections
-             Adhere strictly to the given JSON Format even follow the letter casing too .
+             Adhere strictly to the given JSON Format even follow the letter casing too give unique ids in the form of random uuid .
             '''
         )
         return response.text
@@ -107,7 +107,7 @@ def PromptResultGenerator(prompt,additionalPrompt,quizStatus):
                         }}
                     ]
                 }}
-                reward is an integer from 1 to 20 just 3 questions Now
+                reward is an integer from 1 to 20 just 3 questions Now.  unique ids in the form of random uuid
             '''
         )
         return response.text

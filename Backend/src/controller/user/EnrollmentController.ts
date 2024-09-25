@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User, { IUser } from '../../model/User';
 import mongoose from 'mongoose';
+import Progress from '../../model/Progress';
 
 const GetEnroll = async (req: Request, res: Response) => {
   try {
@@ -61,6 +62,19 @@ const Enroll = async (req: Request, res: Response) => {
           $addToSet: { enrolledCourses: courseId },
         }
       );
+      //include the courseid and the userid in the progress array
+      const findProgress=await Progress.findOne({courseId:courseId})
+      console.log(findProgress)
+      if(!findProgress){
+        const newProgress=new Progress(
+          {
+            userId:new mongoose.Types.ObjectId(user.id as string),
+            courseId:new mongoose.Types.ObjectId(courseId as string)
+
+          }
+        )
+        await newProgress.save()
+      }
       res.status(201).json({ message: 'success' });
     } else {
       res.status(404).json({ message: 'requested resource not found' });
