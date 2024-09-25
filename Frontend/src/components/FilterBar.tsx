@@ -20,6 +20,7 @@ export default function FilterBar({
   const [selectdate, setSelectdate] = useState<boolean>(false);
   const [favorite,setFavorite]=useState<boolean>(false)
   useEffect(() => {
+
     const fetchData = async (endpoint: string) => {
       const response = (
         await axiosInstance.get(endpoint)
@@ -30,7 +31,7 @@ export default function FilterBar({
     if (selectdate && domain && favorite ) {
       fetchData(`/user/course?page=${currentpage}&date=${date}&domain=${domain}&favorite=true`);
     } else if (domain) {
-      fetchData(`/user/course?page=${currentpage}&domain=${domain}&`);
+      fetchData(`/user/course?page=${currentpage}&domain=${domain}`);
     } else if (selectdate) {
       fetchData(`/user/course?page=${currentpage}&date=${date}`);
     }else if(favorite){
