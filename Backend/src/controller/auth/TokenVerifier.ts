@@ -15,7 +15,6 @@ const TokenVerifier=(req:Request,res:Response)=>{
 const RefreshToken = async (req: Request, res: Response) => {
   try {
     const { refresh_token } = req.body;
-    console.log(refresh_token);
     if (refresh_token) {
       const decoded = verify(
         refresh_token,
@@ -23,7 +22,7 @@ const RefreshToken = async (req: Request, res: Response) => {
       ) as IUser;
       if (decoded) {
         const fromCache = await getValueFromCache(`refresh-${decoded.email}`);
-        if (fromCache !== refresh_token) {
+        if (fromCache !== refresh_token) {         
           res.status(401).json({ message: 'unauthorized' });
         } else {
           const token = sign(

@@ -26,7 +26,8 @@ axiosInstance.interceptors.response.use(
 
         return axiosInstance(originalRequest); // Retry the original request
       } catch (refreshError) {
-        window.localStorage.clear()
+        console.log("error is",refreshError)
+        // window.localStorage.clear()
         return Promise.reject(refreshError);
       }
     }
