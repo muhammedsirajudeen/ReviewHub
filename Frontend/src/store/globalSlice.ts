@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 interface HistoryProps {
   paymentDate: string;
   type: string;
@@ -40,6 +39,7 @@ export interface GlobalState {
   user: userProps;
   page: string;
   filterProps:filterProps
+
 }
 
 
@@ -51,7 +51,7 @@ const initialState: GlobalState = {
   filterProps:{
     date:null,
     status:null
-  }
+  },
 };
 
 export const globalSlice = createSlice({

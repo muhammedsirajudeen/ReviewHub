@@ -26,12 +26,12 @@ connectDB();
 //socket logic here
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
-
+  socket.emit('message',"hey")
   // Listen for messages
   socket.on('chat message', (msg) => {
       console.log('Message received:', msg);
       // Broadcast the message to all connected clients
-      io.emit('chat message', msg);
+      io.emit('message', msg);
   });
 
   socket.on('disconnect', () => {
