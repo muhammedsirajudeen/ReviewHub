@@ -23,7 +23,13 @@ export default function Chat(): ReactElement {
   useEffect(() => {
     dispatch(setPage('chat'));
 
-    const socket = io(url);
+    const socket = io(url,
+        {
+            auth:{
+                token:window.localStorage.getItem("token")
+            }
+        }
+    );
     socket.on('connect', socketConnect);
     socket.on('message', (msg) => {
       console.log(msg);
