@@ -77,11 +77,11 @@ export default function AdminSideBar(): ReactElement {
         </div>
         <img
           onClick={signoutHandler}
-          className="mt-40 cursor-pointer"
+          className="mt-10  cursor-pointer"
           src="/sidebar/logout.png"
         />
         <img
-          className="bg-white h-8 w-8 rounded-full mt-10"
+          className="bg-white h-8 w-8 mb-8 rounded-full mt-10"
           src={user.profileImage ?? '/user.png'}
         />
       </nav>

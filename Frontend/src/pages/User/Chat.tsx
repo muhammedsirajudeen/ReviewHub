@@ -47,7 +47,7 @@ export default function Chat(): ReactElement {
         setChatFind={setChatfind}
         setUsers={setUsers}
       />
-      <h1 className="text-center text-4xl font-bold mt-5">Chat</h1>
+      <h1 className="text-start text-4xl ml-36 mt-5 mb-5">CHAT</h1>
       <div className="flex h-screen bg-gray-100">
         <div className="w-1/4 bg-white shadow-lg p-4 ml-36">
           <h2 className="text-lg font-semibold text-gray-600 ">Your Chats</h2>
