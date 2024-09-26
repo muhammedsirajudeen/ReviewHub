@@ -14,6 +14,7 @@ import PaymentController from '../controller/user/payment/PaymentController';
 import BlogController from '../controller/user/BlogController';
 import PremiumController from '../controller/premium/PremiumController';
 import FavoriteController from '../controller/user/FavoriteController';
+import ChatController from '../controller/user/chat/ChatController';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -146,6 +147,13 @@ router.post(
   FavoriteController.AddFavorite
 )
 
+
+//chat management for almost everyone
+router.get(
+  '/chat/users',
+  passport.authenticate('jwt',{session:false}),
+  ChatController.GetUsers
+)
 
 
 export default router;
