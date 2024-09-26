@@ -1,4 +1,4 @@
-import { ReactElement, Ref } from 'react';
+import { Dispatch, ReactElement, Ref, SetStateAction } from 'react';
 import userProps from '../../types/userProps';
 import url from '../../helper/backendUrl';
 
@@ -6,11 +6,17 @@ export default function ChatFindDialog({
   dialogRef,
   closeHandler,
   users,
+  setUser
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   users: Array<userProps>;
+  setUser:Dispatch<SetStateAction<userProps | null>>
 }): ReactElement {
+    const chatHandler=(user:userProps)=>{
+        setUser(user)
+        closeHandler()
+    }
   return (
     <dialog
       ref={dialogRef}
@@ -47,7 +53,7 @@ export default function ChatFindDialog({
               <div className="flex-1 mx-4">
                 <p className="font-medium text-lg">{user.email}</p>
               </div>
-              <button className="bg-green-500 h-10 w-10 flex items-center justify-center text-white rounded-lg transition-transform hover:scale-105">
+              <button onClick={()=>chatHandler(user)}  className="bg-green-500 h-10 w-10 flex items-center justify-center text-white rounded-lg transition-transform hover:scale-105">
                 <img className="h-5 w-5" src="/chat/chat.png" alt="Chat" />
               </button>
             </div>
