@@ -28,6 +28,13 @@ const userSchema: Schema<IUser> = new Schema({
     required: true,
     unique: false,
     minlength: 8,
+    validate:(password:string)=>{
+      if(password.trim()===''){
+        return false
+      }else{
+        return true
+      }
+    }
   },
   profileImage: {
     type: String,
