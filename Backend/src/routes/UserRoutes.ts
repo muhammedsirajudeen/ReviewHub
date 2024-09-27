@@ -15,6 +15,7 @@ import BlogController from '../controller/user/BlogController';
 import PremiumController from '../controller/premium/PremiumController';
 import FavoriteController from '../controller/user/FavoriteController';
 import ChatController from '../controller/user/chat/ChatController';
+import Chat from '../model/Chat';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -153,6 +154,18 @@ router.get(
   '/chat/users',
   passport.authenticate('jwt',{session:false}),
   ChatController.GetUsers
+)
+
+router.get(
+  '/chat/connected',
+  passport.authenticate('jwt',{session:false}),
+  ChatController.GetConnectedUsers
+)
+
+router.post(
+  '/chat/history',
+  passport.authenticate('jwt',{session:false}),
+  ChatController.GetHistory
 )
 
 

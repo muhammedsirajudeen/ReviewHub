@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { IUser } from './User';
 
 interface messageProps {
   from: String;
@@ -7,8 +8,8 @@ interface messageProps {
   time?:Date
 }
 
-interface IChat extends Document {
-  userId: mongoose.Types.ObjectId[];
+export interface IChat extends Document {
+  userId: mongoose.Types.ObjectId[] | IUser[];
   messages: Array<messageProps>;
 }
 
@@ -40,7 +41,10 @@ const messageSchema = new mongoose.Schema<messageProps>({
 });
 
 const ChatSchema = new mongoose.Schema<IChat>({
-  userId: [mongoose.Schema.ObjectId],
+  userId: {
+    type:[mongoose.Schema.Types.Mixed],
+    ref:'User'
+  },
   messages: [messageSchema],
 });
 

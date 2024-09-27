@@ -8,6 +8,11 @@ import ChatTopBar from '../../components/Topbar/ChatTopBar';
 import userProps from '../../types/userProps';
 import ChatFindDialog from '../../components/Dialog/ChatFindDialog';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { chatProps } from '../../types/chatProps';
+import { v4 } from 'uuid';
+import getConnectedUser from '../../helper/datafetching/connectedUser';
+import { historyFetching } from '../../helper/datafetching/historyFetching';
+import { flushSync } from 'react-dom';
 
 const socketConnect = () => {
   toast('Connected successfully', { type: 'success' });
@@ -20,7 +25,10 @@ export default function Chat(): ReactElement {
   const [chatfind, setChatfind] = useState<boolean>(false);
   const chatFindDialogRef = useRef<HTMLDialogElement>(null);
   const [user, setUser] = useState<userProps | null>(null);
-  const currentUser=useAppSelector((state)=>state.global.user)
+  const [chats, setChats] = useState<Array<chatProps>>([]);
+  const currentUser = useAppSelector((state) => state.global.user);
+  const [connectedusers, setConnectedusers] = useState<Array<userProps>>([]);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   interface messageProps {
     message: string;
   }
@@ -29,16 +37,26 @@ export default function Chat(): ReactElement {
 
   useEffect(() => {
     dispatch(setPage('chat'));
+    //fetching connected users first
+    getConnectedUser(setConnectedusers);
 
     const socket = io(url, {
       auth: {
-        token: window.localStorage.getItem("token"),
+        token: window.localStorage.getItem('token'),
       },
     });
 
     socket.on('connect', socketConnect);
     socket.on('message', (msg) => {
       console.log(msg);
+      const message = JSON.parse(msg);
+      flushSync(() => {
+        setChats((prev) => [...prev, message]);
+      });
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop =
+          chatContainerRef.current?.scrollHeight;
+      }
     });
 
     socketRef.current = socket;
@@ -47,7 +65,10 @@ export default function Chat(): ReactElement {
       socket.disconnect();
     };
   }, [dispatch]);
-
+  useEffect(() => {
+    setChats([]);
+    historyFetching(user?._id as string, setChats, chatContainerRef);
+  }, [user]);
   const closeHandler = () => {
     chatFindDialogRef.current?.close();
     setChatfind(false);
@@ -55,16 +76,33 @@ export default function Chat(): ReactElement {
 
   const onSubmit: SubmitHandler<messageProps> = (data) => {
     if (data.message.trim()) {
-      if(socketRef.current){
-        socketRef.current.emit('message',JSON.stringify({from:currentUser.email,to:user?.email,message:data.message}))
-      }else{
-        toast.error("message not send")
+      if (socketRef.current) {
+        const message = {
+          from: currentUser.email,
+          to: user?.email,
+          message: data.message,
+          time: new Date(),
+        } as chatProps;
+        socketRef.current.emit('message', JSON.stringify(message));
+        flushSync(() => {
+          setChats((prev) => [...prev, message]);
+        });
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop =
+            chatContainerRef.current?.scrollHeight;
+        }
+      } else {
+        toast.error('message not send');
       }
       // socketRef.current?.emit('message', data.message);
       reset();
     } else {
       toast('Please enter a message', { type: 'warning' });
     }
+  };
+  const setUserHandler = (user: userProps) => {
+    setChats([]);
+    setUser(user);
   };
 
   return (
@@ -75,11 +113,36 @@ export default function Chat(): ReactElement {
         setUsers={setUsers}
       />
       <h1 className="text-start text-4xl ml-36 mt-5 mb-5">CHAT</h1>
-      <div className="flex h-screen bg-gray-100">
+      <div className="flex h-screen bg-gray-100 ">
         <div className="w-1/4 bg-white shadow-lg p-4 ml-36 rounded-lg">
           <h2 className="text-lg font-semibold text-gray-600">Your Chats</h2>
           <div className="mt-4">
             <p>No chat history available yet.</p>
+            {connectedusers.map((user) => (
+              <div
+                className="flex items-center justify-start mt-4 hover:bg-gray-50 p-2 rounded-lg transition"
+                key={user._id}
+              >
+                <img
+                  className="h-8 w-8 rounded-full"
+                  src={
+                    user.profileImage?.includes('http')
+                      ? user.profileImage
+                      : user.profileImage
+                      ? `${url}/profile/${user.profileImage}`
+                      : '/user.png'
+                  }
+                  alt={`${user.email}'s profile`}
+                />
+                <p className="text-sm ml-2 w-3/4">{user.email}</p>
+                <button
+                  onClick={() => setUserHandler(user)}
+                  className="bg-green-500  right-0 p-2 rounded-xl hover:bg-green-600 transition"
+                >
+                  <img className="h-6 w-6" src="/chat/chat.png" alt="Chat" />
+                </button>
+              </div>
+            ))}
           </div>
         </div>
         <div className="w-3/4 p-4">
@@ -91,64 +154,77 @@ export default function Chat(): ReactElement {
                     ? user.profileImage
                     : `${url}/profile/${user.profileImage}`
                 }
-                className="h-14 w-14 rounded-full border-2 border-gray-300"
+                className="h-16 w-16 rounded-full border-2 border-gray-300"
                 alt="Profile"
               />
               <p className="ml-4 text-lg font-semibold">{user.email}</p>
               <div className="flex flex-col w-full">
                 {/* Chat Messages */}
-                <div className="flex-grow bg-gray-50 border border-gray-300 rounded-lg p-4 mb-4 overflow-y-auto shadow-inner">
-                  <p className="text-gray-500">Chat messages will appear here...</p>
+                <div
+                  style={{ height: '70vh' }}
+                  ref={chatContainerRef}
+                  className="flex-grow bg-gray-50  border border-gray-300 rounded-lg w-full p-4   overflow-y-auto shadow-inner"
+                >
+                  <p className="text-gray-500">
+                    Chat messages will appear here...
+                  </p>
+                  {chats.map((chat) => (
+                    <div
+                    style={chat.from===currentUser.email ? {left:"42vw"} : {}}
+                      className={`flex mt-4 w-96 p-4 text-white font-bold text-lg justify-between rounded-lg shadow-lg transition-transform transform hover:scale-105 ${
+                        chat.from === currentUser.email
+                          ? 'bg-gray-600 hover:bg-gray-700 relative '
+                          : 'bg-green-600 hover:bg-green-700'
+                      }`}
+                      key={v4()}
+                    >
+                      <div className="flex items-center">
+                        <i className="fas fa-clock mr-2"></i>
+                        <p className="text-sm font-normal">
+                          {chat.time.toString()}
+                        </p>
+                      </div>
+                      <p className="max-w-[70%]">{chat.message}</p>
+                    </div>
+                  ))}
                 </div>
                 <form
                   onSubmit={handleSubmit(onSubmit)}
-                  className="flex items-center justify-between fixed bottom-10 left-1/2"
+                  className="flex items-center justify-between fixed bottom-4 left-1/2 transform  bg-white border border-gray-300 rounded-lg shadow-md p-2"
                 >
                   <input
                     {...register('message', {
-                      required: { value: true, message: 'please enter a message' },
+                      required: {
+                        value: true,
+                        message: 'Please enter a message',
+                      },
                       minLength: {
                         value: 1,
-                        message: 'please enter at least one character',
+                        message: 'Please enter at least one character',
                       },
                     })}
-                    className="flex-grow bg-white border border-gray-400 p-2 rounded-lg w-96 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-200"
+                    className="flex-grow w-72 bg-transparent border-none p-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
                     placeholder="Type your message..."
                   />
                   <button
                     type="submit"
-                    className="bg-green-500 p-2 rounded-lg ml-2 text-white hover:bg-green-600 transition duration-200 "
+                    className="bg-green-500 p-2 rounded-lg ml-2 flex items-center justify-center shadow hover:bg-green-600 transition duration-200"
                   >
-                    <img className="h-5 w-5" src="/chat/chat.png" alt="Chat" />
+                    <img className="h-5 w-5" src="/chat/chat.png" alt="Send" />
                   </button>
                 </form>
               </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full bg-white p-4 rounded-lg shadow-md">
-              {/* <img
-                src="/path/to/illustration.png" // Replace with a suitable image or icon
-                alt="Select User"
-                className="h-24 w-24 mb-4"
-              /> */}
               <p className="text-lg font-semibold text-gray-700 mb-2">
                 No User Selected
               </p>
               <p className="text-gray-500 mb-4">
                 To start chatting, please select a user from the list.
               </p>
-              {/* <button
-                onClick={() => {
-                  flushSync(()=>{
-                    setChatfind(true)
-                  })
-                  chatFindDialogRef.current?.showModal();
-                }} // Assuming setChatfind opens the user selection dialog
-                className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-200"
-              >
-                Select User
-              </button> */}
-            </div>          )}
+            </div>
+          )}
         </div>
       </div>
 
