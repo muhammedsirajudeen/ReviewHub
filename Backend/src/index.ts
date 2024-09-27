@@ -16,8 +16,10 @@ import path from "path";
 import passport from "passport";
 import corsOptions from "./helper/corsOptions";
 import verifyToken from "./helper/tokenVerifier";
-import { IUser } from "./model/User";
-import { addValueToCache } from "./helper/redisHelper";
+import User, { IUser } from "./model/User";
+import { addValueToCache, getValueFromCache } from "./helper/redisHelper";
+import Chat from "./model/Chat";
+import mongoose from "mongoose";
 
 const app = express();
 const server = http.createServer(app);
@@ -36,6 +38,7 @@ export interface JwtPayload {
 
 interface SocketwithUser extends Socket{
   user?:string
+  email?:string
 }
 
 //socket logic here
@@ -48,14 +51,59 @@ io.on('connection', async (socket:SocketwithUser) => {
       return socket.disconnect()
     }
     const decoded=await verifyToken(token) as IUser
-    socket.user=decoded.email
+    socket.user=decoded.id
+    socket.email=decoded.email
     addValueToCache(`socket-${socket.user}`,socket.id,3600)
+    
   }catch(error){
     console.log(error)
 
   }
   console.log('A user connected:', socket.user);
-  socket.on('chat message', (msg) => {
+  socket.on('message', async (msg) => {
+      const parsedMessage=JSON.parse(msg)
+      console.log(parsedMessage.to)
+      const recieverUser=await User.findOne({email:parsedMessage.to})
+      const receieverId=recieverUser?.id
+      const socketId=await getValueFromCache(`socket-${receieverId}`)
+      console.log("the id is",socketId)
+      //sending message to the user
+      io.to(socketId).emit('message',JSON.stringify(parsedMessage))
+
+      //this entire logic is the chat adding in the db logic
+      if(receieverId){
+        const objectIdOne=new mongoose.Types.ObjectId(socket.user as string)
+        const objectIdTwo=new mongoose.Types.ObjectId(receieverId as string)
+        const newChat=await Chat.findOne({userId:{$all:[objectIdOne,objectIdTwo]}})
+        console.log(newChat)
+        //new chat with new user
+        if(!newChat){
+          const newChat=new Chat(
+            {
+              userId:[objectIdOne,objectIdTwo],
+              messages:[
+                {
+                  from:socket.email,
+                  to:parsedMessage.to,
+                  message:parsedMessage.message
+                }
+              ]
+            }
+          )
+          await newChat.save()
+        }else{
+          //sadhanam und
+          newChat.messages.push(
+            {
+              from:socket.email as string,
+              to:parsedMessage.to,
+              message:parsedMessage.message
+
+            }
+          )
+          await newChat.save()
+        }
+      }
       console.log('Message received:', msg);
 
   });
