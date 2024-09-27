@@ -1,5 +1,7 @@
 import { CorsOptions, CorsOptionsDelegate } from "cors";
-const allowedOrigin: string = "http://localhost:5173";
+import { configDotenv } from "dotenv";
+configDotenv()
+const allowedOrigin: string = process.env.CORS_ORIGIN as string;
 
 const corsOptions: CorsOptions | CorsOptionsDelegate = {
   origin: (

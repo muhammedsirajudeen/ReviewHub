@@ -161,7 +161,7 @@ export default function Chat(): ReactElement {
               <div className="flex flex-col w-full">
                 {/* Chat Messages */}
                 <div
-                  style={{ height: '70vh' }}
+                  style={{ height: '65vh' }}
                   ref={chatContainerRef}
                   className="flex-grow bg-gray-50  border border-gray-300 rounded-lg w-full p-4   overflow-y-auto shadow-inner"
                 >

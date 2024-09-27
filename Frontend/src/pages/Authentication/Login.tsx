@@ -37,6 +37,7 @@ export default function Login(): ReactElement {
   const location = useLocation();
   const roleRef = useRef<string | null>(null);
   useEffect(()=>{
+
     roleRef.current=location.state ? location.state.role : null
   },[location.state, roleRef])
 
