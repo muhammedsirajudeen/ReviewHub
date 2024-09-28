@@ -1,7 +1,6 @@
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
-import { io, Socket } from 'socket.io-client';
 import url from '../../helper/backendUrl';
 import { toast, ToastContainer } from 'react-toastify';
 import ChatTopBar from '../../components/Topbar/ChatTopBar';
@@ -13,10 +12,9 @@ import { v4 } from 'uuid';
 import getConnectedUser from '../../helper/datafetching/connectedUser';
 import { historyFetching } from '../../helper/datafetching/historyFetching';
 import { flushSync } from 'react-dom';
+import useSocket from '../../customHooks/SocketHook';
 
-const socketConnect = () => {
-  toast('Connected successfully', { type: 'success' });
-};
+
 
 interface messageCount{
   userId:string,
@@ -25,40 +23,6 @@ interface messageCount{
 interface messageProps {
   message: string;
 }
-
-type UseSocket = (url: string, onMessage: (message: string) => void) => React.MutableRefObject<Socket | null>;
-
-
-const useSocket:UseSocket = (url, onMessage) => {
-  const socketRef = useRef<Socket | null>(null);
-
-  useEffect(() => {
-    const socket = io(url, {
-      auth: {
-        token: window.localStorage.getItem('token'),
-      },
-    });
-
-    socket.on('connect', () => {
-      console.log('Socket connected');
-      socketConnect()
-    });
-
-    socket.on('message', (msg) => {
-      
-      onMessage(msg);
-    });
-
-    socketRef.current = socket;
-
-    return () => {
-      socket.disconnect();
-      console.log('Socket disconnected');
-    };
-  }, []);
-
-  return socketRef;
-};
 
 export default function Chat(): ReactElement {
   const dispatch = useAppDispatch();
