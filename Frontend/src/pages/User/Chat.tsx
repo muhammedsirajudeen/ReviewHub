@@ -72,11 +72,9 @@ export default function Chat(): ReactElement {
   const [chatcount,setChatcount]=useState<Array<messageCount>>([])
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { register, handleSubmit, reset } = useForm<messageProps>();
-  
   const onMessage=(msg:string)=>{
     
     const message = JSON.parse(msg);
-    console.log(message)
     //already connected user
     flushSync(() => {
       setChats((prevChats) => {
@@ -95,18 +93,29 @@ export default function Chat(): ReactElement {
     
         return updatedChats;
       });
-      // const copyState=chatcount
+      
+      const currentChat=window.localStorage.getItem("chatuser")
+      setChatcount((prevChatcount) => {
+        let flag = false;
+        const updatedChatcount = prevChatcount.map((chat) => {
+          //temporary hack fix it
+          console.log("this is",currentChat,message.from)
+          if (chat.userId === message.from) {
+            flag = true;
+            if(currentChat===message.from){
+              return { ...chat, messageCount: 0};
 
-      // let flag=false
-      // copyState.forEach((chat)=>{
-      //   if(chat.userId===message.from  ){
-      //     chat.messageCount++
-      //     flag=true
-      //   }
-      // })
-      // if(!flag){
-      //   setChatcount((prev)=>([...prev,{userId:message.from,messageCount:1}]))
-      // }
+            }
+            return { ...chat, messageCount: chat.messageCount + 1 };
+          }
+          return chat; 
+        });
+        if (!flag ) {
+          return [...updatedChatcount, { userId: message.from, messageCount: 1 }];
+        }
+      
+        return updatedChatcount;
+      });
     });
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -117,6 +126,7 @@ export default function Chat(): ReactElement {
 
 
   useEffect(() => {
+    window.localStorage.removeItem('chatuser')
     dispatch(setPage('chat'));
     getConnectedUser(setConnectedusers)
   }, [dispatch]);
@@ -158,7 +168,6 @@ export default function Chat(): ReactElement {
           })
           setChats(copyChats);
         });
-        console.log(chats)
         if (chatContainerRef.current) {
           chatContainerRef.current.scrollTop =
             chatContainerRef.current?.scrollHeight;
@@ -176,6 +185,7 @@ export default function Chat(): ReactElement {
     flushSync(()=>{
       setUser(user);
     })
+    window.localStorage.setItem("chatuser",user.email)
     const copymessage=chatcount
     copymessage.forEach((chat)=>{
       if(user.email===chat.userId){
@@ -217,7 +227,6 @@ export default function Chat(): ReactElement {
                 <p className="text-sm ml-2 w-3/4">{connecteduser.email}</p>
                 {
                   chatcount.map((count)=>{
-                    console.log(count)
                     if(count.userId===connecteduser.email && connecteduser.email!==user?.email && count.messageCount>0  ){
                       return(
                         <p className='w-10 text-xs p-2 rounded-xl bg-blue-500 mr-4 text-white text-center align-middle ' >{count.messageCount}</p>
