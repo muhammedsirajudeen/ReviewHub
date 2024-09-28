@@ -6,15 +6,19 @@ export default function ChatFindDialog({
   dialogRef,
   closeHandler,
   users,
-  setUser
+  setUser,
+  setConnectedUsers
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   users: Array<userProps>;
   setUser:Dispatch<SetStateAction<userProps | null>>
+  setConnectedUsers:Dispatch<SetStateAction<Array<userProps>>>
+
 }): ReactElement {
     const chatHandler=(user:userProps)=>{
         setUser(user)
+        setConnectedUsers((prev)=>([...prev,user]))
         closeHandler()
     }
   return (
