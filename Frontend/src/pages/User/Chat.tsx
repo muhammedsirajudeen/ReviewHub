@@ -25,9 +25,7 @@ interface messageCount{
 interface messageProps {
   message: string;
 }
-interface ExtendedChat {
-  userId:chatProps
-}
+
 export default function Chat(): ReactElement {
   const dispatch = useAppDispatch();
   const socketRef = useRef<Socket | null>(null);
@@ -56,10 +54,13 @@ export default function Chat(): ReactElement {
 
     socket.on('connect', socketConnect);
     socket.on('message', (msg) => {
-      console.log(msg);
       const message = JSON.parse(msg);
+      
       flushSync(() => {
-        setChats((prev) => [...prev, message]);
+        console.log(message.from)
+        // if(user?.email == message.from){
+        //   setChats((prev) => [...prev, message]);
+        // }
         //set the count of chat here
         
         // setChatcount((prev)=>[...prev,{userId:message.from as string,number:0}])
@@ -90,7 +91,7 @@ export default function Chat(): ReactElement {
   
   useEffect(() => {
     setChats([]);
-    historyFetching(user?._id as string, setChats, chatContainerRef);
+    historyFetching(user?._id as string,user?.email as string ,setChats, chatContainerRef);
   }, [user]);
   const closeHandler = () => {
     chatFindDialogRef.current?.close();
@@ -105,10 +106,16 @@ export default function Chat(): ReactElement {
           to: user?.email,
           message: data.message,
           time: new Date(),
-        } as chatProps;
+        };
         socketRef.current.emit('message', JSON.stringify(message));
         flushSync(() => {
-          setChats((prev) => [...prev, message]);
+          const copyChats=[...chats]
+          copyChats.forEach((chat)=>{
+            if(chat.userId===user?.email){
+              chat.messages.push(message)
+            }
+          })
+          setChats(copyChats);
         });
         if (chatContainerRef.current) {
           chatContainerRef.current.scrollTop =
@@ -211,25 +218,33 @@ export default function Chat(): ReactElement {
                   <p className="text-gray-500">
                     Chat messages will appear here...
                   </p>
-                  {chats.map((chat) => (
-                    <div
-                    style={chat.from===currentUser.email ? {left:"30vw"} : {}}
-                      className={`flex mt-4 w-96 p-4 text-white font-bold text-lg justify-between rounded-lg shadow-lg transition-transform transform hover:scale-105 ${
-                        chat.from === currentUser.email
-                          ? 'bg-gray-600 hover:bg-gray-700 relative '
-                          : 'bg-green-600 hover:bg-green-700'
-                      }`}
-                      key={v4()}
-                    >
-                      <div className="flex items-center">
-                        <i className="fas fa-clock mr-2"></i>
-                        <p className="text-sm font-normal">
-                          {chat.time.toString()}
-                        </p>
-                      </div>
-                      <p className="max-w-[70%]">{chat.message}</p>
-                    </div>
-                  ))}
+                  {chats.map((chat) => {
+                    if(chat.userId===user?.email){
+                      return chat.messages.map((indi)=>{
+
+                        return(
+                        <div
+                        style={indi.from===currentUser.email ? {left:"30vw"} : {}}
+                          className={`flex mt-4 w-96 p-4 text-white font-bold text-lg justify-between rounded-lg shadow-lg transition-transform transform hover:scale-105 ${
+                            indi.from === currentUser.email
+                              ? 'bg-gray-600 hover:bg-gray-700 relative '
+                              : 'bg-green-600 hover:bg-green-700'
+                          }`}
+                          key={v4()}
+                        >
+                          <div className="flex items-center">
+                            <i className="fas fa-clock mr-2"></i>
+                            <p className="text-sm font-normal">
+                              {indi.time.toString()}
+                            </p>
+                          </div>
+                          <p className="max-w-[70%]">{indi.message}</p>
+                        </div>
+                        )
+                      })                  
+                    }
+                  }  
+                )}
                 </div>
                 <form
                   onSubmit={handleSubmit(onSubmit)}

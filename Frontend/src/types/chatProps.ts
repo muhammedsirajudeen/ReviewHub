@@ -1,7 +1,10 @@
 export interface chatProps {
-    from: string;
-    to: string;
-    message: string;
-    time:Date
-    _id:string
-  }
+  userId: string;
+  messages: {
+    from: string | undefined;
+    to: string | undefined;
+    message: string | undefined;
+    time: Date;
+    _id?: string | undefined;
+  }[];
+}

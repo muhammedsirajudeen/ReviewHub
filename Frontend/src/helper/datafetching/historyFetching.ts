@@ -3,14 +3,14 @@ import { chatProps } from "../../types/chatProps";
 import axiosInstance from "../axiosInstance";
 import { flushSync } from "react-dom";
 
-export const historyFetching=async (recieverId:string,setResult:Dispatch<SetStateAction<Array<chatProps>>>,ref:RefObject<HTMLDivElement>)=>{
+export const historyFetching=async (recieverId:string,email:string,setResult:Dispatch<SetStateAction<Array<chatProps>>>,ref:RefObject<HTMLDivElement>)=>{
     try{
         const response=(
             await axiosInstance.post('/user/chat/history',{recieverId})
         ).data
         if(response.message==="success"){
             flushSync(()=>{
-                setResult(response.history)
+                setResult([{userId:email,messages:response.history}])
             })
             if(ref.current){
                 // alert("scrolling")
