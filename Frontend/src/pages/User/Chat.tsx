@@ -26,42 +26,42 @@ interface messageProps {
   message: string;
 }
 
-// type UseSocket = (url: string, onMessage: (message: any) => void) => React.MutableRefObject<Socket | null>;
+type UseSocket = (url: string, onMessage: (message: string) => void) => React.MutableRefObject<Socket | null>;
 
 
-// const useSocket:UseSocket = (url, onMessage) => {
-//   const socketRef = useRef(null);
+const useSocket:UseSocket = (url, onMessage) => {
+  const socketRef = useRef<Socket | null>(null);
 
-//   useEffect(() => {
-//     const socket = io(url, {
-//       auth: {
-//         token: window.localStorage.getItem('token'),
-//       },
-//     });
+  useEffect(() => {
+    const socket = io(url, {
+      auth: {
+        token: window.localStorage.getItem('token'),
+      },
+    });
 
-//     socket.on('connect', () => {
-//       console.log('Socket connected');
-//     });
+    socket.on('connect', () => {
+      console.log('Socket connected');
+      socketConnect()
+    });
 
-//     socket.on('message', (msg) => {
-//       const message = JSON.parse(msg);
-//       onMessage(message);
-//     });
+    socket.on('message', (msg) => {
+      
+      onMessage(msg);
+    });
 
-//     socketRef.current = socket;
+    socketRef.current = socket;
 
-//     return () => {
-//       socket.disconnect();
-//       console.log('Socket disconnected');
-//     };
-//   }, [url, onMessage]);
+    return () => {
+      socket.disconnect();
+      console.log('Socket disconnected');
+    };
+  }, []);
 
-//   return socketRef;
-// };
+  return socketRef;
+};
 
 export default function Chat(): ReactElement {
   const dispatch = useAppDispatch();
-  const socketRef = useRef<Socket | null>(null);
   const [users, setUsers] = useState<Array<userProps>>([]);
   const [chatfind, setChatfind] = useState<boolean>(false);
   const chatFindDialogRef = useRef<HTMLDialogElement>(null);
@@ -71,65 +71,55 @@ export default function Chat(): ReactElement {
   const [connectedusers, setConnectedusers] = useState<Array<userProps>>([]);
   const [chatcount,setChatcount]=useState<Array<messageCount>>([])
   const chatContainerRef = useRef<HTMLDivElement>(null);
-
   const { register, handleSubmit, reset } = useForm<messageProps>();
   
+  const onMessage=(msg:string)=>{
+    
+    const message = JSON.parse(msg);
+    console.log(message)
+    //already connected user
+    flushSync(() => {
+      setChats((prevChats) => {
+        const updatedChats = prevChats.map((chat) => {
+          // Check if the message belongs to the current chat
+          if (chat.userId === message.from) {
+            // Instead of pushing to the existing messages array (mutating it),
+            // return a new chat object with an updated messages array
+            return {
+              ...chat,
+              messages: [...chat.messages, message], // Immutably add the new message
+            };
+          }
+          return chat;
+        });
+    
+        return updatedChats;
+      });
+      // const copyState=chatcount
+
+      // let flag=false
+      // copyState.forEach((chat)=>{
+      //   if(chat.userId===message.from  ){
+      //     chat.messageCount++
+      //     flag=true
+      //   }
+      // })
+      // if(!flag){
+      //   setChatcount((prev)=>([...prev,{userId:message.from,messageCount:1}]))
+      // }
+    });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current?.scrollHeight;
+    }
+  }
+  const socketRef=useSocket(url,onMessage)
+
+
   useEffect(() => {
     dispatch(setPage('chat'));
-    //fetching connected users first
-    getConnectedUser(setConnectedusers);
-
-    const socket = io(url, {
-      auth: {
-        token: window.localStorage.getItem('token'),
-      },
-    });
-
-    socket.on('connect', socketConnect);
-    socket.on('message', (msg) => {
-      console.log(chats)
-      const message = JSON.parse(msg);
-      console.log(message)
-      flushSync(() => {
-        //fix this
-        // flushSync(()=>{
-        //   historyFetching(message.from as string,user?.email as string ,setChats, chatContainerRef);
-        // })
-
-        setChats((prevChats) => {
-          const updatedChats = [...prevChats];
-          updatedChats.forEach((chat) => {
-            if (chat.userId === message.from) {
-              chat.messages.push(message);
-            }
-          });
-          return updatedChats;
-        });
-        // const copyState=chatcount
-
-        // let flag=false
-        // copyState.forEach((chat)=>{
-        //   if(chat.userId===message.from  ){
-        //     chat.messageCount++
-        //     flag=true
-        //   }
-        // })
-        // if(!flag){
-        //   setChatcount((prev)=>([...prev,{userId:message.from,messageCount:1}]))
-        // }
-      });
-      if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTop =
-          chatContainerRef.current?.scrollHeight;
-      }
-    });
-
-    socketRef.current = socket;
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [dispatch,chats]);
+    getConnectedUser(setConnectedusers)
+  }, [dispatch]);
   
   useEffect(() => {
     setChats([]);

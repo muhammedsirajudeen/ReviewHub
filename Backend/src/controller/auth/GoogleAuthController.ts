@@ -44,7 +44,7 @@ const GoogleLogin = async (req: Request, res: Response) => {
           email: checkUser.email,
         },
         process.env.SECRET_KEY as string,
-        { expiresIn: "5m" } //dont forget to decrease in production
+        { expiresIn: "1h" } //dont forget to decrease in production
       );
       const refresh_token= jwt.sign(
         {

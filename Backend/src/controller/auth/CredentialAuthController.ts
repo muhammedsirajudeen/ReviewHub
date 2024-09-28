@@ -102,7 +102,7 @@ const CredentialSignin = async (req: Request, res: Response) => {
             email: checkUser.email,
           },
           process.env.SECRET_KEY ?? "",
-          { expiresIn: "5m" }
+          { expiresIn: "1h" }
         );
         const refresh_token= jwt.sign(
           {
