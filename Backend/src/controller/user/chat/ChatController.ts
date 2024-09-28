@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import User, { IUser } from "../../../model/User";
 import Chat, { IChat } from "../../../model/Chat";
 import mongoose from "mongoose";
-import { randomUUID } from "crypto";
 
 interface queryProps{
     email?:RegExp
@@ -44,7 +43,6 @@ const GetConnectedUsers=async (req:Request,res:Response)=>{
                     }
                 })
             })
-            console.log(connectedUsers)
             //populate with username and email
             res.status(200).json({message:"success",users:connectedUsers})
         }else{
@@ -61,7 +59,6 @@ const GetHistory=async (req:Request,res:Response)=>{
         const {recieverId}=req.body
         const user=req.user as IUser
         const findChat=await Chat.findOne({userId:{$all:[new mongoose.Types.ObjectId(user.id as string),new mongoose.Types.ObjectId(recieverId as string)]}})
-        console.log(findChat)
         if(findChat){
             
             res.status(200).json({message:"success",history:findChat.messages})

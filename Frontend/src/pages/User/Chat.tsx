@@ -18,6 +18,16 @@ const socketConnect = () => {
   toast('Connected successfully', { type: 'success' });
 };
 
+interface messageCount{
+  userId:string,
+  messageCount:number
+}
+interface messageProps {
+  message: string;
+}
+interface ExtendedChat {
+  userId:chatProps
+}
 export default function Chat(): ReactElement {
   const dispatch = useAppDispatch();
   const socketRef = useRef<Socket | null>(null);
@@ -28,10 +38,8 @@ export default function Chat(): ReactElement {
   const [chats, setChats] = useState<Array<chatProps>>([]);
   const currentUser = useAppSelector((state) => state.global.user);
   const [connectedusers, setConnectedusers] = useState<Array<userProps>>([]);
+  const [chatcount,setChatcount]=useState<Array<messageCount>>([])
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  interface messageProps {
-    message: string;
-  }
 
   const { register, handleSubmit, reset } = useForm<messageProps>();
 
@@ -52,6 +60,20 @@ export default function Chat(): ReactElement {
       const message = JSON.parse(msg);
       flushSync(() => {
         setChats((prev) => [...prev, message]);
+        //set the count of chat here
+        
+        // setChatcount((prev)=>[...prev,{userId:message.from as string,number:0}])
+        const copyState=chatcount
+        let flag=false
+        copyState.forEach((chat)=>{
+          if(chat.userId===message.from  ){
+            chat.messageCount++
+            flag=true
+          }
+        })
+        if(!flag){
+          setChatcount((prev)=>([...prev,{userId:message.from,messageCount:1}]))
+        }
       });
       if (chatContainerRef.current) {
         chatContainerRef.current.scrollTop =
@@ -64,7 +86,8 @@ export default function Chat(): ReactElement {
     return () => {
       socket.disconnect();
     };
-  }, [dispatch]);
+  }, [chatcount, dispatch]);
+  
   useEffect(() => {
     setChats([]);
     historyFetching(user?._id as string, setChats, chatContainerRef);
@@ -102,7 +125,17 @@ export default function Chat(): ReactElement {
   };
   const setUserHandler = (user: userProps) => {
     setChats([]);
-    setUser(user);
+    flushSync(()=>{
+
+      setUser(user);
+    })
+    const copymessage=chatcount
+    copymessage.forEach((chat)=>{
+      if(user.email===chat.userId){
+        chat.messageCount=0
+      }
+    })
+    setChatcount(copymessage)
   };
 
   return (
@@ -118,25 +151,35 @@ export default function Chat(): ReactElement {
           <h2 className="text-lg font-semibold text-gray-600">Your Chats</h2>
           <div className="mt-4">
             <p>No chat history available yet.</p>
-            {connectedusers.map((user) => (
+            {connectedusers.map((connecteduser) => (
               <div
                 className="flex items-center justify-start mt-4 hover:bg-gray-50 p-2 rounded-lg transition"
-                key={user._id}
+                key={connecteduser._id}
               >
                 <img
                   className="h-8 w-8 rounded-full"
                   src={
-                    user.profileImage?.includes('http')
-                      ? user.profileImage
-                      : user.profileImage
-                      ? `${url}/profile/${user.profileImage}`
+                    connecteduser.profileImage?.includes('http')
+                      ? connecteduser.profileImage
+                      : connecteduser.profileImage
+                      ? `${url}/profile/${connecteduser.profileImage}`
                       : '/user.png'
                   }
-                  alt={`${user.email}'s profile`}
+                  alt={`${connecteduser.email}'s profile`}
                 />
-                <p className="text-sm ml-2 w-3/4">{user.email}</p>
+                <p className="text-sm ml-2 w-3/4">{connecteduser.email}</p>
+                {
+                 chatcount.map((count)=>{
+                  console.log(count)
+                  if(count.userId===connecteduser.email && connecteduser.email!==user?.email && count.messageCount>0  ){
+                    return(
+                      <p className='w-10 text-xs p-2 rounded-xl bg-blue-500 mr-4 text-white text-center align-middle ' >{count.messageCount}</p>
+                    )
+                  }
+                 })
+                }
                 <button
-                  onClick={() => setUserHandler(user)}
+                  onClick={() => setUserHandler(connecteduser)}
                   className="bg-green-500  right-0 p-2 rounded-xl hover:bg-green-600 transition"
                 >
                   <img className="h-6 w-6" src="/chat/chat.png" alt="Chat" />
@@ -158,19 +201,19 @@ export default function Chat(): ReactElement {
                 alt="Profile"
               />
               <p className="ml-4 text-lg font-semibold">{user.email}</p>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full ">
                 {/* Chat Messages */}
                 <div
                   style={{ height: '65vh' }}
                   ref={chatContainerRef}
-                  className="flex-grow bg-gray-50  border border-gray-300 rounded-lg w-full p-4   overflow-y-auto shadow-inner"
+                  className="flex-grow bg-gray-50  overflow-x-hidden border border-gray-300 rounded-lg w-full p-4   overflow-y-auto shadow-inner"
                 >
                   <p className="text-gray-500">
                     Chat messages will appear here...
                   </p>
                   {chats.map((chat) => (
                     <div
-                    style={chat.from===currentUser.email ? {left:"42vw"} : {}}
+                    style={chat.from===currentUser.email ? {left:"30vw"} : {}}
                       className={`flex mt-4 w-96 p-4 text-white font-bold text-lg justify-between rounded-lg shadow-lg transition-transform transform hover:scale-105 ${
                         chat.from === currentUser.email
                           ? 'bg-gray-600 hover:bg-gray-700 relative '
