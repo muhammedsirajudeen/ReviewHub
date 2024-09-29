@@ -13,11 +13,13 @@ export default function ChatFindDialog({
   closeHandler: VoidFunction;
   users: Array<userProps>;
   setUser:Dispatch<SetStateAction<userProps | null>>
-  setConnectedUsers:Dispatch<SetStateAction<Array<userProps>>>
+  setConnectedUsers:Dispatch<SetStateAction<Array<Pick<userProps,'_id'|'profileImage'|'email'>>>>
 
 }): ReactElement {
     const chatHandler=(user:userProps)=>{
         setUser(user)
+        window.localStorage.setItem("chatuser",user.email)
+
         setConnectedUsers((prev)=>([...prev,user]))
         closeHandler()
     }

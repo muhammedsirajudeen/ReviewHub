@@ -46,3 +46,14 @@ export async function getValueFromCache(value:string):Promise<string>{
     client.disconnect()
   }
 }
+
+export async function removeValueFromCache(key:string){
+  const client=createClient()
+  try{
+    await client.connect()
+    await client.del(key)
+  }catch(error){
+    console.log(error)
+    
+  }
+}

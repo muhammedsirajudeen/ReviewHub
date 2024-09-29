@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react"
 import userProps from "../../types/userProps"
 import axiosInstance from "../axiosInstance"
 
-const getConnectedUser=async (setResult:Dispatch<SetStateAction<Array<userProps>>>)=>{
+const getConnectedUser=async (setResult:Dispatch<SetStateAction<Array<Pick<userProps,'_id'|'email'|'profileImage'>>>>)=>{
     const response=
     (
         await axiosInstance.get(

@@ -9,8 +9,12 @@ interface queryProps{
 
 const GetUsers=async (req:Request,res:Response)=>{
     try{
-        const {search}=req.query
+        const {search,email}=req.query
         const query:queryProps={}
+        if(email){
+            const user=await User.findOne({email:email}).select(['email','profileImage'])
+            return res.status(200).json({message:"success",user:user})
+        }
         if(query) query.email=new RegExp(search as string,'i') 
         const Users = await User.find(query).select('email profileImage')
         res.status(200).json({message:'success',users:Users})
@@ -19,6 +23,7 @@ const GetUsers=async (req:Request,res:Response)=>{
         res.status(500).json({message:'server error occured'})
     }
 }
+
 
 
 

@@ -17,7 +17,7 @@ import passport from "passport";
 import corsOptions from "./helper/corsOptions";
 import verifyToken from "./helper/tokenVerifier";
 import User, { IUser } from "./model/User";
-import { addValueToCache, getValueFromCache } from "./helper/redisHelper";
+import { addValueToCache, getValueFromCache, removeValueFromCache } from "./helper/redisHelper";
 import Chat from "./model/Chat";
 import mongoose from "mongoose";
 
@@ -68,14 +68,19 @@ io.on('connection', async (socket:SocketwithUser) => {
       const socketId=await getValueFromCache(`socket-${receieverId}`)
       console.log("the id is",socketId)
       //sending message to the user
-      io.to(socketId).emit('message',JSON.stringify(parsedMessage))
+      if(socketId){
+        io.to(socketId).emit('message',JSON.stringify(parsedMessage))
+      }else{
+        console.log("user is not online")
+        //so we add the unread message count kinda here maybe in db or in seperate connection whichever is viable  ToDo
+
+      }
 
       //this entire logic is the chat adding in the db logic
       if(receieverId){
         const objectIdOne=new mongoose.Types.ObjectId(socket.user as string)
         const objectIdTwo=new mongoose.Types.ObjectId(receieverId as string)
         const newChat=await Chat.findOne({userId:{$all:[objectIdOne,objectIdTwo]}})
-        console.log(newChat)
         //new chat with new user
         if(!newChat){
           const newChat=new Chat(
@@ -104,12 +109,12 @@ io.on('connection', async (socket:SocketwithUser) => {
           await newChat.save()
         }
       }
-      console.log('Message received:', msg);
 
   });
 
   socket.on('disconnect', () => {
       console.log('User disconnected:', socket.id);
+      removeValueFromCache(`socket-${socket.user}`)
   });
 });
 

@@ -13,6 +13,7 @@ import getConnectedUser from '../../helper/datafetching/connectedUser';
 import { historyFetching } from '../../helper/datafetching/historyFetching';
 import { flushSync } from 'react-dom';
 import useSocket from '../../customHooks/SocketHook';
+import axiosInstance from '../../helper/axiosInstance';
 
 
 
@@ -32,21 +33,44 @@ export default function Chat(): ReactElement {
   const [user, setUser] = useState<userProps | null>(null);
   const [chats, setChats] = useState<Array<chatProps>>([]);
   const currentUser = useAppSelector((state) => state.global.user);
-  const [connectedusers, setConnectedusers] = useState<Array<userProps>>([]);
+  const [connectedusers, setConnectedusers] = useState<Array<Pick<userProps,'_id' | 'email' | 'profileImage'>>>([]);
   const [chatcount,setChatcount]=useState<Array<messageCount>>([])
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { register, handleSubmit, reset } = useForm<messageProps>();
-  const onMessage=(msg:string)=>{
+  const onMessage=async (msg:string)=>{
     
     const message = JSON.parse(msg);
-    //already connected user
+    const fromUser=((await axiosInstance.get(`/user/chat/users?email=${message.from}`)).data).user
+
     flushSync(() => {
+      //if the user isnt connected yet we have to add them here so lets handle it here an api call might be required
+      setConnectedusers((connected)=>{
+        console.log(connected)
+        let flag=false
+        connected.forEach((connected)=>{
+          if(connected.email===message.from){
+            flag=true
+          }
+        })
+        if(!flag){
+          // console.log("new user")
+          if(fromUser){
+            console.log("new user is",fromUser)
+            toast("you have a message from",message.from)
+            return [...connected,{_id:fromUser._id,profileImage:fromUser.profileImage,email:fromUser.email}]
+          }
+          //perform api call and fetch the user forst
+          
+          // return [...connected,{}]
+        }
+        return connected
+      })
+
       setChats((prevChats) => {
         const updatedChats = prevChats.map((chat) => {
           // Check if the message belongs to the current chat
           if (chat.userId === message.from) {
             // Instead of pushing to the existing messages array (mutating it),
-            // return a new chat object with an updated messages array
             return {
               ...chat,
               messages: [...chat.messages, message], // Immutably add the new message
@@ -63,7 +87,6 @@ export default function Chat(): ReactElement {
         let flag = false;
         const updatedChatcount = prevChatcount.map((chat) => {
           //temporary hack fix it
-          console.log("this is",currentChat,message.from)
           if (chat.userId === message.from) {
             flag = true;
             if(currentChat===message.from){
@@ -199,7 +222,7 @@ export default function Chat(): ReactElement {
                  })
                 }
                 <button
-                  onClick={() => setUserHandler(connecteduser)}
+                  onClick={() => setUserHandler(connecteduser as userProps)}
                   className="bg-green-500  right-0 p-2 rounded-xl hover:bg-green-600 transition"
                   >
                   <img className="h-6 w-6" src="/chat/chat.png" alt="Chat" />
@@ -232,32 +255,54 @@ export default function Chat(): ReactElement {
                     Chat messages will appear here...
                   </p>
                   {chats.map((chat) => {
-                    if(chat.userId===user?.email){
-                      return chat.messages.map((indi)=>{
-                        
-                        return(
-                          <div
-                          style={indi.from===currentUser.email ? {left:"30vw"} : {}}
-                          className={`flex mt-4 w-96 p-4 text-white font-bold text-lg justify-between rounded-lg shadow-lg transition-transform transform hover:scale-105 ${
-                            indi.from === currentUser.email
-                            ? 'bg-gray-600 hover:bg-gray-700 relative '
-                            : 'bg-green-600 hover:bg-green-700'
-                          }`}
-                          key={v4()}
-                        >
-                          <div className="flex items-center">
-                            <i className="fas fa-clock mr-2"></i>
-                            <p className="text-sm font-normal">
-                              {indi.time.toString()}
-                            </p>
-                          </div>
-                          <p className="max-w-[70%]">{indi.message}</p>
-                        </div>
-                        )
-                      })                  
-                    }
-                  }  
-                )}
+  if (chat.userId === user?.email) {
+    return chat.messages.map((indi) => {
+      return (
+        <div
+          key={v4()}
+          className={`flex items-start space-x-4 mb-4 ${
+            indi.from === currentUser.email ? 'justify-end' : 'justify-start'
+          }`}
+        >
+          {indi.from !== currentUser.email && (
+            <div className="flex-shrink-0">
+              {/* <img
+                src="/path-to-avatar.jpg" // Use real user image or initials
+                alt="User avatar"
+                className="h-10 w-10 rounded-full"
+              /> */}
+            </div>
+          )}
+
+          <div
+            className={`max-w-lg p-4 text-white font-bold text-lg rounded-2xl shadow-md ${
+              indi.from === currentUser.email
+                ? 'bg-blue-500 text-right' // User's message bubble
+                : 'bg-green-500 text-left' // Other's message bubble
+            }`}
+            style={indi.from === currentUser.email ? { marginRight: '30px' } : {}}
+          >
+            <div className="text-sm font-normal mb-1 text-gray-300">
+              {indi.time.toString()}
+            </div>
+            <p className="break-words">{indi.message}</p>
+          </div>
+
+          {indi.from === currentUser.email && (
+            <div className="flex-shrink-0">
+              {/* <img
+                src="/path-to-current-user-avatar.jpg"
+                alt="Your avatar"
+                className="h-10 w-10 rounded-full"
+              /> */}
+            </div>
+          )}
+        </div>
+      );
+    });
+  }
+})}
+
                 </div>
                 <form
                   onSubmit={handleSubmit(onSubmit)}
