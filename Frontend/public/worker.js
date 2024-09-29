@@ -6,6 +6,10 @@ self.addEventListener('push',async  function(e) {
         notification.notification.title,
         {
             body: notification.notification.body,
+            icon:notification.notification.image
         }
     );
+})
+self.addEventListener('install',(event)=>{
+    self.skipWaiting()
 })

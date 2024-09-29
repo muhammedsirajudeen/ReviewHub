@@ -1,4 +1,5 @@
-import { ReactElement, Ref } from "react";
+import { ReactElement, Ref, useEffect } from "react";
+import axiosInstance from "../../helper/axiosInstance";
 
 export default function ProgressDialog({
     dialogRef,
@@ -9,6 +10,19 @@ export default function ProgressDialog({
     closeHandler: VoidFunction;
     courseId:string
 }): ReactElement {
+    useEffect(()=>{
+        async function progressFetcher(){
+            try{
+                const response=(await axiosInstance.get(`/user/progress/${courseId}`)).data
+                if(response.message==="success"){
+                    console.log(response)
+                }
+            }catch(error){
+                console.log(error)
+            }
+        }
+        progressFetcher()
+    },[courseId])
     return (
         <dialog
             ref={dialogRef}

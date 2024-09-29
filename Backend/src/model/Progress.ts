@@ -22,7 +22,10 @@ const quizSchema = new mongoose.Schema<quizProps>({
 });
 
 const IndiProgressSchema = new mongoose.Schema<progressProps>({
-  roadmapId: mongoose.Schema.ObjectId,
+  roadmapId: {
+    type:mongoose.Schema.ObjectId,
+    ref:'roadmap'
+  },
   quizes: [quizSchema],
 });
 

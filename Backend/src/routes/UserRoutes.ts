@@ -16,6 +16,7 @@ import PremiumController from '../controller/premium/PremiumController';
 import FavoriteController from '../controller/user/FavoriteController';
 import ChatController from '../controller/user/chat/ChatController';
 import Chat from '../model/Chat';
+import ProgressController from '../controller/user/progress/ProgressController';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -166,6 +167,13 @@ router.post(
   '/chat/history',
   passport.authenticate('jwt',{session:false}),
   ChatController.GetHistory
+)
+
+//progress manager
+router.get(
+  '/progress/:courseId',
+  passport.authenticate('jwt',{session:false}),
+  ProgressController.GetProgress
 )
 
 

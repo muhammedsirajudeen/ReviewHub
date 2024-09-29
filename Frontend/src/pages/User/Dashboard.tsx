@@ -22,35 +22,22 @@ export default function Dashboard(): ReactElement {
   console.log("component rendered")
   useEffect(() => {
     async function registerServiceWorker() {
-      const register = await navigator.serviceWorker.register('/worker.js', {
-          scope: '/'
-      });
-  
-      const subscription = await register.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlB64ToUint8Array(import.meta.env.VITE_VAPID_PUBLIC_KEY),
-      });
-      console.log(subscription)
       if(renderCount.current===0){
+        const register = await navigator.serviceWorker.register('/worker.js', {
+            scope: '/'
+        });
+    
+        const subscription = await register.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlB64ToUint8Array(import.meta.env.VITE_VAPID_PUBLIC_KEY),
+        });
+        console.log(subscription)
         await axiosInstance.post('/notification/subscribe',
           subscription
         )
       }
       renderCount.current++
-      // await fetch("/subscribe", {
-      //     method: "POST",
-      //     body: JSON.stringify(subscription),
-      //     headers: {
-      //         "Content-Type": "application/json",
-      //     }
-      // })
-    //   self.addEventListener('push', (e: PushEvent) => {
-    //     const data = e.data ? e.data.json() : { title: '', body: '' }; // Handle case where data might be null
-    
-    //     self.registration.showNotification(data.title, {
-    //         body: data.body,
-    //     });
-    // });
+
     
   }
   registerServiceWorker()
