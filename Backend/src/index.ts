@@ -10,6 +10,7 @@ import AuthRoute from "../src/routes/AuthRoutes";
 import UserRoutes from "./routes/UserRoutes"
 import AdminRoutes from "./routes/AdminRoutes"
 import ReviewerRoutes from "./routes/ReviewerRoutes"
+import SubscriptionRoutes from "./routes/SubscriptionRoutes"
 import ErrorController from "./controller/ErrorController";
 
 import path from "path";
@@ -20,6 +21,7 @@ import User, { IUser } from "./model/User";
 import { addValueToCache, getValueFromCache, removeValueFromCache } from "./helper/redisHelper";
 import Chat from "./model/Chat";
 import mongoose from "mongoose";
+import { sendNotification } from "./services/subscriptionService";
 
 const app = express();
 const server = http.createServer(app);
@@ -70,9 +72,11 @@ io.on('connection', async (socket:SocketwithUser) => {
       //sending message to the user
       if(socketId){
         io.to(socketId).emit('message',JSON.stringify(parsedMessage))
+        // sendNotification(parsedMessage.from,parsedMessage.message,'https://img.icons8.com/?size=100&id=32309&format=png&color=FFFFFF',parsedMessage.to)
       }else{
         console.log("user is not online")
         //so we add the unread message count kinda here maybe in db or in seperate connection whichever is viable  ToDo
+        sendNotification(parsedMessage.from,parsedMessage.message,'https://img.icons8.com/?size=100&id=32309&format=png&color=FFFFFF',parsedMessage.to)
 
       }
 
@@ -132,7 +136,7 @@ app.use("/auth", AuthRoute);
 app.use("/user",UserRoutes)
 app.use("/admin",AdminRoutes)
 app.use("/reviewer",ReviewerRoutes)
-
+app.use("/notification",SubscriptionRoutes)
 app.use(ErrorController);
 
 
