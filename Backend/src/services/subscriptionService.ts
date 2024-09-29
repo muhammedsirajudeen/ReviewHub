@@ -52,8 +52,7 @@ export const sendNotification = async (
       },
     });
     webPush
-      .sendNotification(sub, payload).then((value)=>console.log("send",value))
-      .catch((error) => console.error('Error sending notification:', error));
+      .sendNotification(sub, payload).catch((error) => console.error('Error sending notification:', error));
   } else {
     console.log('user has not subscribed yet');
   }

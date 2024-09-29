@@ -76,7 +76,8 @@ io.on('connection', async (socket:SocketwithUser) => {
       }else{
         console.log("user is not online")
         //so we add the unread message count kinda here maybe in db or in seperate connection whichever is viable  ToDo
-        sendNotification(parsedMessage.from,parsedMessage.message,'https://img.icons8.com/?size=100&id=32309&format=png&color=FFFFFF',parsedMessage.to)
+        const profileImage=await User.findOne({email:parsedMessage.from})
+        sendNotification(parsedMessage.from,parsedMessage.message,profileImage?.profileImage as string,parsedMessage.to)
 
       }
 
