@@ -68,7 +68,7 @@ const QuizChecker = async (req: Request, res: Response) => {
           roadmapId: checkQuiz.roadmapId,
           quizes: [
             {
-              quizId: quizId,
+              quizId: new mongoose.Types.ObjectId(quizId),
               reward: finalReward,
             },
           ],

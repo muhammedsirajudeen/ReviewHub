@@ -4,7 +4,7 @@ import Progress from "../../../model/Progress";
 const GetProgress=async (req:Request,res:Response)=>{
     try{
         const {courseId}=req.params
-        const getProgress=await Progress.findOne({courseId:courseId}).populate('courseId').populate('progress.roadmapId')        
+        const getProgress=await Progress.findOne({courseId:courseId}).populate('courseId').populate('progress.roadmapId').populate('progress.quizes.quizId')       
         res.status(200).json({message:"success",progress:getProgress??{}})
     }catch(error){
         console.log(error)

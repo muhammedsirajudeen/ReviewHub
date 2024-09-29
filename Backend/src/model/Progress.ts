@@ -1,8 +1,9 @@
 import mongoose, { mongo } from 'mongoose';
 
 interface quizProps {
-  quizId: string;
+  quizId: mongoose.Types.ObjectId;
   reward: number;
+  date?:Date
 }
 
 interface progressProps {
@@ -17,8 +18,16 @@ interface IProgress extends Document {
 }
 
 const quizSchema = new mongoose.Schema<quizProps>({
-  quizId: mongoose.Schema.ObjectId,
+  quizId: {
+    type:mongoose.Schema.ObjectId,
+    ref:'quizes'
+  },
   reward: Number,
+  date:{
+    type:Date,
+    default:new Date(),
+    required:false
+  }
 });
 
 const IndiProgressSchema = new mongoose.Schema<progressProps>({
