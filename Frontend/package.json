@@ -22,6 +22,7 @@
     "bulma": "^1.0.2",
     "bulma-helpers": "^0.4.3",
     "check-password-strength": "^2.0.10",
+    "immer": "^10.1.1",
     "material-design-icons": "^3.0.1",
     "passport-google-oauth2": "^0.2.0",
     "postcss": "^8.4.47",

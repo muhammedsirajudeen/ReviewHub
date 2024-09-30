@@ -13,6 +13,7 @@ import ResourceController from '../controller/admin/ResourceController';
 
 import { IUser } from '../model/User';
 import PaymentController from '../controller/admin/PaymentController';
+import WithdrawalController from '../controller/admin/WithdrawalController';
 const router = express.Router();
 
 const AdminMiddleware=(req:Request,res:Response,next:NextFunction)=>{
@@ -216,4 +217,18 @@ router.get(
   PaymentController.GetPayments
 )
 
+//withdrawal management
+router.get(
+  '/withdrawals',
+  passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+  WithdrawalController.Withdrawals
+)
+
+router.put(
+  '/withdrawal/:withdrawalId',
+  passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+  WithdrawalController.ApproveWithdrawal
+)
 export default router;

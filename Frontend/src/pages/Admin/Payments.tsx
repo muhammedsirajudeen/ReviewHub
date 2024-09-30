@@ -55,6 +55,7 @@ export default function Payments(): ReactElement {
     <>
       <PaymentTopBar setResults={setPayments} />
       <h1 className="text-4xl ml-36 mt-4 mb-6">Payments</h1>
+      <a href='/admin/withdrawals' className='ml-36  mt-4 mb-4 text-xl border border-b-black border-t-white border-l-white border-r-white' >Withdrawals</a>
       <PaymentFilterBar currentpage={currentpage}/>
       <div className="ml-36 mb-6 border rounded-lg shadow-lg p-4 bg-white">
         <table className="min-w-full divide-y divide-gray-200">

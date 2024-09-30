@@ -4,6 +4,7 @@ interface IWithdrawal extends Document{
     userId:mongoose.Types.ObjectId,
     amount:number,
     date?:Date
+    status:boolean
 }
 
 const WithdrawalSchema=new mongoose.Schema<IWithdrawal>(
@@ -21,6 +22,11 @@ const WithdrawalSchema=new mongoose.Schema<IWithdrawal>(
             type:Date,
             required:false,
             default:new Date()
+        },
+        status:{
+            type:Boolean,
+            required:false,
+            default:false
         }
     }
 )

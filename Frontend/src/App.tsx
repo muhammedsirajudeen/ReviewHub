@@ -41,6 +41,7 @@ import ManageBlog from './pages/User/ManageBlog';
 import ManageCourse from './pages/User/ManageCourse';
 import Payments from './pages/Admin/Payments';
 import Chat from './pages/User/Chat';
+import Withdrawals from './pages/Admin/Withdrawals';
 
 const router = createBrowserRouter([
   //authentication routes
@@ -127,6 +128,11 @@ const router = createBrowserRouter([
       {
         path:'/admin/chat',
         element:<AdminPrivateRoute Component={AdminChat}/>,
+        loader:tokenVerifier
+      },
+      {
+        path:'/admin/withdrawals',
+        element:<AdminPrivateRoute Component={Withdrawals}/>,
         loader:tokenVerifier
       }
     ],
