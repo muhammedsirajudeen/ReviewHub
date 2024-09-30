@@ -17,6 +17,7 @@ import FavoriteController from '../controller/user/FavoriteController';
 import ChatController from '../controller/user/chat/ChatController';
 import Chat from '../model/Chat';
 import ProgressController from '../controller/user/progress/ProgressController';
+import WithdrawalController from '../controller/user/withdrawal/WithdrawalController';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -176,5 +177,11 @@ router.get(
   ProgressController.GetProgress
 )
 
+//withdrawal controller
+router.post(
+  '/withdrawal',
+  passport.authenticate('jwt',{session:false}),
+  WithdrawalController.WithdrawalController
+)
 
 export default router;

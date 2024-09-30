@@ -3,6 +3,7 @@ import { useAppSelector } from '../../store/hooks';
 import {  ToastContainer } from 'react-toastify';
 import PaymentDialog from '../../components/payment/PaymentDialog';
 import { flushSync } from 'react-dom';
+import WithdrawalDialog from '../../components/payment/WithdrawalDialog';
 // import PaymentButton from '../../components/payment/RazorpayComponent';
 
 
@@ -10,8 +11,10 @@ import { flushSync } from 'react-dom';
 export default function Wallet(): ReactElement {
   const [active, setActive] = useState<string>('All');
   const user = useAppSelector((state) => state.global.user);
-  const paymentdialogRef=useRef<HTMLDialogElement>(null)
   const [payment,setPayment]=useState<boolean>(false)
+  const paymentdialogRef=useRef<HTMLDialogElement>(null)
+  const [withdrawal,setWithdrawal]=useState<boolean>(false)
+  const withdrawaldialogRef=useRef<HTMLDialogElement>(null)
   useEffect(() => {
     setActive('All');
   }, []);
@@ -26,6 +29,16 @@ export default function Wallet(): ReactElement {
   const closeHandler=()=>{
     setPayment(false)
     paymentdialogRef.current?.close()
+  }
+  const withdrawalHandler=()=>{
+    flushSync(()=>{
+      setWithdrawal(true)
+    })
+    withdrawaldialogRef.current?.showModal()
+  }
+  const withdrawalCloseHandler=()=>{
+    withdrawaldialogRef.current?.close()
+    setWithdrawal(false)
   }
 
   return (
@@ -61,11 +74,14 @@ export default function Wallet(): ReactElement {
             <img src="/wallet/topup.png" className="h-8 w-8" alt="Top Up" />
             <p className="text-xs font-semibold mt-1">Top Up</p>
             </button>
-            <button className="flex flex-col items-center justify-center font-bold bg-white text-blue-600 py-2 px-4 rounded shadow hover:bg-gray-200 transition">
+            <button
+                onClick={withdrawalHandler}
+                 className="flex flex-col items-center justify-center font-bold bg-white text-blue-600 py-2 px-4 rounded shadow hover:bg-gray-200 transition">
               <img
                 src="/wallet/withdraw.png"
                 className="h-8 w-8"
                 alt="Withdraw"
+                
               />
               <p className="text-xs font-semibold mt-1">Withdraw</p>
             </button>
@@ -127,6 +143,10 @@ export default function Wallet(): ReactElement {
         payment && (
             <PaymentDialog dialogRef={paymentdialogRef}  closeHandler={closeHandler}/>
         )
+      }
+      {
+        withdrawal && 
+        <WithdrawalDialog dialogRef={withdrawaldialogRef} closeHandler={withdrawalCloseHandler}/>
       }
     </>
   );
