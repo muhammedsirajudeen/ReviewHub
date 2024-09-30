@@ -2,13 +2,17 @@ import { Request,Response } from "express";
 import Withdrawal from "../../model/Withdrawal";
 import User, { IUser } from "../../model/User";
 import Wallet from "../../model/Wallet";
+import { PAGE_LIMIT } from "../user/CourseController";
 
 
 const Withdrawals=async (req:Request,res:Response)=>{
     try{
-        const withdrawals=await Withdrawal.find().populate('userId','email profileImage')
+        let { page } = req.query ?? '1';
+        const pageLength=(await Withdrawal.find()).length
+        const withdrawals=await Withdrawal.find().populate('userId','email profileImage').skip((parseInt(page as string) - 1) * PAGE_LIMIT)
+        .limit(PAGE_LIMIT);
         
-        res.status(200).json({message:"success",withdrawals:withdrawals})
+        res.status(200).json({message:"success",withdrawals:withdrawals,pageLength})
     }catch(error){
         console.log(error)
         res.status(500).json({message:"server error occured"})

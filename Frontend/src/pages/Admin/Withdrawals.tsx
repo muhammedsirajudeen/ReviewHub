@@ -6,16 +6,19 @@ import url from '../../helper/backendUrl';
 import { FaCheck, FaTimes } from 'react-icons/fa'; // Install react-icons
 import { toast, ToastContainer } from 'react-toastify';
 import { produce } from 'immer';
+import PaginationComponent from '../../components/pagination/PaginationComponent';
 export default function Withdrawals(): ReactElement {
   const [withdrawals, setWithdrawals] = useState<withdrawalProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
+  const [currentpage, setCurrentpage] = useState<number>(1);
+  const [pagecount, setPagecount] = useState<number>(0);
   useEffect(() => {
     async function withdrawalFetcher() {
       try {
         const response = (await axiosInstance.get('/admin/withdrawals')).data;
         if (response.message === 'success') {
           setWithdrawals(response.withdrawals);
+          setPagecount(response.pageLength)
         }
       } catch (error) {
         console.log(error);
@@ -62,11 +65,23 @@ export default function Withdrawals(): ReactElement {
       toast.error('please try again');
     }
   };
+  const pageHandler = (count: number) => {
+    const page = Math.ceil(count / 10);
+    return Array.from({ length: page }, (_, i) => i + 1);
+  };
+
+  const previouspageHandler = () => {
+    setCurrentpage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const nextpageHandler = () => {
+    setCurrentpage((prev) => Math.min(prev + 1, Math.ceil(pagecount / 10)));
+  };
 
   return (
     <>
       <DashboardTopbar />
-      <h1 className="text-4xl ml-36 mt-8 mb-4">Withdrawals</h1>
+      <h1 className="text-4xl ml-36 mt-8 mb-4">WITHDRAWALS</h1>
       <div className="flex flex-col items-center ml-36">
         {loading ? (
           <div className="loader">Loading...</div> // You can style this loader
@@ -137,6 +152,13 @@ export default function Withdrawals(): ReactElement {
             borderRadius: '10px',
           }}
         />
+              <PaginationComponent
+        previouspageHandler={previouspageHandler}
+        nextpageHandler={nextpageHandler}
+        pageHandler={pageHandler}
+        pagecount={pagecount}
+        currentpage={currentpage}
+      />
       </div>
     </>
   );

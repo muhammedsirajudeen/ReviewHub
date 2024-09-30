@@ -1,5 +1,10 @@
 import mongoose, { Document, Mongoose, Schema } from 'mongoose';
 
+interface paymentMethodprops{
+  bankaccount:string,
+  ifsc:string,
+  holdername:string,
+}
 export interface IUser extends Document {
   email: string; // Optional field for user's name
   password: string; // Optional field for user's email
@@ -14,8 +19,27 @@ export interface IUser extends Document {
   verified:boolean;
   reviewerApproval:boolean
   premiumMember:boolean;
-  favoriteCourses:Array<mongoose.Types.ObjectId>
+  favoriteCourses:Array<mongoose.Types.ObjectId>,
+  paymentMethod:paymentMethodprops[]
 }
+
+const PaymentMethodSchema=new Schema<paymentMethodprops>(
+  {
+      bankaccount:{
+        type:String,
+        required:false
+      },
+      ifsc:{
+        type:String,
+        required:false
+      },
+      holdername:{
+        type:String,
+        required:false
+      }
+  }
+)
+
 
 const userSchema: Schema<IUser> = new Schema({
   email: {
@@ -96,7 +120,13 @@ const userSchema: Schema<IUser> = new Schema({
     type:[mongoose.Schema.ObjectId],
     required:false,
     default:[]
+  },
+  paymentMethod:{
+    type:[PaymentMethodSchema],
+    required:false,
+    default:[]
   }
+  
 });
 const User = mongoose.model<IUser>('User', userSchema);
 export default User;

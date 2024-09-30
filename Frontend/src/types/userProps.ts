@@ -11,6 +11,12 @@ interface walletProps {
   balance?: number;
   history?: HistoryProps[];
 }
+export interface paymentMethodprops{
+  bankaccount:string,
+  ifsc:string,
+  holdername:string,
+  _id?:string
+}
 export default interface userProps {
   email: string;
   profileImage: string;
@@ -23,7 +29,7 @@ export default interface userProps {
   premiumMember:boolean;
   favoriteCourses?:string[]
   verified:boolean
-
+  paymentMethod:paymentMethodprops[]
 }
 
 export interface approvalProps {

@@ -12,6 +12,12 @@ interface walletProps {
   balance?: number;
   history?: HistoryProps[];
 }
+interface paymentMethodprops{
+  bankaccount:string,
+  ifsc:string,
+  holdername:string,
+  _id?:string
+}
 interface userProps {
   email?: string;
   password?: string;
@@ -25,6 +31,7 @@ interface userProps {
   premiumMember?:boolean;
   favoriteCourses?:string[]
   verified?:boolean
+  paymentMethod:paymentMethodprops[]
 
 }
 
@@ -47,7 +54,7 @@ export interface GlobalState {
 const initialState: GlobalState = {
   authenticated: false,
   page: "",
-  user: {},
+  user: {paymentMethod:[]},
   filterProps:{
     date:null,
     status:null
@@ -63,7 +70,7 @@ export const globalSlice = createSlice({
     },
     clearAuthenticated: (state) => {
       state.authenticated = false;
-      state.user={}
+      state.user={paymentMethod:[]}
     },
     setUser: (state, action: PayloadAction<userProps>) => {
       state.user = action.payload;
