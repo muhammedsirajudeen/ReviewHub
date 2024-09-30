@@ -29,7 +29,12 @@ const WithdrawalController=async (req:Request,res:Response)=>{
                 {
                     userId:user.id,
                     amount:amount,
-                    status:"pending"
+                    status:"pending",
+                    paymentMethod:{
+                      bankaccount,
+                      ifsc,
+                      holdername
+                    }
                 }
             )
 

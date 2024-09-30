@@ -18,6 +18,7 @@ interface paymentMethodprops{
   holdername:string,
   _id?:string
 }
+
 interface userProps {
   email?: string;
   password?: string;
