@@ -25,31 +25,44 @@ export default function Withdrawals(): ReactElement {
     }
     withdrawalFetcher();
   }, []);
-  const approveHandler = async (id: string) => {
+  const approveHandler = async (id: string, status: boolean) => {
     console.log(id);
     try {
-        const response=(
-            await axiosInstance.put(`/admin/withdrawal/${id}`,{approval:true})
-        ).data
-        if(response.message==="success"){
-            toast.success("approved successfully")
-            setWithdrawals(produce((draft)=>{
-                draft.map((draft)=>{
-                    if(draft._id===id){
-                        draft.status=true
-                    }
-                })
-            }))
+      const response = (
+        await axiosInstance.put(`/admin/withdrawal/${id}`, { approval: status })
+      ).data;
+      if (response.message === 'success') {
+        if (status) {
+          setWithdrawals(
+            produce((draft) => {
+              draft.map((draft) => {
+                if (draft._id === id) {
+                  draft.status = 'approved';
+                }
+              });
+            })
+          );
 
+          toast.success('approved successfully');
+        } else {
+          setWithdrawals(
+            produce((draft) => {
+              draft.map((draft) => {
+                if (draft._id === id) {
+                  draft.status = 'rejected';
+                }
+              });
+            })
+          );
+          toast.error('transaction rejected');
         }
+      }
     } catch (error) {
-        console.log(error)
-        toast.error("please try again")
+      console.log(error);
+      toast.error('please try again');
     }
   };
-  const rejectHandler = (id: string) => {
-    console.log(id);
-  };
+
   return (
     <>
       <DashboardTopbar />
@@ -84,20 +97,27 @@ export default function Withdrawals(): ReactElement {
                     </div>
                   </div>
                   <div className="flex space-x-2">
-                    {withdrawal.status ? (
+                    {withdrawal.status === 'approved' ? (
                       <button className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200">
                         <FaCheck className="mr-1" /> Approved
+                      </button>
+                    ) : withdrawal.status === 'rejected' ? (
+                      <button
+                        onClick={() => approveHandler(withdrawal._id, false)}
+                        className="flex items-center bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200"
+                      >
+                        <FaTimes className="mr-1" /> Reject
                       </button>
                     ) : (
                       <>
                         <button
-                          onClick={() => approveHandler(withdrawal._id)}
+                          onClick={() => approveHandler(withdrawal._id, true)}
                           className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
                         >
                           <FaCheck className="mr-1" /> Approve
                         </button>
                         <button
-                          onClick={() => rejectHandler(withdrawal._id)}
+                          onClick={() => approveHandler(withdrawal._id, false)}
                           className="flex items-center bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200"
                         >
                           <FaTimes className="mr-1" /> Reject

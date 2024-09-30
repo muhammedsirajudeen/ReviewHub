@@ -22,13 +22,18 @@ const ApproveWithdrawal=async (req:Request,res:Response)=>{
         const {approval}=req.body
         const approveWithdrawal=await Withdrawal.findById(withdrawalId)
         if(approveWithdrawal){
-            approveWithdrawal.status=true
+            approveWithdrawal.status=approval ? "approved" : "rejected"
+            approveWithdrawal.completed=approval
             const wallet=await Wallet.findOne({userId:approveWithdrawal.userId})
+            if(approval && wallet ){
+                wallet.redeemable-=approveWithdrawal.amount
+                wallet.balance-=approveWithdrawal.amount
+            }
             wallet?.history.map((history)=>{
                 console.log(history)
                 if(history?.withdrawalId?.toHexString()===approveWithdrawal.id){
-                    history.status=true
-                    history.type="withdrawal succeeded"
+                    history.status=approval
+                    history.type= approval ?  "withdrawal succeeded" : "withdrawal rejected"
                 }
             })
             await approveWithdrawal.save()

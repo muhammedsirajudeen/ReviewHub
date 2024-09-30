@@ -15,16 +15,19 @@ const WithdrawalController=async (req:Request,res:Response)=>{
         let withdrawalsAmount=0
         if(existingWithdrawals){
           existingWithdrawals.map((withdrawal)=>{
-            withdrawalsAmount+=withdrawal.amount
+            if(withdrawal.completed!==true){
+              withdrawalsAmount+=withdrawal.amount
+            }
           })
         }
-
+        console.log(withdrawalsAmount)
         if(checkWallet.redeemable>=parseInt(amount) && checkWallet.redeemable-withdrawalsAmount>=parseInt(amount) ){
 
             const newWithdrawal=new Withdrawal(
                 {
                     userId:user.id,
-                    amount:amount
+                    amount:amount,
+                    status:"pending"
                 }
             )
 

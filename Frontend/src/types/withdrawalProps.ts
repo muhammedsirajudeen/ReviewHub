@@ -5,5 +5,5 @@ export default interface withdrawalProps {
     amount:number,
     date?:Date
     _id:string
-    status:boolean
+    status:string
 }
