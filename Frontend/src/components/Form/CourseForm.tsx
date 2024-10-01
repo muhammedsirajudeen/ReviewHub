@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, useRef, useState } from 'react';
+import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Select from 'react-select';
 import { toast, ToastContainer } from 'react-toastify';
@@ -14,11 +14,20 @@ interface Inputs {
 }
 
 // Options for select input
-const options = [
-  { value: 'Mern', label: 'Mern' },
-  { value: 'Django', label: 'Django' },
-  { value: 'Golang', label: 'Golang' },
-];
+// const options = [
+//   { value: 'Mern', label: 'Mern' },
+//   { value: 'Django', label: 'Django' },
+//   { value: 'Golang', label: 'Golang' },
+// ];
+interface domainProps{
+  _id:string,
+  domain:string
+}
+export interface optionProps{
+  value:string,
+  label:string
+}
+
 
 export default function CourseForm({
   closeForm,
@@ -40,11 +49,35 @@ export default function CourseForm({
     },
   });
 
+
   const [domain, setDomain] = useState<string>('');
   const [list, setList] = useState<boolean>(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-
+  const [options,setOptions]=useState<Array<optionProps>>([])
+  useEffect(()=>{
+    async function dataFetcher(){
+      try{
+        const response=(
+          await axiosInstance.get('/user/domain')
+        ).data
+        if(response.message==="success"){
+          console.log(response)
+          const options:optionProps[]=[]
+          response.domains.map((domain:domainProps)=>{
+            console.log(domain)
+            options.push({value:domain.domain,label:domain.domain})  
+          })
+          setOptions(options)
+        }
+         
+      }catch(error){
+        console.log(error)
+        
+      }
+    }
+    dataFetcher()
+    },[])
   const fileHandler = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const maxSize = 2 * 1024 * 1024; // 2MB
@@ -166,6 +199,8 @@ export default function CourseForm({
       {/* Domain Selection */}
       <label className="text-sm font-light w-full mt-4">Domain</label>
       <Select
+      // defaultValue={'MERN STACK'}
+      defaultInputValue={course?.domain}
         options={options}
         className="w-full mb-2"
         onChange={(value) => setDomain(value?.value ?? '')}
