@@ -14,6 +14,7 @@ import ResourceController from '../controller/admin/ResourceController';
 import { IUser } from '../model/User';
 import PaymentController from '../controller/admin/PaymentController';
 import WithdrawalController from '../controller/admin/WithdrawalController';
+import DomainController from '../controller/admin/DomainController';
 const router = express.Router();
 
 const AdminMiddleware=(req:Request,res:Response,next:NextFunction)=>{
@@ -231,4 +232,32 @@ router.put(
   AdminMiddleware,
   WithdrawalController.ApproveWithdrawal
 )
+
+//domain management
+router.get(
+  '/domain',
+  passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+  DomainController.GetDomain
+)
+
+router.post(
+  '/domain',
+  passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+  DomainController.AddDomain
+)
+router.put(
+  '/domain/:domain',
+  passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+  DomainController.EditDomain
+)
+
+router.delete(
+  '/domain/:domain',
+  passport.authenticate('jwt',{session:false}),
+  DomainController.DeleteDomain
+)
+
 export default router;

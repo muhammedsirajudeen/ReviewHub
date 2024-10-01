@@ -68,3 +68,8 @@ export interface responseProps {
   question: string;
   reward: number;
 }
+
+
+export interface domainProps {
+  domain: string;
+}

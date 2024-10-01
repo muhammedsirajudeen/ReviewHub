@@ -10,6 +10,7 @@ import CourseDeleteForm from '../../components/Form/CourseDeleteForm';
 import FilterBar from '../../components/FilterBar';
 import TopBar from '../../components/TopBar';
 import axiosInstance from '../../helper/axiosInstance';
+import DomainDialog from '../../components/Dialog/DomainDialog';
 export default function Course(): ReactElement {
     const [open, setOpen] = useState<boolean>(false);
     const [courses, setCourses] = useState<Array<courseProps>>([]);
@@ -21,6 +22,8 @@ export default function Course(): ReactElement {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const deletedialogRef=useRef<HTMLDialogElement>(null)
     const [search,setSearch]=useState<string>("")
+    const [domain,setDomain]=useState<boolean>(false)
+    const domainDialogRef=useRef<HTMLDialogElement>(null)
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     useEffect(() => {
@@ -109,11 +112,22 @@ export default function Course(): ReactElement {
       deletedialogRef.current?.close()
 
     }
+    const domainHandler=()=>{
+      flushSync(()=>{
+        setDomain(true)
+      })
+      domainDialogRef.current?.showModal()
+    }
+    const closeDomainHandler=()=>{
+      domainDialogRef.current?.close()
+      setDomain(false)
+    }
 
     return (
       <>
         <TopBar currentpage={currentpage} setCourses={setCourses} search={search} setSearch={setSearch}  />
         <FilterBar currentpage={currentpage} setResult={setCourses} />
+        <button onClick={domainHandler}  className='ml-36 border  border-b-black border-t-white border-l-white border-r-white ' >Domain</button>
         <div className="ml-36 mt-10 flex items-center justify-evenly flex-wrap ">
           {courses.map((course) => {
             return (
@@ -221,6 +235,10 @@ export default function Course(): ReactElement {
             closeDeleteHandler={closeDeleteHandler}
           />
         )}
+        {
+          domain &&
+          <DomainDialog dialogRef={domainDialogRef} closeHandler={closeDomainHandler}/>
+        }
       </>
     );
 }
