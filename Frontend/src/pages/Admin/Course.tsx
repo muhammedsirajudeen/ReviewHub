@@ -230,6 +230,7 @@ export default function Course(): ReactElement {
         )}
         {deleteopen && (
           <CourseDeleteForm
+          setCourses={setCourses}
             course={course}
             deletedialogRef={deletedialogRef}
             closeDeleteHandler={closeDeleteHandler}

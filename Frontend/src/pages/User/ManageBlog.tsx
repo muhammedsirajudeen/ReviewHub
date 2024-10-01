@@ -140,6 +140,7 @@ export default function ManageBlog(): ReactElement {
       {editdialog && (
         <BlogForm
           method="put"
+          setBlogs={setBlogs}
           blog={blog}
           dialogRef={editDialogRef}
           closeHandler={editCloseHandler}
@@ -147,6 +148,7 @@ export default function ManageBlog(): ReactElement {
       )}
       {deletedialog && (
         <BlogDelete
+          setBlogs={setBlogs}
           dialogRef={deleteDialogRef}
           closeHandler={deleteCloseHandler}
           blog={blog}

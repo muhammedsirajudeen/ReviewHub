@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, Ref, useRef } from 'react';
+import { ChangeEvent, Dispatch, ReactElement, Ref, SetStateAction, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { blogProps } from '../../../types/blogProps';
 import { toast } from 'react-toastify';
@@ -10,6 +10,7 @@ interface BlogFormProps {
   closeHandler: VoidFunction;
   blog?: blogProps; // Optional for editing an existing blog
   method?:string
+  setBlogs:Dispatch<SetStateAction<blogProps[]>>
 }
 
 export default function BlogForm({
@@ -62,6 +63,7 @@ export default function BlogForm({
           ).data
           if(response.message==="success"){
             toast.success("updated successfully")
+            
             setTimeout(()=>window.location.reload(),1000)
             return
           }else{

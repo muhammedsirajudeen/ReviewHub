@@ -1,16 +1,19 @@
-import { ReactElement, Ref } from 'react';
+import { Dispatch, ReactElement, Ref, SetStateAction } from 'react';
 import { courseProps } from '../../types/courseProps';
 import { toast, ToastContainer } from 'react-toastify';
 import axiosInstance from '../../helper/axiosInstance';
+import { produce } from 'immer';
 
 export default function CourseDeleteForm({
   deletedialogRef,
   closeDeleteHandler,
   course,
+  setCourses
 }: {
   deletedialogRef: Ref<HTMLDialogElement>;
   closeDeleteHandler: VoidFunction;
   course: courseProps | undefined;
+  setCourses:Dispatch<SetStateAction<Array<courseProps>>>
 }): ReactElement {
 
   const deleteHandler=async ()=>{
@@ -19,7 +22,17 @@ export default function CourseDeleteForm({
    ).data
    if(response.message==="success"){
     toast("deleted successfully")
-    setTimeout(()=>window.location.reload(),1000)
+    setCourses(produce((draft)=>{
+      draft.forEach((d)=>{
+
+        console.log(d)
+        if(d._id===course?._id){
+          d.unlistStatus=true
+        }
+      })
+    }))
+    closeDeleteHandler()
+    // setTimeout(()=>window.location.reload(),1000)
    }else{
     toast(response.message)
    }

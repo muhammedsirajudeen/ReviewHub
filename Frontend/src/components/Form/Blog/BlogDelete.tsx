@@ -1,16 +1,19 @@
-import { ReactElement, Ref } from 'react';
+import { Dispatch, ReactElement, Ref, SetStateAction } from 'react';
 import { blogProps } from '../../../types/blogProps';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../helper/axiosInstance';
+import { produce } from 'immer';
 
 export default function BlogDelete({
   dialogRef,
   closeHandler,
   blog,
+  setBlogs
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   blog?: blogProps;
+  setBlogs:Dispatch<SetStateAction<blogProps[]>>
 }): ReactElement {
   const deleteHandler = async () => {
     try {
@@ -18,9 +21,16 @@ export default function BlogDelete({
         .data;
       if (response.message === 'success') {
         toast.success('deleted successfully');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        setBlogs(produce((draft)=>{
+          return(
+
+            draft.filter((d)=>d._id!==blog?._id)
+          )
+        }))
+        closeHandler()
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 1000);
       } else {
         toast.error(response.message);
       }

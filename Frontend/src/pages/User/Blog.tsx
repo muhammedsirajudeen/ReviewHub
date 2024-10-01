@@ -151,6 +151,7 @@ export default function Blog(): ReactElement {
       {createblog && (
         <BlogForm
           blog={undefined}
+          setBlogs={setBlogs}
           dialogRef={createDialogRef}
           closeHandler={createCloseHandler}
         />
