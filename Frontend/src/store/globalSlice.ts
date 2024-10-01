@@ -87,11 +87,14 @@ export const globalSlice = createSlice({
     },
     addWithdrawal:(state,action:PayloadAction<HistoryProps>)=>{
       state.user.walletId?.history?.push(action.payload)
+    },
+    setPaymentMethod:(state,action:PayloadAction<paymentMethodprops>)=>{
+      state.user.paymentMethod.push(action.payload)
     }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setAuthenticated, clearAuthenticated, setUser, setPage, setDateSlice, setStatus, addWithdrawal } = globalSlice.actions;
+export const { setAuthenticated, clearAuthenticated, setUser, setPage, setDateSlice, setStatus, addWithdrawal, setPaymentMethod } = globalSlice.actions;
 
 export default globalSlice.reducer;

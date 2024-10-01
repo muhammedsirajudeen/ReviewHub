@@ -2,7 +2,7 @@ import { ReactElement, Ref } from 'react';
 import { useForm } from 'react-hook-form';
 import axiosInstance from '../../helper/axiosInstance';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { addWithdrawal } from '../../store/globalSlice';
+import { addWithdrawal, setPaymentMethod } from '../../store/globalSlice';
 import { toast } from 'react-toastify';
 import { paymentMethodprops } from '../../types/userProps';
 
@@ -50,6 +50,13 @@ export default function WithdrawalDialog({
           status: false,
         }));
         toast.success("Withdrawal request succeeded");
+        dispatch(setPaymentMethod(
+          {
+            bankaccount:data.bankAccount,
+            ifsc:data.ifsc,
+            holdername:data.holderName
+          }
+        ))
         reset(); // Clear the form after submission
         closeHandler();
       }

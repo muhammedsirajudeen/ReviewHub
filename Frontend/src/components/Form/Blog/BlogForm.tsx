@@ -4,6 +4,7 @@ import { blogProps } from '../../../types/blogProps';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../helper/axiosInstance';
 import url from '../../../helper/backendUrl';
+import { produce } from 'immer';
 
 interface BlogFormProps {
   dialogRef: Ref<HTMLDialogElement>;
@@ -17,7 +18,8 @@ export default function BlogForm({
   dialogRef,
   closeHandler,
   blog,
-  method
+  method,
+  setBlogs
 }: BlogFormProps): ReactElement {
   const {
     register,
@@ -63,8 +65,17 @@ export default function BlogForm({
           ).data
           if(response.message==="success"){
             toast.success("updated successfully")
-            
-            setTimeout(()=>window.location.reload(),1000)
+            //include image update here
+            setBlogs(produce((draft)=>{
+              draft.forEach((d)=>{
+                if(d._id===blog?._id){
+                  d.article=data.article
+                  d.heading=data.heading
+                }
+              })
+            }))
+            closeHandler()            
+            // setTimeout(()=>window.location.reload(),1000)
             return
           }else{
             toast.error(response.message)

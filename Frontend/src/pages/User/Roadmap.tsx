@@ -106,7 +106,8 @@ export default function Roadmap(): ReactElement {
     ).data;
     if (response.message === 'success') {
       toast('enrolled successfully');
-      setTimeout(() => window.location.reload(), 1000);
+      setEnroll(true)
+      // setTimeout(() => window.location.reload(), 1000);
     } else {
       toast(response.message);
     }
@@ -117,7 +118,8 @@ export default function Roadmap(): ReactElement {
     ).data;
     if (response.message === 'success') {
       toast('disenrolled successfully');
-      setTimeout(() => window.location.reload(), 1000);
+      setEnroll(false)
+      // setTimeout(() => window.location.reload(), 1000);
     } else {
       toast(response.message);
     }
