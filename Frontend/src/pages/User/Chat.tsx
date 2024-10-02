@@ -172,10 +172,20 @@ export default function Chat(): ReactElement {
       toast('Please enter a message', { type: 'warning' });
     }
   };
-  const setUserHandler = (user: userProps) => {
-    
+  const setUserHandler = async (user: userProps) => {
+    const response=(await axiosInstance.post('/user/chat/clear'
+      ,
+      {
+        messageUserId:currentUser._id,
+        userId:user._id
+      }
+    )).data
+    if(response.message==="success"){
+      console.log(response)
+    }
     flushSync(()=>{
       setUser(user);
+
     })
     window.localStorage.setItem("chatuser",user.email)
     const copymessage=chatcount

@@ -172,6 +172,12 @@ router.get(
 )
 
 router.post(
+  '/chat/clear',
+  passport.authenticate('jwt',{session:false}),
+  ChatController.ClearUnread
+)
+
+router.post(
   '/chat/history',
   passport.authenticate('jwt',{session:false}),
   ChatController.GetHistory

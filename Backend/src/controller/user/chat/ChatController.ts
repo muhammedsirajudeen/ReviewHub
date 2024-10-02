@@ -91,9 +91,30 @@ const GetUnread=async (req:Request,res:Response)=>{
         res.status(500).json({message:"server error occured"})
     }
 }
+
+const ClearUnread=async (req:Request,res:Response)=>{
+    console.log(req.body)
+    const {userId,messageUserId}=req.body
+
+    try{
+        const unreadChat=await UnreadChat.findOne({userId:userId,messageUserId:messageUserId})
+        console.log(unreadChat)
+        if(unreadChat){
+
+            unreadChat.messageCount=0
+            unreadChat.save()
+        }
+        res.status(200).json({message:"success"})
+    }catch(error){
+        console.log(error)
+        res.status(500).json({message:"server error occured"})
+    }
+}
+
 export default {
     GetUsers,
     GetConnectedUsers,
     GetHistory,
-    GetUnread
+    GetUnread,
+    ClearUnread
 }
