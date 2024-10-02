@@ -76,24 +76,28 @@ export default function RoadmapForm({
     } else {
       formData.append('file', fileRef.current.files[0]);
     }
-
-    const response = method === 'put'
-      ? await axiosInstance.put(`/admin/roadmap/${roadmap?._id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-      : await axiosInstance.post(`/admin/roadmap`, formData, {
-          headers: {
-            "Content-Type": 'multipart/form-data'
-          },
-        });
-
-    if (response.data.message === 'success') {
-      toast(`Roadmap ${method === 'put' ? 'updated' : 'added'} successfully`);
-      setTimeout(() => window.location.reload(), 1000);
-    } else {
-      toast(response.data.message);
+    try {      
+      const response = method === 'put'
+        ? await axiosInstance.put(`/admin/roadmap/${roadmap?._id}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+        : await axiosInstance.post(`/admin/roadmap`, formData, {
+            headers: {
+              "Content-Type": 'multipart/form-data'
+            },
+          });
+  
+      if (response.data.message === 'success') {
+        toast(`Roadmap ${method === 'put' ? 'updated' : 'added'} successfully`);
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        toast(response.data.message);
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error("please try again")
     }
   };
 

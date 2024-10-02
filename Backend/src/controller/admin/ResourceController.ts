@@ -3,7 +3,8 @@ import Resource, { sectionProps } from '../../model/Resource';
 import mongoose from 'mongoose';
 import Quiz, { quizProps } from '../../model/Quiz';
 import { randomUUID } from 'crypto';
-import { equal } from 'assert';
+
+//add backend validation 
 
 //Get resource associated with each object
 const GetResource = async (req: Request, res: Response) => {
