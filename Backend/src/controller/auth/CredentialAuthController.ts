@@ -8,6 +8,7 @@ import { randomUUID } from "crypto";
 import transporter from "../../config/nodemailerConfig";
 import Wallet from "../../model/Wallet";
 import { addValueToCache, getValueFromCache } from "../../helper/redisHelper";
+import { spaceValidator } from "../../helper/validationHelper";
 
 //storing it in dict
 let UuidMapping:Map<string,string>=new Map()
@@ -44,6 +45,9 @@ const CredentialSignup = async (req: Request, res: Response) => {
   try {
     
     const { email, password,phone,address,role } = req.body;
+    if(spaceValidator(email) || spaceValidator(password) ){
+      return res.status(400).json({message:"bad request"})
+    }
     const checkUser = await User.findOne({ email: email });
     let filename;
     if(req.file?.filename){
@@ -92,6 +96,7 @@ const CredentialSignup = async (req: Request, res: Response) => {
 const CredentialSignin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+
     const checkUser = await User.findOne({ email: email });
     if (checkUser) {
       
