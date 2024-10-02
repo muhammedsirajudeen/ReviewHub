@@ -165,11 +165,19 @@ router.get(
   ChatController.GetConnectedUsers
 )
 
+router.get(
+  '/chat/unread',
+  passport.authenticate('jwt',{session:false}),
+  ChatController.GetUnread
+)
+
 router.post(
   '/chat/history',
   passport.authenticate('jwt',{session:false}),
   ChatController.GetHistory
 )
+
+
 
 //progress manager
 router.get(

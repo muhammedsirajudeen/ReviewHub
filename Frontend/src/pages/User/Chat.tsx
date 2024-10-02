@@ -14,10 +14,12 @@ import { historyFetching } from '../../helper/datafetching/historyFetching';
 import { flushSync } from 'react-dom';
 import useSocket from '../../customHooks/SocketHook';
 import axiosInstance from '../../helper/axiosInstance';
+import messagecountFetching from '../../helper/datafetching/messagecountFetching';
 
 
 
-interface messageCount{
+export interface messageCount{
+  //
   userId:string,
   messageCount:number
 }
@@ -116,6 +118,9 @@ export default function Chat(): ReactElement {
     window.localStorage.removeItem('chatuser')
     dispatch(setPage('chat'));
     getConnectedUser(setConnectedusers)
+    //get count of chat here
+    messagecountFetching(setChatcount)
+
   }, [dispatch]);
   
   useEffect(() => {

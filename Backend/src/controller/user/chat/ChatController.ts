@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import User, { IUser } from "../../../model/User";
 import Chat, { IChat } from "../../../model/Chat";
 import mongoose from "mongoose";
+import { resolveSoa } from "dns";
+import UnreadChat from "../../../model/UnreadChat";
 
 interface queryProps{
     email?:RegExp
@@ -75,8 +77,23 @@ const GetHistory=async (req:Request,res:Response)=>{
         res.status(500).json({message:"server error occured"})
     }
 }
+
+const GetUnread=async (req:Request,res:Response)=>{
+    try{
+        const user=req.user as IUser
+        const unreadChats=await UnreadChat.find({messageUserId:user.id}).populate('userId','email')
+        console.log(unreadChats)
+
+        //additional logic after this
+        res.status(200).json({message:"success",unread:unreadChats})
+    }catch(error){
+        console.log(error)
+        res.status(500).json({message:"server error occured"})
+    }
+}
 export default {
     GetUsers,
     GetConnectedUsers,
-    GetHistory
+    GetHistory,
+    GetUnread
 }
