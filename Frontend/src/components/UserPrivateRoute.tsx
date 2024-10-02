@@ -9,8 +9,9 @@ export default function UserPrivateRoute({Component}:{Component:ComponentType}):
     const resourceMatch=useMatch('/user/resource')
     //hacky code 
     const dashboardMatch=useMatch('/user/dashboard')
+    const manageMatch=useMatch('/user/blog/manage')
     if(user){
-        if(user.authorization==="admin"){
+        if(user.authorization==="admin" && !manageMatch ){
             return <Navigate to="/admin/dashboard"/>
         }
         else if((user.authorization==="reviewer" && !user.reviewerApproval) && (!match || !roadmapMatch || !resourceMatch)){
