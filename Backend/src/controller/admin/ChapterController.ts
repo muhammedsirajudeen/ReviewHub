@@ -3,6 +3,7 @@ import Chapter from "../../model/Chapter";
 import mongoose from "mongoose";
 import { IUser } from "../../model/User";
 import { addMessageToQueue } from "../../helper/redisHelper";
+import { minLengthValidator, spaceValidator, specialCharValidator } from "../../helper/validationHelper";
 interface dateProps{
     '$gt':Date
 }
@@ -23,7 +24,15 @@ const AddChapter=async (req:Request,res:Response)=>{
             return res.status(401).json({message:"Unauthorized"})
           }
         const {roadmapId,chapterName,quizStatus,additionalPrompt}=req.body
-        
+        if(spaceValidator(roadmapId) || spaceValidator(chapterName) || spaceValidator(additionalPrompt) ){
+            return res.status(400).json({message:"bad request"})
+        }
+        if(minLengthValidator(roadmapId) || minLengthValidator(chapterName) || minLengthValidator(additionalPrompt) ) {
+            return res.status(400).json({message:"bad request"})
+        }
+        if(specialCharValidator(roadmapId) || specialCharValidator(chapterName) ){
+            return res.status(400).json({message:"bad request"})
+        }
         const newChapter=new Chapter(
             {
                 chapterName,
@@ -82,6 +91,15 @@ const UpdateChapter=async (req:Request,res:Response)=>{
             res.status(401).json({message:"Unauthorized"})
         }else{
             const {chapterName,quizStatus,additionalPrompt}=req.body
+            if(spaceValidator(chapterName) || spaceValidator(additionalPrompt) ){
+                return res.status(400).json({message:"bad request"})
+            }
+            if(minLengthValidator(chapterName) || minLengthValidator(additionalPrompt) ) {
+                return res.status(400).json({message:"bad request"})
+            }
+            if( specialCharValidator(chapterName) ){
+                return res.status(400).json({message:"bad request"})
+            }
             const {chapterId}=req.params
             const UpdateChapter=await Chapter.findById(chapterId)
             if(UpdateChapter){
