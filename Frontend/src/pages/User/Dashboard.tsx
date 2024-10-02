@@ -19,7 +19,6 @@ function urlB64ToUint8Array(base64String:string) {
 export default function Dashboard(): ReactElement {
   const dispatch = useAppDispatch();
   const renderCount=useRef<number>(0)
-  console.log("component rendered")
   useEffect(() => {
     async function registerServiceWorker() {
       if(renderCount.current===0){

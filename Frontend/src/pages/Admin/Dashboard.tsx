@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from "react";
+import { ReactElement, useEffect, useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import { useAppDispatch } from "../../store/hooks";
 import { setPage } from "../../store/globalSlice";
@@ -8,6 +8,7 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import { ScatterChart } from '@mui/x-charts/ScatterChart';
 import Stack from '@mui/material/Stack';
 import { Gauge } from '@mui/x-charts/Gauge';
+import axiosInstance from "../../helper/axiosInstance";
 
 const data = [
   {
@@ -172,12 +173,42 @@ const data = [
     y2: 488.06,
   },
 ];
+function urlB64ToUint8Array(base64String:string) {
+  // Replace '-' with '+' and '_' with '/' to make it standard base64
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64); // Decode base64 string
+  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0))); // Convert to Uint8Array
+}
 
 export default function AdminDashboard(): ReactElement {
   const dispatch = useAppDispatch();
-
+  const renderCount=useRef<number>(0)
   useEffect(() => {
     dispatch(setPage("dashboard"));
+    async function registerServiceWorker() {
+      if(renderCount.current===0){
+        const register = await navigator.serviceWorker.register('/worker.js', {
+            scope: '/'
+        });
+    
+        const subscription = await register.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlB64ToUint8Array(import.meta.env.VITE_VAPID_PUBLIC_KEY),
+        });
+        console.log(subscription)
+        await axiosInstance.post('/notification/subscribe',
+          subscription
+        )
+      }
+      renderCount.current++
+
+    
+  }
+  registerServiceWorker()
   }, [dispatch]);
 
   return (
