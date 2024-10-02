@@ -84,7 +84,7 @@ export default function ManageCourse(): ReactElement {
             className="bg-white rounded-lg shadow-md overflow-hidden transform transition-all hover:shadow-xl hover:scale-105"
           >
             <img
-              className="w-96 h-40 object-cover"
+              className="w-full h-40 object-cover"
               src={`${url}/course/${course.courseImage}`}
               alt={course.courseName}
             />

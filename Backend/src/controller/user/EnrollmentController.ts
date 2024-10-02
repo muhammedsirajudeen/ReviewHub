@@ -63,7 +63,7 @@ const Enroll = async (req: Request, res: Response) => {
         }
       );
       //include the courseid and the userid in the progress array
-      const findProgress=await Progress.findOne({courseId:courseId})
+      const findProgress=await Progress.findOne({courseId:courseId,userId:user.id})
       console.log(findProgress)
       if(!findProgress){
         const newProgress=new Progress(

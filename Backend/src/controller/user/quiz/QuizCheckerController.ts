@@ -62,7 +62,7 @@ const QuizChecker = async (req: Request, res: Response) => {
       const courseId = (await Roadmap.findById(checkQuiz.roadmapId))?.courseId;
       if (!courseId)
         return res.status(404).json({ message: 'course not found' });
-      const updateProgress = await Progress.findOne({ courseId: courseId });
+      const updateProgress = await Progress.findOne({ courseId: courseId ,userId:user.id});
       if (updateProgress) {
         updateProgress.progress.push({
           roadmapId: checkQuiz.roadmapId,
