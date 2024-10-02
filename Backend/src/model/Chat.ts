@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { IUser } from './User';
 
-interface messageProps {
+export interface messageProps {
   from: String;
   to: String;
   message: string;
@@ -13,7 +13,7 @@ export interface IChat extends Document {
   messages: Array<messageProps>;
 }
 
-const messageSchema = new mongoose.Schema<messageProps>({
+export const messageSchema = new mongoose.Schema<messageProps>({
   from: {
     type: String,
     required: true,

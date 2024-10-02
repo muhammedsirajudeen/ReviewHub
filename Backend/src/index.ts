@@ -22,6 +22,8 @@ import { addValueToCache, getValueFromCache, removeValueFromCache } from "./help
 import Chat from "./model/Chat";
 import mongoose from "mongoose";
 import { sendNotification } from "./services/subscriptionService";
+import UnreadChatSchema from "./model/UnreadChat";
+import UnreadChat from "./model/UnreadChat";
 
 const app = express();
 const server = http.createServer(app);
@@ -75,6 +77,23 @@ io.on('connection', async (socket:SocketwithUser) => {
         // sendNotification(parsedMessage.from,parsedMessage.message,'https://img.icons8.com/?size=100&id=32309&format=png&color=FFFFFF',parsedMessage.to)
       }else{
         console.log("user is not online")
+        //add chat here
+        const unreadChat=await UnreadChat.findOne({userId:socket.user,messageUserId:receieverId})
+        console.log(unreadChat)
+        if(!unreadChat){
+          const newUnread=new UnreadChat(
+            {
+              userId:socket.user,
+              messageUserId:receieverId,
+              messageCount:1
+            }
+          )
+          newUnread.save()
+        }else{
+          unreadChat.messageCount++
+          await unreadChat.save()
+        }
+
         //so we add the unread message count kinda here maybe in db or in seperate connection whichever is viable  ToDo
         const profileImage=await User.findOne({email:parsedMessage.from})
         sendNotification(parsedMessage.from,parsedMessage.message,profileImage?.profileImage as string,parsedMessage.to)
