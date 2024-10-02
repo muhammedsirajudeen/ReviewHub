@@ -1,10 +1,20 @@
 import { Request, Response } from "express";
 import Domain, { IDomain } from "../../model/Domain";
+import { spaceValidator, specialCharValidator } from "../../helper/validationHelper";
 
 const AddDomain=async (req:Request,res:Response)=>{
     try{
         const domain=req.body as IDomain
-        console.log(domain)
+        if(spaceValidator(domain.domain)){
+            return res.status(400).json({message:"bad request"})
+        }
+        if(specialCharValidator(domain.domain)){
+            return res.status(400).json({message:"bad request"})
+        }
+        if(domain.domain.length<=4){
+            return res.status(400).json({message:"bad request"})
+        }
+
         const newDomain=new Domain(
             {
                 domain:domain.domain
@@ -42,6 +52,15 @@ const EditDomain=async (req:Request,res:Response)=>{
     try{
         const {domain}=req.params
         const domainBody=req.body as IDomain
+        if(spaceValidator(domainBody.domain)){
+            return res.status(400).json({message:"bad request"})
+        }
+        if(specialCharValidator(domainBody.domain)){
+            return res.status(400).json({message:"bad request"})
+        }
+        if(domainBody.domain.length<=4){
+            return res.status(400).json({message:"bad request"})
+        }
         const updateDomain=await Domain.findOne({domain:domain})
         if(updateDomain){
             updateDomain.domain=domainBody.domain
