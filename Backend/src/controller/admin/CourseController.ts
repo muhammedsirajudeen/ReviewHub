@@ -57,7 +57,7 @@ const UpdateCourse=async (req:Request,res:Response)=>{
       if(specialCharValidator(courseName) || specialCharValidator(courseDescription) || specialCharValidator(domain) || specialCharValidator(tagline) ){
         return res.status(400).json({message:"bad request"})
       }
-      if(minLengthValidator(courseName) || minLengthValidator(courseDescription) || minLengthValidator(domain) || specialCharValidator(tagline) ){
+      if(minLengthValidator(courseName) || minLengthValidator(courseDescription)  || specialCharValidator(tagline) ){
         return res.status(400).json({message:"bad request"})
       }
       unlistStatus=JSON.parse(unlistStatus)
