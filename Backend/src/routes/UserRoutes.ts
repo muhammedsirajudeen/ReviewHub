@@ -19,6 +19,7 @@ import Chat from '../model/Chat';
 import ProgressController from '../controller/user/progress/ProgressController';
 import WithdrawalController from '../controller/user/withdrawal/WithdrawalController';
 import DomainController from '../controller/user/DomainController';
+import ReviewController from '../controller/user/review/ReviewController';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -205,6 +206,14 @@ router.get(
   '/domain',
   passport.authenticate('jwt',{session:false}),
   DomainController.DomainController
+)
+
+
+//review management
+router.get(
+  '/review',
+  passport.authenticate('jwt',{session:false}),
+  ReviewController.GetReview
 )
 
 export default router;

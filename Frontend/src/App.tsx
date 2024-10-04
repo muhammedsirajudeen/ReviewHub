@@ -42,6 +42,7 @@ import ManageCourse from './pages/User/ManageCourse';
 import Payments from './pages/Admin/Payments';
 import Chat from './pages/User/Chat';
 import Withdrawals from './pages/Admin/Withdrawals';
+import Review from './pages/User/Review';
 
 const router = createBrowserRouter([
   //authentication routes
@@ -193,6 +194,11 @@ const router = createBrowserRouter([
       {
         path:'/user/chat',
         element:<UserPrivateRoute Component={Chat}/>,
+        loader:tokenVerifier
+      },
+      {
+        path:'/user/review',
+        element:<UserPrivateRoute Component={Review}/>,
         loader:tokenVerifier
       }
     ],
