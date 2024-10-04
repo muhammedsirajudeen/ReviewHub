@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-interface IPayment extends Document {
+interface IPayment extends Document  {
   amount: number;
   status: boolean;
   orderId: string;
@@ -16,7 +16,7 @@ const PaymentSchema = new Schema<IPayment>({
   },
   status: {
     type: Boolean,
-    required: true,
+  required: true,
     default: false,
   },
   orderId: {

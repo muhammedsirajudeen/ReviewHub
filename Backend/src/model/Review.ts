@@ -12,7 +12,9 @@ interface IReview extends Document {
   instantReview: boolean;
   recordingUrl?: string;
   feedback?: IFeedback;
-  reviewStatus:boolean
+  reviewStatus: boolean;
+  roadmapId: mongoose.Types.ObjectId;
+  domainName: string;
 }
 
 const FeedbackSchema = new Schema<IFeedback>({
@@ -24,16 +26,16 @@ const ReviewSchema = new Schema<IReview>({
   reviewerId: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
-    required: true,
+    required: false,
   },
   revieweeId: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
-    required: true,
+    required: false,
   },
   scheduledDate: {
     type: Date,
-    required: true,
+    required: false,
   },
   instantReview: {
     type: Boolean,
@@ -48,10 +50,20 @@ const ReviewSchema = new Schema<IReview>({
     type: FeedbackSchema,
     required: false,
   },
-  reviewStatus:{
-    type:Boolean,
-    required:true
-  }
+  reviewStatus: {
+    type: Boolean,
+    required: true,
+  },
+  roadmapId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'roadmap',
+    required: false,
+  },
+  domainName: {
+    type: String,
+    ref: 'roadmap',
+    required: false,
+  },
 });
 
 const Review = mongoose.model<IReview>('review', ReviewSchema);

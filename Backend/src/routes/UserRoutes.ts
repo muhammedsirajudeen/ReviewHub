@@ -216,4 +216,17 @@ router.get(
   ReviewController.GetReview
 )
 
+router.post(
+  '/review/request/:roadmapId',
+  passport.authenticate('jwt',{session:false}),
+  ReviewController.RequestReview
+)
+
+
+router.get(
+  '/review/roadmaps',
+  passport.authenticate('jwt',{session:false}),
+  ReviewController.GetScheduledRoadmaps
+)
+
 export default router;

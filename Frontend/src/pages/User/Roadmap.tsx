@@ -166,6 +166,7 @@ export default function Roadmap(): ReactElement {
       )
       }
 
+
       <div className="mt-10 flex justify-evenly flex-wrap">
         {roadmaps.map((roadmap) => (
           <div

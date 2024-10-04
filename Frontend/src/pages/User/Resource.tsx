@@ -6,6 +6,7 @@ import QuizCheck from '../../components/Form/Resource/user/QuizCheck';
 import { flushSync } from 'react-dom';
 import ConfettiExplosion from 'react-confetti-explosion';
 import axiosInstance from '../../helper/axiosInstance';
+import { AxiosError } from 'axios';
 
 export default function Resource(): ReactElement {
   const location = useLocation();
@@ -96,10 +97,32 @@ export default function Resource(): ReactElement {
     resultdialogRef.current?.close()
     setResult(false)
   }
+  const reviewRequestHandler=async ()=>{
+    try{
+      const response=(await axiosInstance.post(`/user/review/request/${location.state.roadmapId}`)).data
+      if(response.message==="success"){
+        toast.success("requested successfully")
+      }
+    }catch(error){
+      const axiosError=error as AxiosError
+      
+      console.log(axiosError)
+      if(axiosError.status===409){
+
+        toast.error("Review Requested already")
+      }else if(axiosError.status===429){
+        toast.error("Too many review requests")
+      }
+    }
+  }
   return (
     <div className="ml-36 flex items-start justify-start">
+              
+          
+          
+        
       <div className="w-1/4 h-screen flex flex-col mt-10">
-        <h1 className="text-3xl text-gray-800 font-bold mb-6">Lessons</h1>
+      <h1 className="text-3xl text-gray-800 font-bold mb-6">Lessons</h1>
 
         {resources.map((resource) => (
           <div
@@ -211,6 +234,8 @@ export default function Resource(): ReactElement {
           </form>
         </div>
       )}
+      <button onClick={()=>reviewRequestHandler()} className='text-xs w-20 text-nowrap border mr-10 mt-10 border-white border-b-black '>Request Review</button>
+
 
 
       <ToastContainer

@@ -1,3 +1,4 @@
+import { roadmapProps } from "./courseProps";
 
 interface feedbackProps {
     reviewerFeedback: string;
@@ -10,6 +11,7 @@ export interface reviewProps  {
     instantReview: boolean;
     recordingUrl?: string;
     feedback?: feedbackProps;
+    roadmapId:roadmapProps
 }
 
   
