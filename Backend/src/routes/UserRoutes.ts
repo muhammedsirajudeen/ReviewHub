@@ -3,7 +3,6 @@ import UserController from '../controller/user/UserController';
 const router = express.Router();
 import passport = require('passport');
 import './passport-setup/passport-setup';
-import upload from '../helper/fileuploadHelper';
 import UploadHandler from '../helper/fileuploadHelper';
 import CourseController from '../controller/user/CourseController';
 import RoadmapController from '../controller/user/RoadmapController';
@@ -15,7 +14,6 @@ import BlogController from '../controller/user/BlogController';
 import PremiumController from '../controller/premium/PremiumController';
 import FavoriteController from '../controller/user/FavoriteController';
 import ChatController from '../controller/user/chat/ChatController';
-import Chat from '../model/Chat';
 import ProgressController from '../controller/user/progress/ProgressController';
 import WithdrawalController from '../controller/user/withdrawal/WithdrawalController';
 import DomainController from '../controller/user/DomainController';
@@ -222,11 +220,23 @@ router.post(
   ReviewController.RequestReview
 )
 
+router.put(
+  '/review/schedule/:roadmapId',
+  passport.authenticate('jwt',{session:false}),
+  ReviewController.ScheduleReview
+)
+
 
 router.get(
   '/review/roadmaps',
   passport.authenticate('jwt',{session:false}),
   ReviewController.GetScheduledRoadmaps
+)
+
+router.delete(
+  '/review/:reviewId',
+  passport.authenticate('jwt',{session:false}),
+  ReviewController.CancelReview
 )
 
 export default router;

@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { reviewProps } from '../../types/reviewProps';
 import axiosInstance from '../../helper/axiosInstance';
 import DashboardTopbar from '../../components/DashboardTopbar';
@@ -13,9 +13,12 @@ import {
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { AxiosError } from 'axios';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import url from '../../helper/backendUrl';
 import { roadmapProps } from '../../types/courseProps';
+import ReviewDelete from '../../components/Form/Review/ReviewDelete';
+import { flushSync } from 'react-dom';
+import { produce } from 'immer';
 
 const localizer: DateLocalizer = momentLocalizer(moment);
 
@@ -27,8 +30,10 @@ export default function Review(): ReactElement {
   const [pendingreviews, setPendingreviews] = useState<Array<reviewProps>>([]);
   const [date, setDate] = useState<Date>();
   const [select, setSelect] = useState<boolean>(false);
-  const [roadmap,setRoadmap]=useState<roadmapProps>()
-
+  const [roadmap, setRoadmap] = useState<roadmapProps>();
+  const [review, setReview] = useState<reviewProps>();
+  const deleteDialogRef = useRef<HTMLDialogElement>(null);
+  const [deletedialog, setDeletedialog] = useState<boolean>(false);
   useEffect(() => {
     async function reviewFetching() {
       const response = (await axiosInstance.get('/user/review')).data;
@@ -38,7 +43,8 @@ export default function Review(): ReactElement {
     }
     async function requestedFetcher() {
       try {
-        const response = (await axiosInstance.get('/user/review/roadmaps')).data;
+        const response = (await axiosInstance.get('/user/review/roadmaps'))
+          .data;
         if (response.message === 'success') {
           console.log(response);
           setPendingreviews(response.requested);
@@ -54,29 +60,56 @@ export default function Review(): ReactElement {
 
   const handleSelectSlot = (slotInfo: SlotInfo) => {
     console.log(slotInfo.start);
-    setDate(new Date(slotInfo.start))
+    setDate(new Date(slotInfo.start));
   };
 
   const selectRoadmap = (roadmap: roadmapProps) => {
     setSelect(true);
-    setRoadmap(roadmap)
+    setRoadmap(roadmap);
   };
-  const reviewScheduler=async ()=>{
-    try{
-        const response=(
-            await axiosInstance.post('/review/schedule',
-                {
-                    date:date
-                }
-            )
-        ).data
-        if(response.message==="success"){
-            toast.success("scheduled successfully")
-        }
-    }catch(error){
-        const axiosError=error as AxiosError
-        toast.error(axiosError.message)
+  const reviewScheduler = async () => {
+    if (!date) {
+      toast.error('Please select a date first');
+      return;
     }
+    try {
+      const response = (
+        await axiosInstance.put(`/user/review/schedule/${roadmap?._id}`, {
+          date: date,
+        })
+      ).data;
+      if (response.message === 'success') {
+        console.log(response)
+        toast.success('scheduled successfully');
+        setPendingreviews(produce((draft)=>{
+            return(
+                draft.filter((d)=>d._id===review?._id)
+            )
+        }))
+        //get from client side
+        setReviews(produce((draft)=>{
+
+                draft.push(response.reviews)
+            
+        }))
+        setSelect(false)
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      toast.error(axiosError.message);
+    }
+  };
+  const cancelHandler = (review: reviewProps) => {
+    flushSync(()=>{
+        setDeletedialog(true)
+    })
+    deleteDialogRef.current?.showModal()
+    setReview(review);
+
+  };
+  const deleteCloseHandler=()=>{
+    setDeletedialog(false)
+    deleteDialogRef.current?.close()
   }
 
   return (
@@ -91,8 +124,46 @@ export default function Review(): ReactElement {
           <h2 className="text-2xl font-light mb-6 text-gray-700">
             Scheduled Reviews
           </h2>
-          <div className="w-full h-40 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg shadow-sm bg-gray-100">
-            <p className="text-gray-500">No scheduled reviews yet.</p>
+          <div className="w-full h-72 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg shadow-sm bg-gray-100">
+            {reviews.length === 0 && (
+              <p className="text-gray-500">No scheduled reviews yet.</p>
+            )}
+            {reviews.map((review) => {
+              return (
+                <div key={review._id} className="flex flex-col items-center justify-start">
+                  <img
+                    className="h-20 w-20 rounded-lg"
+                    src={`${url}/roadmap/${review.roadmapId.roadmapImage}`}
+                    alt={review.roadmapId.roadmapName}
+                  />
+                  <p className="text-xs mt-2 font-semibold">
+                    {review.roadmapId.roadmapName}
+                  </p>
+
+                  {/* Format the scheduled date */}
+                  <div className="flex flex-col items-center mt-2">
+                    <p className="text-xs text-gray-600">
+                      {new Date(review.scheduledDate).toLocaleDateString(
+                        'en-US',
+                        { month: 'long', day: 'numeric', year: 'numeric' }
+                      )}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      {new Date(review.scheduledDate).toLocaleTimeString(
+                        'en-US',
+                        { hour: '2-digit', minute: '2-digit', hour12: true }
+                      )}
+                    </p>
+                  </div>
+                  <button
+                    className="bg-red-700 text-white p-1 text-xs mt-4"
+                    onClick={() => cancelHandler(review)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -117,12 +188,31 @@ export default function Review(): ReactElement {
                     <p className="font-bold text-lg text-gray-800">
                       {roadmap?.roadmapName}
                     </p>
-
                   </div>
-                {
-                    date?.toISOString()
-                }
-                <button onClick={reviewScheduler} ></button>
+                  {date ? (
+                    <div className="flex flex-col items-center justify-center p-2 border border-gray-300 rounded-md shadow-sm bg-gray-50">
+                      <div className="text-lg font-semibold text-gray-800">
+                        {date.toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </div>
+                      <div className="text-md text-gray-600">
+                        {date.toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true,
+                        })}
+                      </div>
+                    </div>
+                  ) : null}
+                  <button
+                    className="bg-black text-white p-1 rounded-lg"
+                    onClick={reviewScheduler}
+                  >
+                    confirm
+                  </button>
                 </div>
                 <Calendar
                   localizer={localizer}
@@ -163,7 +253,19 @@ export default function Review(): ReactElement {
             )}
           </div>
         </section>
+        <ToastContainer
+          style={{
+            backgroundColor: 'gray',
+            color: 'white',
+            borderRadius: '10px',
+          }}
+        />
       </div>
+      {
+        deletedialog && (
+            <ReviewDelete setReviews={setReviews} review={review} dialogRef={deleteDialogRef} closeHandler={deleteCloseHandler}/>
+        )
+      }
     </>
   );
 }

@@ -102,6 +102,10 @@ export default function Resource(): ReactElement {
       const response=(await axiosInstance.post(`/user/review/request/${location.state.roadmapId}`)).data
       if(response.message==="success"){
         toast.success("requested successfully")
+        setTimeout(()=>{
+
+          navigate('/user/review')
+        },1000)
       }
     }catch(error){
       const axiosError=error as AxiosError
