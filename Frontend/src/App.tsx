@@ -45,6 +45,7 @@ import Payments from './pages/Admin/Payments';
 import Chat from './pages/User/Chat';
 import Withdrawals from './pages/Admin/Withdrawals';
 import Review from './pages/User/Review';
+import Notification from './pages/User/Notification';
 
 const router = createBrowserRouter([
   //authentication routes
@@ -201,6 +202,11 @@ const router = createBrowserRouter([
       {
         path:'/user/review',
         element:<UserPrivateRoute Component={Review}/>,
+        loader:tokenVerifier
+      },
+      {
+        path:'/user/notifications',
+        element:<UserPrivateRoute Component={Notification}/>,
         loader:tokenVerifier
       }
     ],

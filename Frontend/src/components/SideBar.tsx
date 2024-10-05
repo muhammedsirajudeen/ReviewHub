@@ -57,15 +57,40 @@ export default function SideBar(): ReactElement {
           className={`${
             page === 'chat' ? 'bg-blue-400' : ''
           } flex items-center justify-center mt-10 p-6 rounded-lg`}
-        >          <a href="/user/chat">
+        >
+          {' '}
+          <a href="/user/chat">
             <img src="/sidebar/chat.png" />
           </a>
         </div>
-        <div           className={`${
+        <div
+          className={`${
             page === 'review' ? 'bg-blue-400' : ''
-          } flex items-center justify-center mt-10 p-6 rounded-lg`}>
-          <a href={user.authorization==='reviewer' ? '/reviewer/review' :  `/user/review`}>
+          } flex items-center justify-center mt-10 p-6 rounded-lg`}
+        >
+          <a
+            href={
+              user.authorization === 'reviewer'
+                ? '/reviewer/review'
+                : `/user/review`
+            }
+          >
             <img src="/sidebar/review.png" />
+          </a>
+        </div>
+        <div
+          className={`${
+            page === 'notification' ? 'bg-blue-400' : ''
+          } flex items-center justify-center mt-10 p-6 rounded-lg`}
+        >
+          <a
+            href={
+              user.authorization === 'reviewer'
+                ? '/reviewer/review'
+                : `/user/notifications`
+            }
+          >
+            <img src="/sidebar/notification.png" />
           </a>
         </div>
         <img
@@ -73,9 +98,9 @@ export default function SideBar(): ReactElement {
           className="mt-20 cursor-pointer"
           src="/sidebar/logout.png"
         />
-        <a href="/user/profile" className='mt-10' >
+        <a href="/user/profile" className="mt-10">
           <img
-            className="bg-white h-8 w-8 rounded-full"
+            className="bg-white h-6 w-6 rounded-full"
             src={
               user.profileImage?.includes('http')
                 ? user.profileImage
