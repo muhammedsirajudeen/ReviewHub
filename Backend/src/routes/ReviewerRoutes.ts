@@ -1,14 +1,11 @@
-import express, { Request, Response } from 'express';
-import GoogleAuthController from '../controller/auth/GoogleAuthController';
-import CredentialAuthController from '../controller/auth/CredentialAuthController';
+import express from 'express';
 import passport from 'passport';
-import TokenVerifier from '../controller/auth/TokenVerifier';
-import upload from '../helper/fileuploadHelper';
 const router = express.Router();
 
 import './passport-setup/passport-setup';
 import UploadHandler from '../helper/fileuploadHelper';
 import ReviewerController from '../controller/reviewer/ReviewerController';
+import ReviewController from '../controller/reviewer/ReviewController';
 
 router.get(
   '/approval',
@@ -22,5 +19,13 @@ router.post(
   UploadHandler('pdf').single('file'),
   ReviewerController.ReviewerApproval
 );
+
+
+//review management
+router.get(
+  '/reviews',
+  passport.authenticate('jwt',{session:false}),
+  ReviewController.GetReviews
+)
 
 export default router;

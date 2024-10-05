@@ -34,6 +34,8 @@ import Approval from './pages/Reviewer/Approval';
 import ReviewerPrivateRoute from './components/PrivateRoute/ReviewerPrivateRoute';
 
 import ReviewerDashboard from './pages/Reviewer/Dashboard';
+import ReviewerReview from './pages/Reviewer/Review';
+
 import User from './pages/Admin/User';
 import Approvals from './pages/Admin/Approvals';
 import Blog from './pages/User/Blog';
@@ -219,6 +221,11 @@ const router = createBrowserRouter([
         element: <ReviewerPrivateRoute Component={Approval} />,
         loader: tokenVerifier,
       },
+      {
+        path:'/reviewer/review',
+        element:<ReviewerPrivateRoute Component={ReviewerReview}/>,
+        loader:tokenVerifier
+      }
     ],
   },
 ]);
