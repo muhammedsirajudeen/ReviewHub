@@ -1,6 +1,5 @@
 import { Request,Response } from "express";
 import Withdrawal from "../../model/Withdrawal";
-import User, { IUser } from "../../model/User";
 import Wallet from "../../model/Wallet";
 import { PAGE_LIMIT } from "../user/CourseController";
 
@@ -31,7 +30,7 @@ const ApproveWithdrawal=async (req:Request,res:Response)=>{
             const wallet=await Wallet.findOne({userId:approveWithdrawal.userId})
             if(approval && wallet ){
                 wallet.redeemable-=approveWithdrawal.amount
-                wallet.balance-=approveWithdrawal.amount
+                // wallet.balance-=approveWithdrawal.amount
             }
             wallet?.history.map((history)=>{
                 console.log(history)

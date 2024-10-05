@@ -116,6 +116,10 @@ export default function Resource(): ReactElement {
         toast.error("Review Requested already")
       }else if(axiosError.status===429){
         toast.error("Too many review requests")
+      }else if(axiosError.status===402){
+        toast.error("Insufficient funds")
+      }else{
+        toast.error("Please try again")
       }
     }
   }

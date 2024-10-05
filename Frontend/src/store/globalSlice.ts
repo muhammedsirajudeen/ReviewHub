@@ -32,7 +32,7 @@ interface userProps {
   premiumMember?:boolean;
   favoriteCourses?:string[]
   verified?:boolean
-  paymentMethod:paymentMethodprops[]
+  paymentMethod?:paymentMethodprops[]
 
 }
 
@@ -89,7 +89,7 @@ export const globalSlice = createSlice({
       state.user.walletId?.history?.push(action.payload)
     },
     setPaymentMethod:(state,action:PayloadAction<paymentMethodprops>)=>{
-      state.user.paymentMethod.push(action.payload)
+      state.user.paymentMethod?.push(action.payload)
     }
   },
 });

@@ -19,6 +19,8 @@ import { roadmapProps } from '../../types/courseProps';
 import ReviewDelete from '../../components/Form/Review/ReviewDelete';
 import { flushSync } from 'react-dom';
 import { produce } from 'immer';
+import { useAppDispatch } from '../../store/hooks';
+import { setPage } from '../../store/globalSlice';
 
 const localizer: DateLocalizer = momentLocalizer(moment);
 
@@ -34,7 +36,9 @@ export default function Review(): ReactElement {
   const [review, setReview] = useState<reviewProps>();
   const deleteDialogRef = useRef<HTMLDialogElement>(null);
   const [deletedialog, setDeletedialog] = useState<boolean>(false);
+  const dispatch=useAppDispatch()
   useEffect(() => {
+    dispatch(setPage('review'))
     async function reviewFetching() {
       const response = (await axiosInstance.get('/user/review')).data;
       if (response.message === 'success') {
@@ -56,7 +60,7 @@ export default function Review(): ReactElement {
     }
     requestedFetcher();
     reviewFetching();
-  }, []);
+  }, [dispatch]);
 
   const handleSelectSlot = (slotInfo: SlotInfo) => {
     console.log(slotInfo.start);
