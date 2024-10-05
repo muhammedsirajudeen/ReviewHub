@@ -25,7 +25,7 @@ export async function addValueToCache(email:string,value:string | number,time:nu
     console.log('otp added to cache:', value);
 
   }catch(error){
-    console.log("error occured while adding to cache")
+    console.log(error)
     throw "errror while adding to cache"
   }finally{
     client.disconnect()

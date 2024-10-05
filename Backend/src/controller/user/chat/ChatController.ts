@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import User, { IUser } from "../../../model/User";
-import Chat, { IChat } from "../../../model/Chat";
+import Chat from "../../../model/Chat";
 import mongoose from "mongoose";
-import { resolveSoa } from "dns";
 import UnreadChat from "../../../model/UnreadChat";
 
 interface queryProps{
@@ -44,7 +43,6 @@ const GetConnectedUsers=async (req:Request,res:Response)=>{
                 chat.userId.forEach((user)=>{
                     const userId=user._id as mongoose.Types.ObjectId
                     user=user as IUser
-                    console.log(userId.toHexString()!==currentuser.id)
                     if(userId.toHexString()!==currentuser.id){
                         connectedUsers.push({_id:userId.toHexString(),email:user.email,profileImage:user.profileImage})
                     }
@@ -82,7 +80,6 @@ const GetUnread=async (req:Request,res:Response)=>{
     try{
         const user=req.user as IUser
         const unreadChats=await UnreadChat.find({messageUserId:user.id}).populate('userId','email')
-        console.log(unreadChats)
 
         //additional logic after this
         res.status(200).json({message:"success",unread:unreadChats})
@@ -93,12 +90,10 @@ const GetUnread=async (req:Request,res:Response)=>{
 }
 
 const ClearUnread=async (req:Request,res:Response)=>{
-    console.log(req.body)
     const {userId,messageUserId}=req.body
 
     try{
         const unreadChat=await UnreadChat.findOne({userId:userId,messageUserId:messageUserId})
-        console.log(unreadChat)
         if(unreadChat){
 
             unreadChat.messageCount=0

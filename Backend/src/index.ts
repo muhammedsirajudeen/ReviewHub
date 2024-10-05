@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import * as dotenv from "dotenv";
 dotenv.config();
 import connectDB from "./model/dbConnect";
@@ -22,8 +22,10 @@ import { addValueToCache, getValueFromCache, removeValueFromCache } from "./help
 import Chat from "./model/Chat";
 import mongoose from "mongoose";
 import { sendNotification } from "./services/subscriptionService";
-import UnreadChatSchema from "./model/UnreadChat";
 import UnreadChat from "./model/UnreadChat";
+import { createClient } from "redis";
+import { ConnectionOptions, Job,Worker } from "bullmq";
+import { schedulerProps } from "./helper/bullmqIntegration";
 
 const app = express();
 const server = http.createServer(app);
@@ -44,6 +46,36 @@ interface SocketwithUser extends Socket{
   user?:string
   email?:string
 }
+
+const client = createClient({
+  url: process.env.REDIS_URL, 
+});
+client.connect().then(() => console.log('Connected to Redis'));
+
+const connection: ConnectionOptions = {
+  host: 'localhost', 
+  port: 6379,
+};
+
+const worker = new Worker(
+  'reviewScheduler',
+  async (job: Job) => {
+    console.log(`Processing job: ${job.name}`);
+    console.log(`Job data:`, job.data);
+    const scheduledMessage=JSON.parse(job.data.message) as schedulerProps
+    const revieweeId=await getValueFromCache(`socket-${scheduledMessage.revieweeId}`)
+    console.log("the data is",revieweeId)
+    //if there is now reviewee id it means user is not online otherwise it means that the user is online we can make it accordingly then like a notification on the app bar
+    
+    // Add your task logic here
+  },
+  { connection }
+);
+
+// Handle worker errors
+worker.on('failed', (job, err) => {
+  console.error(`Job failed`, err);
+});
 
 //socket logic here
 io.on('connection', async (socket:SocketwithUser) => {
@@ -135,7 +167,9 @@ io.on('connection', async (socket:SocketwithUser) => {
       }
 
   });
+  //scheduling logic here
 
+  
   socket.on('disconnect', () => {
       console.log('User disconnected:', socket.id);
       removeValueFromCache(`socket-${socket.user}`)

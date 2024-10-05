@@ -5,6 +5,7 @@ import { IUser } from '../../model/User';
 import Approval from '../../model/Approval';
 import { IRoadmap } from '../../model/Roadmap';
 import { ICourse } from '../../model/Course';
+import { addDelayedTask } from '../../helper/bullmqIntegration';
 
 interface ExtendedRoadmapProps extends Omit<IRoadmap, 'courseId'> {
   courseId: ICourse;
@@ -81,6 +82,12 @@ const CommitReview = async (req: Request, res: Response) => {
     }
     updateReview.reviewerId=user.id
     await updateReview.save()
+    //schedule the job here at the scheduled date
+    const newDate=new Date()
+    const dbDate=new Date(updateReview.scheduledDate)
+    const diff=dbDate.getTime()-newDate.getTime()
+    console.log(diff)
+    addDelayedTask({revieweeId:updateReview.revieweeId.toHexString(),reviewerId:updateReview.reviewerId.toHexString()},diff)
     res.status(200).json({message:'success'})
   } catch (error) {
     console.log(error);
