@@ -24,6 +24,7 @@ const GetReviews = async (req: Request, res: Response) => {
     const Reviews = (await Review.find({
       reviewStatus: false,
       scheduledDate: { $exists: true },
+      reviewerId:{$exists:false}
     })
       .populate({
         path: 'roadmapId', // Populate the roadmapId
@@ -52,6 +53,19 @@ const GetReviews = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'server error occured' });
   }
 };
+
+//add that false flag everywhere dont forget
+const CommittedReview=async (req:Request,res:Response)=>{
+    try{
+        const user=req.user as IUser
+        const committedReview=await Review.find({reviewerId:user.id}).populate('roadmapId')
+
+        res.status(200).json({message:'success',reviews:committedReview})
+    }catch(error){
+        console.log(error)
+        res.status(500).json({message:'server error occured'})
+    }
+}
 
 const CommitReview = async (req: Request, res: Response) => {
   try {
@@ -90,8 +104,11 @@ const CancelReview=async (req:Request,res:Response)=>{
     }
 }
 
+
+
 export default {
   GetReviews,
   CommitReview,
-  CancelReview
+  CancelReview,
+  CommittedReview
 };

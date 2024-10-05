@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import DashboardTopbar from '../../components/DashboardTopbar';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
@@ -8,19 +8,26 @@ import url from '../../helper/backendUrl';
 import PaginationComponent from '../../components/pagination/PaginationComponent';
 import { AxiosError } from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
+import { flushSync } from 'react-dom';
+import ReviewDelete from '../../components/Form/Review/ReviewDelete';
 
 export default function Review(): ReactElement {
   const [reviews, setReviews] = useState<Array<reviewProps>>([]);
+  const [committedreviews,setCommittedreviews]=useState<Array<reviewProps>>([])
   const dispatch = useAppDispatch();
   const [currentpage, setCurrentpage] = useState<number>(1);
   const [pagecount, setPagecount] = useState<number>(0);
-  const user=useAppSelector((state)=>state.global.user)
+    const deleteDialogRef=useRef<HTMLDialogElement>(null)
+    const [deletedialog,setDeletedialog]=useState<boolean>(false)
+    const [review,setReview]=useState<reviewProps>()
+  const user = useAppSelector((state) => state.global.user);
   useEffect(() => {
     async function reviewFetcher() {
       try {
         const response = (
           await axiosInstance.get(`/reviewer/reviews?page=${currentpage}`)
         ).data;
+
         if (response.message === 'success') {
           setReviews(response.reviews);
           setPagecount(response.pageLength);
@@ -29,6 +36,19 @@ export default function Review(): ReactElement {
         console.log(error);
       }
     }
+    async function committedFetcher(){
+        try {
+            const response=(
+                await axiosInstance.get('/reviewer/review/committed')
+            ).data
+            if(response.message==="success"){
+                setCommittedreviews(response.reviews)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    committedFetcher()
     reviewFetcher();
     dispatch(setPage('review'));
   }, [dispatch, currentpage]);
@@ -55,12 +75,23 @@ export default function Review(): ReactElement {
       console.log(axiosError);
     }
   };
+  const cancelHandler=(review:reviewProps)=>{
+        flushSync(()=>{
+            setDeletedialog(true)
+            setReview(review)
+        })
+        deleteDialogRef.current?.showModal()
+  }
+  const closeHandler=()=>{
+    deleteDialogRef.current?.close()
+    setDeletedialog(false)
+  }
   return (
     <>
       <DashboardTopbar />
       <h1 className="ml-36 text-4xl  text-gray-800 mb-8">REVIEWS</h1>
       <div className="flex items-center justify-center flex-col px-4">
-      <section className="mb-12 w-3/4">
+        <section className="mb-12 w-3/4">
           <h2 className="text-2xl font-light mb-6 text-gray-700">
             Scheduled Reviews
           </h2>
@@ -68,9 +99,12 @@ export default function Review(): ReactElement {
             {reviews.length === 0 && (
               <p className="text-gray-500">No scheduled reviews yet.</p>
             )}
-            {reviews.map((review) => {
+            {committedreviews.map((review) => {
               return (
-                <div key={review._id} className="flex flex-col items-center justify-start">
+                <div
+                  key={review._id}
+                  className="flex flex-col items-center justify-start"
+                >
                   <img
                     className="h-20 w-20 rounded-lg"
                     src={`${url}/roadmap/${review.roadmapId.roadmapImage}`}
@@ -97,7 +131,7 @@ export default function Review(): ReactElement {
                   </div>
                   <button
                     className="bg-red-700 text-white p-1 text-xs mt-4"
-                    // onClick=}
+                    onClick={()=>cancelHandler(review)}
                   >
                     Cancel
                   </button>
@@ -110,6 +144,7 @@ export default function Review(): ReactElement {
           <div className="text-xl text-gray-500 mt-10">No reviews found</div>
         ) : (
           reviews.map((review) => (
+            
             <div
               key={review._id}
               className="flex items-center justify-between w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden mb-6 p-6 transition transform hover:scale-105 hover:shadow-xl"
@@ -131,11 +166,11 @@ export default function Review(): ReactElement {
                 </p>
               </div>
               <button
-              disabled={user._id===review.reviewerId}
+                disabled={user._id === review.reviewerId}
                 onClick={() => commitHandler(review._id)}
                 className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition"
               >
-                {user._id===review.reviewerId ? "Already Commited" : "Commit" }
+                {user._id === review.reviewerId ? 'Already Commited' : 'Commit'}
               </button>
             </div>
           ))
@@ -155,6 +190,12 @@ export default function Review(): ReactElement {
           borderRadius: '10px',
         }}
       />
+      {
+        deletedialog && 
+        (
+            <ReviewDelete setReviews={setCommittedreviews} review={review} closeHandler={closeHandler} dialogRef={deleteDialogRef} />
+        )
+      }
     </>
   );
 }

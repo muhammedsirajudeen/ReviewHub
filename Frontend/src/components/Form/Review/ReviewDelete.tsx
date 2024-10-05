@@ -3,6 +3,7 @@ import { reviewProps } from "../../../types/reviewProps";
 import { toast } from "react-toastify";
 import axiosInstance from "../../../helper/axiosInstance";
 import { produce } from "immer";
+import { useAppSelector } from "../../../store/hooks";
 
 export default function ReviewDelete({
   dialogRef,
@@ -13,10 +14,29 @@ export default function ReviewDelete({
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   review: reviewProps | undefined;
-  setReviews:Dispatch<SetStateAction<Array<reviewProps>>>
+  setReviews:Dispatch<SetStateAction<Array<reviewProps>>>;
+
 }): ReactElement {
+  const user=useAppSelector((state)=>state.global.user)
     const reviewCancel=async ()=>{
         try{
+          if(user.authorization==='reviewer'){
+            const response=(
+              await axiosInstance.delete(`/reviewer/review/${review?._id}`)
+          ).data
+          if(response.message==="success"){
+            setReviews(produce((draft)=>{
+                return(
+
+                    draft.filter((d)=>d._id!==review?._id)
+                )
+            }))
+            toast.success("Deleted Successfully")
+            closeHandler()
+            
+        }          
+          }else{
+
             const response=(
                 await axiosInstance.delete(`/user/review/${review?._id}`)
             ).data
@@ -31,6 +51,7 @@ export default function ReviewDelete({
                 closeHandler()
                 
             }
+          }
         }catch(error){
             console.log(error)
             toast.error("server error occured")

@@ -20,23 +20,27 @@ router.post(
   ReviewerController.ReviewerApproval
 );
 
-
 //review management
 router.get(
   '/reviews',
-  passport.authenticate('jwt',{session:false}),
+  passport.authenticate('jwt', { session: false }),
   ReviewController.GetReviews
-)
+);
 
+router.get(
+  '/review/committed',
+  passport.authenticate('jwt', { session: false }),
+  ReviewController.CommittedReview
+);
 router.put(
   '/review/:reviewId',
-  passport.authenticate('jwt',{session:false}),
+  passport.authenticate('jwt', { session: false }),
   ReviewController.CommitReview
-)
+);
 
 router.delete(
-  '/review',
-  passport.authenticate('jwt',{session:false}),
+  '/review/:reviewId',
+  passport.authenticate('jwt', { session: false }),
   ReviewController.CancelReview
-)
+);
 export default router;
