@@ -3,6 +3,11 @@ import { IUser } from '../../../model/User';
 import Review from '../../../model/Review';
 import Roadmap from '../../../model/Roadmap';
 import Course from '../../../model/Course';
+import Wallet from '../../../model/Wallet';
+import mongoose from 'mongoose';
+
+const REVIEW_POINT=69
+
 const GetReview = async (req: Request, res: Response) => {
   try {
     const user = req.user as IUser;
@@ -18,10 +23,48 @@ const GetReview = async (req: Request, res: Response) => {
   }
 };
 
+
+
 const RequestReview = async (req: Request, res: Response) => {
+  const session = await mongoose.startSession();
+
   try {
+    session.startTransaction();
+
     const user = req.user as IUser;
     const { roadmapId } = req.params;
+    //check if user has enough balance too
+    const walletId=await Wallet.findOne({userId:user.id})
+    if(walletId){
+      
+      if(walletId.balance>=REVIEW_POINT){
+        walletId.balance-=REVIEW_POINT
+        walletId.history.push(
+          {
+            type:'review payment',
+            amount:REVIEW_POINT,
+            paymentDate:new Date(),
+            status:false
+          }
+        )
+
+      }else if(walletId.redeemable>=REVIEW_POINT){
+        walletId.redeemable-=REVIEW_POINT
+        walletId.history.push(
+          {
+            type:'review payment',
+            amount:REVIEW_POINT,
+            paymentDate:new Date(),
+            status:false
+          }
+        )
+      }
+      else{
+        return res.status(402).json({message:'insufficient funds'})
+      }
+    }else{
+      return res.status(404).json({message:'requested resource not found'})
+    }
     //check if its already there or if limit is more than three
     const checkReview = await Review.findOne({
       revieweeId: user.id,
@@ -49,14 +92,22 @@ const RequestReview = async (req: Request, res: Response) => {
         reviewStatus: false,
         domainName: courseId?.domain,
       });
+      await walletId.save()
       const newReviews=await newReview.save();
+      await session.commitTransaction();
+
       res.status(201).json({ message: 'success',review:newReviews });
     } else {
       res.status(404).json({ message: 'resource not found' });
     }
   } catch (error) {
     console.log(error);
+    await session.abortTransaction();
+
     res.status(500).json({ message: 'server error occured' });
+  }finally{
+    session.endSession();
+
   }
 };
 
@@ -101,11 +152,19 @@ const ScheduleReview = async (req: Request, res: Response) => {
 
 const CancelReview = async (req: Request, res: Response) => {
   try {
+    // const user=req.user as IUser
     const {reviewId}=req.params
     if(!reviewId){
-      return res.status(400).json({message:"Unauthorized"})
+      return res.status(400).json({message:"bad request"})
     }
     await Review.deleteOne({_id:reviewId})
+    // dont keep refund for now
+    // const wallet=await Wallet.findOne({userId:user.id})
+    // if(wallet){
+      
+    // }else{
+    //   return res.status(404).json({message:"resource not found"})
+    // }
     res.status(200).json({ message: 'success' });
   } catch (error) {
     console.log(error);

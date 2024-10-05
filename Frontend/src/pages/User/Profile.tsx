@@ -126,7 +126,7 @@ export default function Profile(): ReactElement {
               className="h-8 w-8 object-contain"
             />
             <p className="text-2xl font-bold ml-2">
-              {user.walletId?.balance?.toLocaleString() || '0'}
+            {(user.walletId?.balance ?? 0)+(user.walletId?.redeemable ?? 0) || '0'}
             </p>
           </div>
         </div>

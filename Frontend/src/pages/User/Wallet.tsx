@@ -62,7 +62,7 @@ export default function Wallet(): ReactElement {
               className="h-12 w-12 object-contain"
             />
             <p className="text-3xl font-bold ml-2">
-              {user.walletId?.balance?.toLocaleString() || '0'}
+              {(user.walletId?.balance ?? 0)+(user.walletId?.redeemable ?? 0) || '0'}
             </p>
           </div>
           <div className="flex items-center w-full justify-between mt-4">

@@ -1,14 +1,10 @@
 import { Request, Response } from 'express';
 import Razorpay from 'razorpay';
 import { configDotenv } from 'dotenv';
-import {
-  addValueToCache,
-  getValueFromCache,
-} from '../../../helper/redisHelper';
 import verifyPayment from '../../../helper/signatureVerifier';
 import Payment from '../../../model/Payment';
 import { IUser } from '../../../model/User';
-import mongoose, { Document } from 'mongoose';
+import mongoose from 'mongoose';
 import Wallet from '../../../model/Wallet';
 configDotenv();
 export interface razorpayProps {
@@ -101,7 +97,7 @@ const OrderVerifier = async (req: Request, res: Response) => {
     if (updatePayment && userWallet) {
       updatePayment.status = true;
       await updatePayment.save();
-      userWallet.balance += updatePayment.amount;
+      // userWallet.balance += updatePayment.amount;
       userWallet.history.push({
         paymentDate: new Date(),
         amount: updatePayment.amount,

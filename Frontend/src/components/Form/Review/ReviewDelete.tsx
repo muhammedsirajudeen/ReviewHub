@@ -52,6 +52,7 @@ export default function ReviewDelete({
         Do you want to cancel the review for
         <span className="text-red-600 font-semibold"> {review?.roadmapId.roadmapName}</span>?
       </p>
+      <p className="text-xs" >Your points would not be refunded</p>
       <div className="flex space-x-4">
         <button
           onClick={reviewCancel}
