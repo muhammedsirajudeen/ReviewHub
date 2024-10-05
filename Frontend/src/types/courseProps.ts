@@ -72,4 +72,5 @@ export interface responseProps {
 
 export interface domainProps {
   domain: string;
+  _id?:string
 }

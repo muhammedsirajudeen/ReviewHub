@@ -5,7 +5,7 @@ interface IFeedback extends Document {
   revieweeFeedback: string;
 }
 
-interface IReview extends Document {
+export interface IReview extends Document {
   reviewerId: mongoose.Types.ObjectId;
   revieweeId: mongoose.Types.ObjectId;
   scheduledDate: Date;

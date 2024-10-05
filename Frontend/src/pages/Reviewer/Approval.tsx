@@ -2,6 +2,7 @@ import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import axiosInstance from '../../helper/axiosInstance';
+import { domainProps } from '../../types/courseProps';
 interface ReviewerApprovalFormData {
   name: string;
   experience: string;
@@ -20,6 +21,7 @@ export default function Approval(): ReactElement {
   const [pdfFile, setPdfFile] = useState<string | ArrayBuffer | null>(null);
   const [fileName, setFileName] = useState('');
   const [requested,setRequested]=useState<boolean>(false)
+  const [domain,setDomain]=useState<Array<domainProps>>([])
   useEffect(()=>{
     try{
       async function dataWrapper(){
@@ -31,6 +33,14 @@ export default function Approval(): ReactElement {
           setRequested(true)
         }
       }
+      async function domainWrapper(){
+        const response=(await axiosInstance.get('/admin/domain')).data
+        if(response.message==="success"){
+          console.log(response)
+          setDomain(response.domain)
+        }
+      }
+      domainWrapper()
       dataWrapper()
     }catch(error){
       console.log(error)
@@ -146,11 +156,14 @@ export default function Approval(): ReactElement {
               className={`mt-1 block w-full p-3 border rounded-md transition duration-200 ${errors.domain ? 'border-red-500' : 'border-gray-300'}`}
               id="domain"
             >
-              <option value="">Select a domain</option>
-              <option value="frontend">Frontend Development</option>
-              <option value="backend">Backend Development</option>
-              <option value="fullstack">Fullstack Development</option>
-              <option value="design">UI/UX Design</option>
+              {
+                domain.map((domain)=>{
+                  return(
+                    <option key={domain._id} value={domain.domain} >{domain.domain}</option>
+                  )
+                })
+              }
+
             </select>
             {errors.domain && <p className="text-red-500 text-xs mt-1">{errors.domain.message}</p>}
           </div>

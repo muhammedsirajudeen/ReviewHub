@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-interface IRoadmap extends Document {
+export interface IRoadmap extends Document {
   roadmapName: string;
   roadmapDescription: string;
   courseId: mongoose.Types.ObjectId;

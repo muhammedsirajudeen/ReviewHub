@@ -34,7 +34,7 @@ export const resizeMiddleware = (req: Request, res: Response, next: Function) =>
 
   sharp(filePath)
     .resize(300, 300) // Resize the image to 300x300 pixels
-    .toFile(filePath.replace(path.extname(req.file.filename), '-resized' + path.extname(req.file.filename)), (err, info) => {
+    .toFile(filePath.replace(path.extname(req.file.filename), '-resized' + path.extname(req.file.filename)), (err) => {
       if (err) {
         return next(err);
       }
@@ -65,7 +65,7 @@ export const resizeMiddlewareWrapper=(pathName:string)=>{
   
     sharp(filePath)
       .resize(300, 300) // Resize the image to 300x300 pixels
-      .toFile(filePath.replace(path.extname(req.file.filename), '-resized' + path.extname(req.file.filename)), (err, info) => {
+      .toFile(filePath.replace(path.extname(req.file.filename), '-resized' + path.extname(req.file.filename)), (err) => {
         if (err) {
           return next(err);
         }
