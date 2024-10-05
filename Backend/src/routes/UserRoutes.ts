@@ -18,6 +18,7 @@ import ProgressController from '../controller/user/progress/ProgressController';
 import WithdrawalController from '../controller/user/withdrawal/WithdrawalController';
 import DomainController from '../controller/user/DomainController';
 import ReviewController from '../controller/user/review/ReviewController';
+import NotificationController from '../controller/user/notification/NotificationController';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -237,6 +238,14 @@ router.delete(
   '/review/:reviewId',
   passport.authenticate('jwt',{session:false}),
   ReviewController.CancelReview
+)
+
+
+//notification management
+router.get(
+  '/notification',
+  passport.authenticate('jwt',{session:false}),
+  NotificationController.GetNotification
 )
 
 export default router;

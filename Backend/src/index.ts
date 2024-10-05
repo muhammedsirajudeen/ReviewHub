@@ -63,10 +63,15 @@ const worker = new Worker(
     console.log(`Processing job: ${job.name}`);
     console.log(`Job data:`, job.data);
     const scheduledMessage=JSON.parse(job.data.message) as schedulerProps
+    //this is for sending ws
     const revieweeId=await getValueFromCache(`socket-${scheduledMessage.revieweeId}`)
-    console.log("the data is",revieweeId)
+    const reviewerId=await getValueFromCache(`socket-${scheduledMessage.reviewerId}`)
     //if there is now reviewee id it means user is not online otherwise it means that the user is online we can make it accordingly then like a notification on the app bar
-    
+    const RevieweeEmail=(await User.findById(scheduledMessage.revieweeId))?.email
+    const ReviewerEmail=(await User.findById(scheduledMessage.reviewerId))?.email
+    sendNotification("admin","You Have A Review Right Now",'https://img.icons8.com/?size=100&id=32309&format=png&color=FFFFFF',RevieweeEmail as string )
+    sendNotification("admin","You Have A Review Right Now",'https://img.icons8.com/?size=100&id=32309&format=png&color=FFFFFF',ReviewerEmail as string)
+
     // Add your task logic here
   },
   { connection }
