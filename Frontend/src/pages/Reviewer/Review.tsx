@@ -10,6 +10,7 @@ import { AxiosError } from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import { flushSync } from 'react-dom';
 import ReviewDelete from '../../components/Form/Review/ReviewDelete';
+import { produce } from 'immer';
 
 export default function Review(): ReactElement {
   const [reviews, setReviews] = useState<Array<reviewProps>>([]);
@@ -64,10 +65,16 @@ export default function Review(): ReactElement {
   const nextpageHandler = () => {
     setCurrentpage((prev) => Math.min(prev + 1, Math.ceil(pagecount / 10)));
   };
-  const commitHandler = async (id: string) => {
+  const commitHandler = async (review:reviewProps) => {
     try {
-      const response = (await axiosInstance.put(`/reviewer/review/${id}`)).data;
+      const response = (await axiosInstance.put(`/reviewer/review/${review._id}`)).data;
       if (response.message === 'success') {
+        setCommittedreviews(produce((draft)=>{
+            draft.push(review)
+        }))
+        setReviews(produce((draft)=>{
+            return draft.filter((d)=>d._id!==review._id)
+        }))
         toast.success('Committed Successfully');
       }
     } catch (error) {
@@ -96,7 +103,7 @@ export default function Review(): ReactElement {
             Scheduled Reviews
           </h2>
           <div className="w-full h-72 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg shadow-sm bg-gray-100">
-            {reviews.length === 0 && (
+            {committedreviews.length === 0 && (
               <p className="text-gray-500">No scheduled reviews yet.</p>
             )}
             {committedreviews.map((review) => {
@@ -167,7 +174,7 @@ export default function Review(): ReactElement {
               </div>
               <button
                 disabled={user._id === review.reviewerId}
-                onClick={() => commitHandler(review._id)}
+                onClick={() => commitHandler(review)}
                 className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition"
               >
                 {user._id === review.reviewerId ? 'Already Commited' : 'Commit'}
@@ -193,7 +200,7 @@ export default function Review(): ReactElement {
       {
         deletedialog && 
         (
-            <ReviewDelete setReviews={setCommittedreviews} review={review} closeHandler={closeHandler} dialogRef={deleteDialogRef} />
+            <ReviewDelete setPendingReviews={setReviews} setReviews={setCommittedreviews} review={review} closeHandler={closeHandler} dialogRef={deleteDialogRef} />
         )
       }
     </>

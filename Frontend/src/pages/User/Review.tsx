@@ -267,7 +267,7 @@ export default function Review(): ReactElement {
       </div>
       {
         deletedialog && (
-            <ReviewDelete setReviews={setReviews} review={review} dialogRef={deleteDialogRef} closeHandler={deleteCloseHandler}/>
+            <ReviewDelete setPendingReviews={setPendingreviews} setReviews={setReviews} review={review} dialogRef={deleteDialogRef} closeHandler={deleteCloseHandler}/>
         )
       }
     </>

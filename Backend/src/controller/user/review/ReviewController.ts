@@ -157,7 +157,11 @@ const CancelReview = async (req: Request, res: Response) => {
     if(!reviewId){
       return res.status(400).json({message:"bad request"})
     }
-    await Review.deleteOne({_id:reviewId})
+    const checkReview=await Review.findById(reviewId)
+    if(checkReview?.reviewerId){
+      return res.status(400).json({message:"reviewer already scheduled"})
+    }
+    await Review.updateOne({_id:reviewId},{$unset:{scheduledDate:1}})
     // dont keep refund for now
     // const wallet=await Wallet.findOne({userId:user.id})
     // if(wallet){

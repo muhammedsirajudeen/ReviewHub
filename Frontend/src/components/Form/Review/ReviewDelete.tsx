@@ -9,12 +9,15 @@ export default function ReviewDelete({
   dialogRef,
   closeHandler,
   review,
-  setReviews
+  setReviews,
+  setPendingReviews
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   review: reviewProps | undefined;
   setReviews:Dispatch<SetStateAction<Array<reviewProps>>>;
+  setPendingReviews:Dispatch<SetStateAction<Array<reviewProps>>>;
+  
 
 }): ReactElement {
   const user=useAppSelector((state)=>state.global.user)
@@ -30,7 +33,16 @@ export default function ReviewDelete({
 
                     draft.filter((d)=>d._id!==review?._id)
                 )
+
             }))
+            if(setPendingReviews){
+              setPendingReviews(produce((draft)=>{
+                if(review){
+
+                  draft.push(review)
+                }
+              }))
+            }
             toast.success("Deleted Successfully")
             closeHandler()
             
@@ -47,6 +59,15 @@ export default function ReviewDelete({
                         draft.filter((d)=>d._id!==review?._id)
                     )
                 }))
+                if(setPendingReviews){
+                  setPendingReviews(produce((draft)=>{
+                    if(review){
+    
+                      draft.push(review)
+                    }
+                  }))
+                }
+
                 toast.success("Deleted Successfully")
                 closeHandler()
                 
