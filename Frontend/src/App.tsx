@@ -46,6 +46,7 @@ import Chat from './pages/User/Chat';
 import Withdrawals from './pages/Admin/Withdrawals';
 import Review from './pages/User/Review';
 import Notification from './pages/User/Notification';
+import VideoChat from './pages/User/VideoChat';
 
 const router = createBrowserRouter([
   //authentication routes
@@ -207,6 +208,11 @@ const router = createBrowserRouter([
       {
         path:'/user/notifications',
         element:<UserPrivateRoute Component={Notification}/>,
+        loader:tokenVerifier
+      },
+      {
+        path:'/user/videochat',
+        element:<UserPrivateRoute Component={VideoChat}/>,
         loader:tokenVerifier
       }
     ],
