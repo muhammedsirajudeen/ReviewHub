@@ -26,6 +26,7 @@ import UnreadChat from "./model/UnreadChat";
 import { createClient } from "redis";
 import { ConnectionOptions, Job,Worker } from "bullmq";
 import { schedulerProps } from "./helper/bullmqIntegration";
+import Notification, { Type } from "./model/Notification";
 
 const app = express();
 const server = http.createServer(app);
@@ -63,6 +64,25 @@ const worker = new Worker(
     console.log(`Processing job: ${job.name}`);
     console.log(`Job data:`, job.data);
     const scheduledMessage=JSON.parse(job.data.message) as schedulerProps
+    //adding notiification to db
+    const newNotification=new Notification(
+      {
+        userId:scheduledMessage.revieweeId,
+        message:"You have  a review join now to avoid cancellation",
+        type:Type.Review,
+        reviewId:scheduledMessage.reviewId
+      }
+    )
+    await newNotification.save()
+    const newNotificationtwo=new Notification(
+      {
+        userId:scheduledMessage.reviewerId,
+        message:"You have a review to take",
+        type:Type.Review,
+        reviewId:scheduledMessage.reviewId
+      }
+    )
+    await newNotificationtwo.save()
     //this is for sending ws
     const revieweeId=await getValueFromCache(`socket-${scheduledMessage.revieweeId}`)
     const reviewerId=await getValueFromCache(`socket-${scheduledMessage.reviewerId}`)

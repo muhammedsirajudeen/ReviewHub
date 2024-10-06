@@ -247,5 +247,10 @@ router.get(
   passport.authenticate('jwt',{session:false}),
   NotificationController.GetNotification
 )
+router.delete(
+  '/notification/:notificationId',
+  passport.authenticate('jwt',{session:false}),
+  NotificationController.DeleteNotification
+)
 
 export default router;

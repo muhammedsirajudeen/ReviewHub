@@ -87,7 +87,7 @@ const CommitReview = async (req: Request, res: Response) => {
     const dbDate=new Date(updateReview.scheduledDate)
     const diff=dbDate.getTime()-newDate.getTime()
     console.log(diff)
-    addDelayedTask({revieweeId:updateReview.revieweeId.toHexString(),reviewerId:updateReview.reviewerId.toHexString()},diff)
+    addDelayedTask({revieweeId:updateReview.revieweeId.toHexString(),reviewId:updateReview.id,reviewerId:updateReview.reviewerId.toHexString()},diff)
     res.status(200).json({message:'success'})
   } catch (error) {
     console.log(error);

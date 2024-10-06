@@ -6,7 +6,8 @@ configDotenv()
 
 export interface schedulerProps{
     revieweeId:string,
-    reviewerId:string
+    reviewerId:string,
+    reviewId:string
 }
 
 

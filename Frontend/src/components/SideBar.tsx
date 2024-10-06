@@ -86,7 +86,7 @@ export default function SideBar(): ReactElement {
           <a
             href={
               user.authorization === 'reviewer'
-                ? '/reviewer/review'
+                ? '/user/notifications'
                 : `/user/notifications`
             }
           >
