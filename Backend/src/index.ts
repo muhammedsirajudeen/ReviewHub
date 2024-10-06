@@ -27,9 +27,18 @@ import { createClient } from "redis";
 import { ConnectionOptions, Job,Worker } from "bullmq";
 import { schedulerProps } from "./helper/bullmqIntegration";
 import Notification, { Type } from "./model/Notification";
+import { ExpressPeerServer } from "peer";
 
 const app = express();
 const server = http.createServer(app);
+
+const peerServer = ExpressPeerServer(server, {
+  path: '/myapp',
+
+});
+
+app.use('/peerjs', peerServer);
+
 const io = new Server(server,{cors:{origin:process.env.CORS_ORIGIN}});
 const port = process.env.PORT ?? 3000;
 connectDB();

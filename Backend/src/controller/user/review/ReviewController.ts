@@ -176,10 +176,33 @@ const CancelReview = async (req: Request, res: Response) => {
   }
 };
 
+const CallerFetcher=async (req:Request,res:Response)=>{
+  try{
+    const user=req.user as IUser
+    const {reviewId}=req.params
+    if(!reviewId){
+      return res.status(400).json({message:'Bad Request'})
+    }
+    const findReview=await Review.findById(reviewId)
+    if(!findReview){
+      return res.status(404).json({message:"Bad Request"})
+    }
+    if(user.authorization==='reviewer'){
+      return res.status(200).json({message:"success",call:findReview.revieweeId})
+    }else{
+      return res.status(200).json({message:"success",call:findReview.reviewerId})
+    }
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message:'server error occured'})
+  }
+}
+
 export default {
   GetReview,
   GetScheduledRoadmaps,
   RequestReview,
   ScheduleReview,
   CancelReview,
+  CallerFetcher
 };

@@ -215,6 +215,12 @@ router.get(
   ReviewController.GetReview
 )
 
+router.get(
+  '/review/call/:reviewId',
+  passport.authenticate('jwt',{session:false}),
+  ReviewController.CallerFetcher
+)
+
 router.post(
   '/review/request/:roadmapId',
   passport.authenticate('jwt',{session:false}),
@@ -239,6 +245,7 @@ router.delete(
   passport.authenticate('jwt',{session:false}),
   ReviewController.CancelReview
 )
+
 
 
 //notification management
