@@ -25,11 +25,14 @@ export default function VideoChat(): ReactElement {
         ).data;
         if (response.message === 'success') {
           console.log(response);
-          window.sessionStorage.setItem('callerId', response.call);
+          window.localStorage.setItem('callerId', response.call);
+          return response.call
         }
       } catch (error) {
         console.log(error);
+        return ""
       }
+      return ""
     }
     dispatch(setPage('review'));
     async function mediaStreamFetcher(): Promise<MediaStream> {
@@ -76,7 +79,7 @@ export default function VideoChat(): ReactElement {
 
     peer.on('open', async (id) => {
       console.log('My peer ID is: ' + id);
-      const callerId = window.sessionStorage.getItem('callerId');
+      const callerId = await reviewDetailsFetcher()
       const stream = await mediaStreamFetcher();
       if (!stream) {
         console.log('No media stream provided');
@@ -109,6 +112,14 @@ export default function VideoChat(): ReactElement {
         }
       });
     });
+    //try to handle this gracefully right now just refreshing the page until it succeeds does know that it succeeds at one point
+    peer.on('error',(error)=>{
+      console.log(error.type)
+      if(error.type==="unavailable-id"){
+
+        window.location.reload()
+      }
+    })
     return () => {
       peer.disconnect();
       peer.destroy(); // Destroy the peer instance
@@ -136,6 +147,7 @@ export default function VideoChat(): ReactElement {
         </div>
         <div className="w-1/2 ml-20 flex items-center justify-start ">
           <video
+          controls
             ref={remoteVideoRef}
             className="w-3/4 h-3/4 bg-black rounded-xl"
           ></video>

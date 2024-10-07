@@ -27,7 +27,7 @@ import { createClient } from "redis";
 import { ConnectionOptions, Job,Worker } from "bullmq";
 import { schedulerProps } from "./helper/bullmqIntegration";
 import Notification, { Type } from "./model/Notification";
-import { ExpressPeerServer } from "peer";
+import { ExpressPeerServer, IClient } from "peer";
 
 const app = express();
 const server = http.createServer(app);
@@ -36,6 +36,18 @@ const peerServer = ExpressPeerServer(server, {
   path: '/myapp',
 
 });
+const connectedPeers:Record<string,IClient>={}
+peerServer.on('connection',(peer)=>{
+  connectedPeers[peer.getId()]=peer
+})
+peerServer.on('disconnect',(id)=>{
+  console.log("Disconnected",id.getId())
+  delete connectedPeers[id.getId()]
+  
+})
+peerServer.on('error',(error)=>{
+  console.log(error)
+})
 
 app.use('/peerjs', peerServer);
 
