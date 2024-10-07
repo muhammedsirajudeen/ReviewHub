@@ -81,6 +81,7 @@ export default function Review(): ReactElement {
       const response = (
         await axiosInstance.put(`/user/review/schedule/${roadmap?._id}`, {
           date: date,
+          reviewId:review?._id
         })
       ).data;
       if (response.message === 'success') {

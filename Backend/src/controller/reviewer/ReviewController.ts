@@ -71,6 +71,7 @@ const GetReviews = async (req: Request, res: Response) => {
       })
       .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
       .limit(PAGE_LIMIT)) as unknown as Array<ExtendedReviewProps>;
+      
     //now check filter out some stuff here
     const checkApproval = await Approval.findOne({ userId: user.id });
     const domain = checkApproval?.domain;
@@ -93,7 +94,7 @@ const GetReviews = async (req: Request, res: Response) => {
 const CommittedReview = async (req: Request, res: Response) => {
   try {
     const user = req.user as IUser;
-    const committedReview = await Review.find({ reviewerId: user.id }).populate(
+    const committedReview = await Review.find({ reviewerId: user.id,reviewStatus:false }).populate(
       'roadmapId'
     );
 

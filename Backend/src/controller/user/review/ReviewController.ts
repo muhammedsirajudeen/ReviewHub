@@ -72,6 +72,7 @@ const RequestReview = async (req: Request, res: Response) => {
     const checkReview = await Review.findOne({
       revieweeId: user.id,
       roadmapId: roadmapId,
+      reviewStatus:false
     });
     if (checkReview) {
       return res.status(409).json({ message: 'review already requested' });
@@ -121,6 +122,7 @@ const GetScheduledRoadmaps = async (req: Request, res: Response) => {
     const scheduledRoadmaps = await Review.find({
       revieweeId: user.id,
       scheduledDate: { $exists: false },
+      reviewStatus:false
     }).populate('roadmapId');
     res.status(200).json({ message: 'success', requested: scheduledRoadmaps });
   } catch (error) {
@@ -131,15 +133,11 @@ const GetScheduledRoadmaps = async (req: Request, res: Response) => {
 
 const ScheduleReview = async (req: Request, res: Response) => {
   try {
-    const user = req.user as IUser;
-    const { roadmapId } = req.params;
-    const { date } = req.body;
+    // const user = req.user as IUser;
+    // const { roadmapId } = req.params;
+    const { date,reviewId } = req.body;
     
-    const updateReview = await Review.findOne({
-      revieweeId: user.id,
-      roadmapId: roadmapId,
-      
-    });
+    const updateReview = await Review.findById(reviewId)
     if (updateReview) {
       updateReview.scheduledDate = new Date(date);
       const newReview=await updateReview.save();
