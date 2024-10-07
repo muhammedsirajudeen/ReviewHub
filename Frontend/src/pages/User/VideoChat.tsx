@@ -4,10 +4,25 @@ import { setPage } from '../../store/globalSlice';
 import { useLoaderData, useLocation, useNavigate } from 'react-router';
 import { ClipLoader } from 'react-spinners';
 import { FaPhone } from 'react-icons/fa';
-import Peer from 'peerjs';
+import Peer, { MediaConnection } from 'peerjs';
 import userProps from '../../types/userProps';
 import axiosInstance from '../../helper/axiosInstance';
-
+async function reviewDetailsFetcher(id:string) {
+  try {
+    const response = (
+      await axiosInstance.get(`/user/review/call/${id}`)
+    ).data;
+    if (response.message === 'success') {
+      console.log(response);
+      window.localStorage.setItem('callerId', response.call);
+      return response.call;
+    }
+  } catch (error) {
+    console.log(error);
+    return '';
+  }
+  return '';
+}
 export default function VideoChat(): ReactElement {
   const dispatch = useAppDispatch();
   const location = useLocation().state;
@@ -17,23 +32,10 @@ export default function VideoChat(): ReactElement {
   const user = useLoaderData() as userProps;
   const streamRef = useRef<MediaStream>();
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const screenVideoRef = useRef<HTMLVideoElement>(null);
+  const peerRef = useRef<Peer>();
   useEffect(() => {
-    async function reviewDetailsFetcher() {
-      try {
-        const response = (
-          await axiosInstance.get(`/user/review/call/${location}`)
-        ).data;
-        if (response.message === 'success') {
-          console.log(response);
-          window.localStorage.setItem('callerId', response.call);
-          return response.call
-        }
-      } catch (error) {
-        console.log(error);
-        return ""
-      }
-      return ""
-    }
+
     dispatch(setPage('review'));
     async function mediaStreamFetcher(): Promise<MediaStream> {
       // Check if the stream is already instantiated
@@ -68,7 +70,7 @@ export default function VideoChat(): ReactElement {
       }
     }
     requestPermission();
-    reviewDetailsFetcher();
+    // reviewDetailsFetcher(location);
     const peer = new Peer(user._id, {
       host: 'localhost',
       port: 3000,
@@ -79,7 +81,8 @@ export default function VideoChat(): ReactElement {
 
     peer.on('open', async (id) => {
       console.log('My peer ID is: ' + id);
-      const callerId = await reviewDetailsFetcher()
+      peerRef.current=peer
+      const callerId = await reviewDetailsFetcher(location);
       const stream = await mediaStreamFetcher();
       if (!stream) {
         console.log('No media stream provided');
@@ -91,6 +94,9 @@ export default function VideoChat(): ReactElement {
             remoteVideoRef.current.srcObject = remoteStream;
             remoteVideoRef.current.play();
             setLoading(false);
+            const videoTracks = remoteStream.getVideoTracks();
+    
+            console.log(`Received ${videoTracks.length} video tracks.`);
           }
         });
 
@@ -109,17 +115,19 @@ export default function VideoChat(): ReactElement {
           remoteVideoRef.current.srcObject = remoteStream;
           remoteVideoRef.current.play();
           setLoading(false);
+          const videoTracks = remoteStream.getVideoTracks();
+    
+          console.log(`Received ${videoTracks.length} video tracks. triggered too`);
         }
       });
     });
     //try to handle this gracefully right now just refreshing the page until it succeeds does know that it succeeds at one point
-    peer.on('error',(error)=>{
-      console.log(error.type)
-      if(error.type==="unavailable-id"){
-
-        window.location.reload()
+    peer.on('error', (error) => {
+      console.log(error.type);
+      if (error.type === 'unavailable-id') {
+        window.location.reload();
       }
-    })
+    });
     return () => {
       peer.disconnect();
       peer.destroy(); // Destroy the peer instance
@@ -127,6 +135,55 @@ export default function VideoChat(): ReactElement {
   }, [dispatch, location, user._id]);
   const backHandler = () => {
     navigate('/user/dashboard');
+  };
+
+  async function combineMediaStreams(screenStream:MediaStream, webcamStream:MediaStream) {
+    // Create a new MediaStream
+    const combinedStream = new MediaStream();
+
+    // Add video tracks from both streams
+    screenStream.getVideoTracks().forEach(track => {
+        combinedStream.addTrack(track);
+    });
+    webcamStream.getVideoTracks().forEach(track => {
+        combinedStream.addTrack(track);
+    });
+
+    // Add audio tracks if needed (optional)
+    // screenStream.getAudioTracks().forEach(track => {
+    //     combinedStream.addTrack(track);
+    // });
+    webcamStream.getAudioTracks().forEach(track => {
+        combinedStream.addTrack(track);
+    });
+
+    return combinedStream;
+}
+  const screenShareHandler = async () => {
+    const screenStream = await navigator.mediaDevices.getDisplayMedia({
+      video: true, // Only video for screen sharing
+    });
+    if (screenVideoRef.current) {
+      screenVideoRef.current.srcObject = screenStream;
+      screenVideoRef.current.play();
+      const combinedStream=await combineMediaStreams(streamRef.current as MediaStream,screenStream)
+      const peer=peerRef.current
+      if(peer){
+        const call=await peer.call(await reviewDetailsFetcher(location),combinedStream)
+        if(!call){
+          return 
+        }
+      }
+      // const call=peer?.call(await)
+      // if(call){
+      //   screenStream.getTracks().forEach(track => {
+      //     // Add the new track to the peer connection
+      //     call.peerConnection.addTrack(track, screenStream);
+      //   });
+      // }
+      
+      
+    }
   };
   return (
     <>
@@ -139,7 +196,7 @@ export default function VideoChat(): ReactElement {
         </div>
       )}
       <h1 className="text-3xl ml-36">VIDEO CHAT</h1>
-      <div className="flex items-center w-full justify-center mt-10">
+      <div className="flex items-center w-full justify-center mt-10 ">
         <div className="w-1/2  flex items-center justify-end">
           <video ref={localVideoRef} className="w-3/4 h-3/4 rounded-xl ">
             {' '}
@@ -147,18 +204,33 @@ export default function VideoChat(): ReactElement {
         </div>
         <div className="w-1/2 ml-20 flex items-center justify-start ">
           <video
-          controls
+            controls
             ref={remoteVideoRef}
             className="w-3/4 h-3/4 bg-black rounded-xl"
           ></video>
         </div>
       </div>
-      <button className="absolute rounded-lg p-2 items-center justify-center bottom-10 left-1/2 bg-red-600 flex ">
-        <FaPhone color="white" />
-        <p onClick={() => backHandler()} className="text-white ml-2">
-          End Call
-        </p>
-      </button>
+      <div className="flex items-center min-w-full justify-center">
+        <div className="w-1/2 mt-20 flex items-center justify-center ">
+          <video
+            controls
+            ref={screenVideoRef}
+            className="w-1/2 h-1/2 bg-black rounded-xl"
+          ></video>
+        </div>
+      </div>
+      <div className="absolute flex p-2 rounded-lg h-12 bg-black items-center justify-center bottom-10 left-1/2">
+        <button className=" rounded-lg p-2 items-center justify-center  bg-red-600 flex ">
+          <FaPhone onClick={() => backHandler()} color="white" />
+        </button>
+        {
+          user.authorization!=='reviewer' && 
+
+        <button onClick={() => screenShareHandler()}>
+          <img className="h-10 w-10" src="/videochat/screenshare.png" />
+        </button>
+        }
+      </div>
     </>
   );
 }
