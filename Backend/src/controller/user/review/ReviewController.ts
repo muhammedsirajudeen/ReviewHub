@@ -17,6 +17,7 @@ const GetReview = async (req: Request, res: Response) => {
     const userReviews = await Review.find({
       revieweeId: user.id,
       scheduledDate: { $exists: true },
+      reviewStatus:false
     }).populate('roadmapId');
     res.status(200).json({ message: 'success', reviews: userReviews });
   } catch (error) {
@@ -133,9 +134,11 @@ const ScheduleReview = async (req: Request, res: Response) => {
     const user = req.user as IUser;
     const { roadmapId } = req.params;
     const { date } = req.body;
+    
     const updateReview = await Review.findOne({
       revieweeId: user.id,
       roadmapId: roadmapId,
+      
     });
     if (updateReview) {
       updateReview.scheduledDate = new Date(date);
