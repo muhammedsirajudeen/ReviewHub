@@ -76,7 +76,7 @@ export default function VideoChat(): ReactElement {
       port: 3000,
       path: '/peerjs/myapp', // The path you defined in the server
       secure: false,
-      debug: 3,
+      // debug: 3,
     });
 
     peer.on('open', async (id) => {
@@ -97,6 +97,9 @@ export default function VideoChat(): ReactElement {
             const videoTracks = remoteStream.getVideoTracks();
     
             console.log(`Received ${videoTracks.length} video tracks.`);
+            remoteStream.getTracks().forEach((track)=>{
+              console.log(track.label)
+            })
           }
         });
 
@@ -118,6 +121,21 @@ export default function VideoChat(): ReactElement {
           const videoTracks = remoteStream.getVideoTracks();
     
           console.log(`Received ${videoTracks.length} video tracks. triggered too`);
+          let count=0
+          if(videoTracks.length===2){
+
+            remoteStream.getTracks().forEach((track)=>{
+              if(count===1){
+                if(screenVideoRef.current){
+                  screenVideoRef.current.srcObject=new MediaStream([track])
+                  screenVideoRef.current.play()
+                }
+              }
+              console.log(track.label)
+              count++
+            })
+          }
+          
         }
       });
     });
