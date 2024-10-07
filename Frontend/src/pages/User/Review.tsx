@@ -67,9 +67,10 @@ export default function Review(): ReactElement {
     setDate(new Date(slotInfo.start));
   };
 
-  const selectRoadmap = (roadmap: roadmapProps) => {
+  const selectRoadmap = (roadmap: roadmapProps,review:reviewProps) => {
     setSelect(true);
     setRoadmap(roadmap);
+    setReview(review)
   };
   const reviewScheduler = async () => {
     if (!date) {
@@ -85,12 +86,11 @@ export default function Review(): ReactElement {
       if (response.message === 'success') {
         console.log(response)
         toast.success('scheduled successfully');
-        setPendingreviews(produce((draft)=>{
-            return(
-                draft.filter((d)=>d._id!==review?._id)
-            )
-        }))
-        //get from client side
+        console.log(review?._id)
+        const newPendingReviews=pendingreviews.filter((d)=>d._id!==review?._id)
+        // console.log(newPendingReviews)
+        setPendingreviews(newPendingReviews)
+
         setReviews(produce((draft)=>{
 
                 draft.push(response.reviews)
@@ -246,7 +246,7 @@ export default function Review(): ReactElement {
                       </p>
                       <button
                         className="mt-4 bg-blue-500 text-white text-sm font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                        onClick={() => selectRoadmap(pendingreview.roadmapId)}
+                        onClick={() => selectRoadmap(pendingreview.roadmapId,pendingreview)}
                       >
                         Schedule
                       </button>
