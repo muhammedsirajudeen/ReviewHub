@@ -43,4 +43,10 @@ router.delete(
   passport.authenticate('jwt', { session: false }),
   ReviewController.CancelReview
 );
+router.put(
+  '/reviewcompletion',
+  passport.authenticate('jwt',{session:false}),
+  ReviewController.ReviewStatus
+)
+
 export default router;

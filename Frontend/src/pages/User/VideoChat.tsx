@@ -10,6 +10,7 @@ import axiosInstance from '../../helper/axiosInstance';
 import { toast } from 'react-toastify';
 import { produce } from 'immer';
 import { flushSync } from 'react-dom';
+import recordingHelper from '../../helper/recordingHelper';
 async function reviewDetailsFetcher(id: string) {
   try {
     const response = (await axiosInstance.get(`/user/review/call/${id}`)).data;
@@ -46,6 +47,7 @@ export default function VideoChat(): ReactElement {
   const [messages, setMessages] = useState<messageProps[]>([]);
   const connectionRef = useRef<DataConnection>();
   const chatContainer = useRef<HTMLDivElement>(null);
+  const renderCount=useRef<number>(0)
   useEffect(() => {
     dispatch(setPage('review'));
     async function mediaStreamFetcher(): Promise<MediaStream> {
@@ -131,10 +133,16 @@ export default function VideoChat(): ReactElement {
               chatContainer.current.scrollHeight;
           }
         });
-        call.on('stream', (remoteStream) => {
+        call.on('stream', async (remoteStream) => {
           if (remoteVideoRef.current) {
             remoteVideoRef.current.srcObject = remoteStream;
             remoteVideoRef.current.play();
+            if(renderCount.current===0){
+
+              recordingHelper(await mediaStreamFetcher(),location,user.authorization)
+              renderCount.current++
+            }
+      
             setLoading(false);
             const videoTracks = remoteStream.getVideoTracks();
 
@@ -165,10 +173,16 @@ export default function VideoChat(): ReactElement {
     });
     peer.on('call', async (call) => {
       call.answer(await mediaStreamFetcher());
-      call.on('stream', (remoteStream) => {
+      call.on('stream', async (remoteStream) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
           remoteVideoRef.current.play();
+          if(renderCount.current===0){
+
+            recordingHelper(await mediaStreamFetcher(),location,user.authorization)
+            renderCount.current++
+          }
+    
           setLoading(false);
           const videoTracks = remoteStream.getVideoTracks();
 
@@ -202,10 +216,8 @@ export default function VideoChat(): ReactElement {
       peer.disconnect();
       peer.destroy(); // Destroy the peer instance
     };
-  }, [dispatch, location, user._id]);
-  const backHandler = () => {
-    navigate('/user/dashboard');
-  };
+  }, [dispatch, location, user._id, user.authorization]);
+
 
   async function combineMediaStreams(
     screenStream: MediaStream,
@@ -291,6 +303,31 @@ export default function VideoChat(): ReactElement {
       messageInputRef.current.value = '';
     }
   };
+  const backHandler = async  () => {
+    
+    if(user.authorization==='reviewer'){
+      try {
+        streamRef.current?.getTracks().forEach((track)=>{
+        track.stop()
+        }
+        )
+        const response=(
+          await axiosInstance.put('/reviewer/reviewcompletion',
+            {
+              reviewId:location
+            }
+          )
+        ).data
+        if(response.message==="success"){
+          console.log(response)
+        }
+        
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    navigate('/user/dashboard');
+  };
   return (
     <>
       {loading && (
@@ -303,8 +340,8 @@ export default function VideoChat(): ReactElement {
       )}
       <h1 className="text-3xl ml-36">VIDEO CHAT</h1>
       <div className="flex items-center w-full justify-center mt-10 ">
-        <div className="w-1/2  flex items-center justify-end">
-          <video ref={localVideoRef} className="w-3/4 h-3/4 rounded-xl ">
+        <div className="w-1/2  flex items-center justify-center">
+          <video ref={localVideoRef} className="w-1/2 h-1/2 rounded-xl ">
             {' '}
           </video>
         </div>

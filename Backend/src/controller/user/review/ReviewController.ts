@@ -5,6 +5,8 @@ import Roadmap from '../../../model/Roadmap';
 import Course from '../../../model/Course';
 import Wallet from '../../../model/Wallet';
 import mongoose from 'mongoose';
+import path from 'path';
+import { appendFile } from 'fs';
 
 const REVIEW_POINT=69
 
@@ -198,11 +200,35 @@ const CallerFetcher=async (req:Request,res:Response)=>{
   }
 }
 
+
+const ReviewRecord=(req:Request,res:Response)=>{
+  try{
+    const buffer=req.file?.buffer
+    const originalname=req.file?.originalname
+    const savePath=path.join(__dirname,"../../../public","reviewrecording")
+    if(buffer){
+      appendFile(savePath+"/"+originalname, buffer, (err) => {
+        if (err) {
+          console.error('Error appending video chunk:', err);
+          return res.status(500).send('Error appending video chunk');
+        }
+    
+        return res.send({ message: 'success' });
+      });
+    }
+    // res.status(200).json({message:"success"})
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message:"server error occured"})
+  }
+}
+
 export default {
   GetReview,
   GetScheduledRoadmaps,
   RequestReview,
   ScheduleReview,
   CancelReview,
-  CallerFetcher
+  CallerFetcher,
+  ReviewRecord
 };

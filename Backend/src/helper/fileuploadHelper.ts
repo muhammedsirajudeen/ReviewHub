@@ -4,7 +4,12 @@ import { Request,Response } from "express";
 import sharp from "sharp";
 import fs from "fs"
 
-function UploadHandler(pathName:string){
+
+
+
+
+
+function UploadHandler(pathName:string,type?:string){
   const uploadDir = path.join(__dirname, "../public/",pathName);
 
   const storage = multer.diskStorage({
@@ -13,8 +18,15 @@ function UploadHandler(pathName:string){
     },
     filename: (req, file, cb) => {
       // Define the file name
-      const uniqueSuffix = Date.now() + path.extname(file.originalname);
-      cb(null, file.fieldname + "-" + uniqueSuffix);
+      if(type==="video"){
+        // const uniqueSuffix = Date.now() + path.extname(file.originalname);
+        cb(null, file.originalname);
+  
+      }else{
+
+        const uniqueSuffix = Date.now() + path.extname(file.originalname);
+        cb(null, file.fieldname + "-" + uniqueSuffix);
+      }
     },
   });
   

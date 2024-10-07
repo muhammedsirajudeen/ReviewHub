@@ -19,6 +19,7 @@ import WithdrawalController from '../controller/user/withdrawal/WithdrawalContro
 import DomainController from '../controller/user/DomainController';
 import ReviewController from '../controller/user/review/ReviewController';
 import NotificationController from '../controller/user/notification/NotificationController';
+import multer = require('multer');
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -238,6 +239,14 @@ router.get(
   '/review/roadmaps',
   passport.authenticate('jwt',{session:false}),
   ReviewController.GetScheduledRoadmaps
+)
+const upload = multer(); // Store files in memory (no temp files)
+
+router.post(
+  '/review/record',
+  passport.authenticate('jwt',{session:false}),
+  upload.single('video'),
+  ReviewController.ReviewRecord
 )
 
 router.delete(
