@@ -87,7 +87,7 @@ export default function Review(): ReactElement {
         toast.success('scheduled successfully');
         setPendingreviews(produce((draft)=>{
             return(
-                draft.filter((d)=>d._id===review?._id)
+                draft.filter((d)=>d._id!==review?._id)
             )
         }))
         //get from client side
