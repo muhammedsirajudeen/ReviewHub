@@ -316,7 +316,7 @@ export default function VideoChat(): ReactElement {
           ></video>
         </div>
       </div>
-      <div className="flex items-center min-w-full justify-center mt-20">
+      <div className="flex items-center min-w-full justify-center mt-20 -z-1">
         <div className="w-1/2 mt-10 flex items-center justify-center ">
           <video
             controls
@@ -325,7 +325,7 @@ export default function VideoChat(): ReactElement {
           ></video>
         </div>
       </div>
-      <div className="absolute flex p-2 rounded-lg h-12 bg-black items-center justify-center bottom-10 left-1/2">
+      <div className="absolute flex p-2 rounded-lg h-12 bg-black items-center justify-center bottom-10 left-1/2 z-20">
         <button className=" rounded-lg p-2 items-center justify-center  bg-red-600 flex ">
           <FaPhone onClick={() => backHandler()} color="white" />
         </button>
