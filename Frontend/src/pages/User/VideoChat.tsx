@@ -4,7 +4,7 @@ import { setPage } from '../../store/globalSlice';
 import { useLoaderData, useLocation, useNavigate } from 'react-router';
 import { ClipLoader } from 'react-spinners';
 import { FaPhone } from 'react-icons/fa';
-import Peer, { MediaConnection } from 'peerjs';
+import Peer from 'peerjs';
 import userProps from '../../types/userProps';
 import axiosInstance from '../../helper/axiosInstance';
 async function reviewDetailsFetcher(id:string) {
@@ -228,8 +228,8 @@ export default function VideoChat(): ReactElement {
           ></video>
         </div>
       </div>
-      <div className="flex items-center min-w-full justify-center">
-        <div className="w-1/2 mt-20 flex items-center justify-center ">
+      <div className="flex items-center min-w-full justify-center mt-20">
+        <div className="w-1/2 mt-10 flex items-center justify-center ">
           <video
             controls
             ref={screenVideoRef}
