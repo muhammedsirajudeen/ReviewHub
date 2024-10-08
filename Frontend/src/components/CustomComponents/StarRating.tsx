@@ -3,11 +3,13 @@ import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from 'rea
 export default function StarRating({
   starCount,
   setStarcount,
-  initialCount
+  initialCount,
+  disabled
 }: {
   starCount: number;
-  setStarcount: Dispatch<SetStateAction<number>>;
-  initialCount:number
+  setStarcount?: Dispatch<SetStateAction<number>>;
+  initialCount:number,
+  disabled?:boolean
 }): ReactElement {
   // Modify the array to start from 1 instead of 0
   const [count] = useState<number[]>(
@@ -25,7 +27,10 @@ export default function StarRating({
 
   const starHandler = (c: number) => {
     console.log(c);
-    setStarcount(c);
+    if(setStarcount){
+
+        setStarcount(c);
+    }
     const element = document.querySelector(`#count-${c}`) as HTMLImageElement;
     const elementSrc = element.src.split('/')[4];
     console.log(elementSrc);
@@ -55,6 +60,7 @@ export default function StarRating({
       {count.map((c) => {
         return (
           <button
+          disabled={disabled}
           type='button'
             key={c}
             onClick={() => starHandler(c)}

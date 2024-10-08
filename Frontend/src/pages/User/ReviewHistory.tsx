@@ -6,6 +6,7 @@ import { flushSync } from 'react-dom';
 import { ToastContainer } from 'react-toastify';
 import ReviewHistoryForm from '../../components/Form/Review/ReviewHistoryForm';
 import PaginationComponent from '../../components/pagination/PaginationComponent';
+import FeedbackDialog from '../../components/Dialog/FeedbackDialog';
 
 export default function ReviewHistory(): ReactElement {
   const [currentpage, setCurrentpage] = useState<number>(1);
@@ -16,14 +17,14 @@ export default function ReviewHistory(): ReactElement {
   const [feedback, setFeedback] = useState<boolean>(false);
   const viewfeedbackRef = useRef<HTMLDialogElement>(null);
   const [viewfeedback, setViewfeedback] = useState<boolean>(false);
-    
+
   useEffect(() => {
     async function historyFetcher() {
       try {
         const response = (await axiosInstance.get('/user/review/history')).data;
         if (response.message === 'success') {
           setReviews(response.reviews);
-          setPagecount(response.pageLength)
+          setPagecount(response.pageLength);
         }
       } catch (error) {
         console.log(error);
@@ -57,6 +58,13 @@ export default function ReviewHistory(): ReactElement {
   const nextpageHandler = () => {
     setCurrentpage((prev) => Math.min(prev + 1, Math.ceil(pagecount / 10)));
   };
+  const viewFeedbackHandler = (review: reviewProps) => {
+    flushSync(() => {
+      setViewfeedback(true);
+      setReview(review);
+    });
+    viewfeedbackRef.current?.showModal();
+  };
 
   return (
     <>
@@ -82,7 +90,10 @@ export default function ReviewHistory(): ReactElement {
                 </p>
               </div>
               <div className="flex space-x-4">
-                <button className="px-2 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                <button
+                  onClick={() => viewFeedbackHandler(review)}
+                  className="px-2 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                >
                   View Feedback
                 </button>
                 <button
@@ -103,6 +114,23 @@ export default function ReviewHistory(): ReactElement {
             setReviews={setReviews}
           />
         )}
+        {viewfeedback && (
+          <FeedbackDialog
+          review={review}
+            dialogRef={viewfeedbackRef}
+            closeHandler={() => {
+              setViewfeedback(false);
+              viewfeedbackRef.current?.close();
+            }}
+          />
+        )}
+        <PaginationComponent
+          previouspageHandler={previouspageHandler}
+          nextpageHandler={nextpageHandler}
+          pageHandler={pageHandler}
+          pagecount={pagecount}
+          currentpage={currentpage}
+        />
         <ToastContainer
           style={{
             backgroundColor: 'gray',
@@ -111,13 +139,6 @@ export default function ReviewHistory(): ReactElement {
           }}
         />
       </div>
-      <PaginationComponent
-        previouspageHandler={previouspageHandler}
-        nextpageHandler={nextpageHandler}
-        pageHandler={pageHandler}
-        pagecount={pagecount}
-        currentpage={currentpage}
-      />
     </>
   );
 }
