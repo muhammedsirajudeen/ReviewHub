@@ -10,6 +10,8 @@ import '@reach/tooltip/styles.css'; // Importing built-in styles
 import PaginationComponent from '../../components/pagination/PaginationComponent';
 import AdminFeedbackDialog from '../../components/Dialog/AdminFeedbackDialog';
 import { flushSync } from 'react-dom';
+import { useNavigate } from 'react-router';
+import { Path } from '../../types/pathNames';
 
 export interface ExtendedReviewProps
   extends Omit<reviewProps, 'revieweeId' | 'reviewerId'> {
@@ -24,6 +26,7 @@ export default function ReviewHistory(): ReactElement {
   const [review, setReview] = useState<ExtendedReviewProps>();
   const [feedback, setFeedback] = useState<boolean>(false);
   const feedbackRef=useRef<HTMLDialogElement>(null)
+  const navigate=useNavigate()
 
   useEffect(() => {
     async function getReviews() {
@@ -67,6 +70,9 @@ export default function ReviewHistory(): ReactElement {
     })
     feedbackRef.current?.showModal()
 
+  }
+  const videoHandler=(review:ExtendedReviewProps)=>{
+    navigate(Path.adminreviewrecording,{state:review})
   }
   return (
     <>
@@ -127,6 +133,7 @@ export default function ReviewHistory(): ReactElement {
               <p className="text-sm text-gray-500">{review.reviewerId.email}</p>
             </div>
             <button onClick={()=>openHandler(review)} className='bg-blue-900 p-2 text-white rounded-lg' >Feedback</button>
+            <button onClick={()=>videoHandler(review)} className='bg-red-500 text-white p-2 rounded-lg' > Recording</button>
           </div>
         ))}
       </div>
