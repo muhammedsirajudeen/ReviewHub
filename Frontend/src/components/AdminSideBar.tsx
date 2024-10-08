@@ -55,7 +55,9 @@ export default function AdminSideBar(): ReactElement {
           </a>
         </div>
 
-        <div className="flex items-center justify-center mt-14">
+        <div className={`${
+            page === 'review' ? 'bg-blue-400' : ''
+          } flex items-center justify-center mt-10 p-6 rounded-lg`}>
           <a href={Path.adminreviewhistory}>
             <img src="/sidebar/review.png" />
           </a>

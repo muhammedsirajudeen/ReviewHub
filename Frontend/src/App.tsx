@@ -50,6 +50,7 @@ import Notification from './pages/User/Notification';
 import VideoChat from './pages/User/VideoChat';
 import { Path } from './types/pathNames';
 import ReviewHistory from './pages/User/ReviewHistory';
+import Recording from './pages/Admin/Recording';
 
 const router = createBrowserRouter([
   //authentication routes
@@ -144,8 +145,13 @@ const router = createBrowserRouter([
         loader:tokenVerifier
       },
       {
-        path:'/admin/reviewhistory',
+        path:Path.adminreviewhistory,
         element:<AdminPrivateRoute Component={AdminReviewHistory}/>,
+        loader:tokenVerifier
+      },
+      {
+        path:Path.adminreviewrecording,
+        element:<AdminPrivateRoute Component={Recording}/>,
         loader:tokenVerifier
       }
     ],

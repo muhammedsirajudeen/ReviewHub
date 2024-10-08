@@ -12,6 +12,8 @@ import AdminFeedbackDialog from '../../components/Dialog/AdminFeedbackDialog';
 import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router';
 import { Path } from '../../types/pathNames';
+import { useAppDispatch } from '../../store/hooks';
+import { setPage } from '../../store/globalSlice';
 
 export interface ExtendedReviewProps
   extends Omit<reviewProps, 'revieweeId' | 'reviewerId'> {
@@ -26,9 +28,11 @@ export default function ReviewHistory(): ReactElement {
   const [review, setReview] = useState<ExtendedReviewProps>();
   const [feedback, setFeedback] = useState<boolean>(false);
   const feedbackRef=useRef<HTMLDialogElement>(null)
+  const dispatch=useAppDispatch()
   const navigate=useNavigate()
 
   useEffect(() => {
+    dispatch(setPage('review'))
     async function getReviews() {
       const response = (await axiosInstance.get('/admin/review')).data;
       if (response.message === 'success') {
@@ -38,7 +42,7 @@ export default function ReviewHistory(): ReactElement {
       }
     }
     getReviews();
-  }, []);
+  }, [dispatch]);
   const pageHandler = (count: number) => {
     const page = Math.ceil(count / 10) + 1;
     const array = [];

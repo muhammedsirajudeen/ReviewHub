@@ -10,7 +10,10 @@ import ffmpeg from 'fluent-ffmpeg';
 
 import path from 'path';
 import { existsSync } from 'fs';
-import Notification from '../../model/Notification';
+// import Notification from '../../model/Notification';
+import Wallet from '../../model/Wallet';
+import { REVIEW_POINT } from '../user/review/ReviewController';
+import mongoose from 'mongoose';
 
 interface ExtendedRoadmapProps extends Omit<IRoadmap, 'courseId'> {
   courseId: ICourse;
@@ -159,7 +162,7 @@ const CancelReview = async (req: Request, res: Response) => {
 
 const ReviewStatus = async (req: Request, res: Response) => {
   try {
-    // const user = req.user as IUser;
+    const user = req.user as IUser;
     const { reviewId } = req.body;
     const pathName = path.join(__dirname, '../../public', 'reviewrecording');
     const finalPath = `${pathName}/reviewer-${reviewId}.webm`;
@@ -175,16 +178,42 @@ const ReviewStatus = async (req: Request, res: Response) => {
       console.log(estimateduration);
       // the 10 is a placeholder 
       if (estimateduration > 10) {
-        await Notification.deleteMany({reviewId:reviewId})
+        //this line is suscetible
+        // await Notification.deleteMany({reviewId:reviewId})
         const reviewStatus=await Review.findById(reviewId)
         if(!reviewStatus){
           return res.status(404).json({message:'resource not found'})
         }
         reviewStatus.reviewStatus=true
         await reviewStatus.save()
+        const userWallet=await Wallet.findById(user.walletId)
+        if(!userWallet){
+          return res.status(404).json({message:'requested resource not found'})
+        }
+        let flag=false
+        userWallet.history.forEach((history)=>{
+          if(history.reviewId?.toHexString()===reviewId){
+            flag=true
+          }
+        })
+        console.log(flag)
+        if(!flag){
+
+          userWallet.redeemable+=REVIEW_POINT
+          userWallet.history.push(
+            {
+              type:'reviewpayment',
+              amount:REVIEW_POINT,
+              status:true,
+              paymentDate:new Date(),
+              reviewId:new mongoose.Types.ObjectId(reviewId as string)
+            }
+          )
+          await userWallet.save()
+        }
         return res.status(200).json({ message: 'success the duration is enough' });
       } else {
-        return res.status(200).json({ message: 'success' });
+        return res.status(400).json({ message: 'Bad Request' });
       }
     } else {
       return res.status(404).json({ message: 'Resource not found' });

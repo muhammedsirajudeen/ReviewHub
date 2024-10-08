@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { appendFile } from 'fs';
 
-const REVIEW_POINT=69
+export const REVIEW_POINT=69
 
 const GetReview = async (req: Request, res: Response) => {
   try {

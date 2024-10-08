@@ -5,7 +5,8 @@ interface HistoryProps {
   type: string;
   amount: number;
   status:boolean;
-  withdrawalId?:mongoose.Types.ObjectId
+  withdrawalId?:mongoose.Types.ObjectId;
+  reviewId?:mongoose.Types.ObjectId
 }
 
 interface IWallet extends Document {
@@ -37,6 +38,10 @@ const HistorySchema = new Schema<HistoryProps>({
   withdrawalId:{
     type:mongoose.Schema.ObjectId,
     required:false,
+  },
+  reviewId:{
+    type:mongoose.Schema.ObjectId,
+    required:false
   }
 });
 
@@ -62,6 +67,7 @@ const WalletSchema = new Schema<IWallet>({
     required: false,
     default: [],
   },
+  
   
 });
 
