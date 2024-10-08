@@ -121,8 +121,8 @@ export default function Review(): ReactElement {
     <>
       <DashboardTopbar />
       <div className="container mx-auto p-8">
-        <h1 className="text-5xl font-semibold text-gray-800 mb-6">
-          Review Scheduling
+        <h1 className="text-5xl  text-black-800 mb-6">
+          REVIEW SCHEDULING
         </h1>
 
         <section className="mb-12">

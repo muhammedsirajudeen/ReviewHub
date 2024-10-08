@@ -58,8 +58,8 @@ export default function Notification(): ReactElement {
   return (
     <>
       <DashboardTopbar />
-      <h1 className="ml-36 text-4xl font-bold mt-10 text-gray-800">
-        Notifications
+      <h1 className="ml-36 text-4xl   text-gray-800">
+        NOTIFICATIONS
       </h1>
       <div className="flex flex-col items-center mt-8">
         {notifications.map((notification, index) => (
