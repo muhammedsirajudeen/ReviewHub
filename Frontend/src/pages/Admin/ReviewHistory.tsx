@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import DashboardTopbar from '../../components/DashboardTopbar';
 import axiosInstance from '../../helper/axiosInstance';
 import { reviewProps } from '../../types/reviewProps';
@@ -8,24 +8,30 @@ import { Tooltip } from '@reach/tooltip';
 
 import '@reach/tooltip/styles.css'; // Importing built-in styles
 import PaginationComponent from '../../components/pagination/PaginationComponent';
+import AdminFeedbackDialog from '../../components/Dialog/AdminFeedbackDialog';
+import { flushSync } from 'react-dom';
 
-interface ExtendedInterface
+export interface ExtendedReviewProps
   extends Omit<reviewProps, 'revieweeId' | 'reviewerId'> {
   revieweeId: userProps;
   reviewerId: userProps;
 }
 
 export default function ReviewHistory(): ReactElement {
-  const [reviews, setReviews] = useState<ExtendedInterface[]>([]);
+  const [reviews, setReviews] = useState<ExtendedReviewProps[]>([]);
   const [currentpage, setCurrentpage] = useState<number>(1);
   const [pagecount, setPagecount] = useState<number>(0);
+  const [review, setReview] = useState<ExtendedReviewProps>();
+  const [feedback, setFeedback] = useState<boolean>(false);
+  const feedbackRef=useRef<HTMLDialogElement>(null)
+
   useEffect(() => {
     async function getReviews() {
       const response = (await axiosInstance.get('/admin/review')).data;
       if (response.message === 'success') {
         console.log(response);
         setReviews(response.reviews ?? []);
-        setPagecount(response.pageLength ?? 0)
+        setPagecount(response.pageLength ?? 0);
       }
     }
     getReviews();
@@ -54,6 +60,14 @@ export default function ReviewHistory(): ReactElement {
     }
     setCurrentpage(next);
   };
+  const openHandler=(review:ExtendedReviewProps)=>{
+      flushSync(()=>{
+        setReview(review)
+        setFeedback(true)
+    })
+    feedbackRef.current?.showModal()
+
+  }
   return (
     <>
       <DashboardTopbar />
@@ -112,16 +126,30 @@ export default function ReviewHistory(): ReactElement {
               </Tooltip>
               <p className="text-sm text-gray-500">{review.reviewerId.email}</p>
             </div>
+            <button onClick={()=>openHandler(review)} className='bg-blue-900 p-2 text-white rounded-lg' >Feedback</button>
           </div>
         ))}
       </div>
       <PaginationComponent
-          previouspageHandler={previouspageHandler}
-          nextpageHandler={nextpageHandler}
-          pageHandler={pageHandler}
-          pagecount={pagecount}
-          currentpage={currentpage}
-        />
+        previouspageHandler={previouspageHandler}
+        nextpageHandler={nextpageHandler}
+        pageHandler={pageHandler}
+        pagecount={pagecount}
+        currentpage={currentpage}
+      />
+      {
+        feedback && 
+        (
+            <AdminFeedbackDialog
+                dialogRef={feedbackRef}
+                review={review}
+                closeHandler={()=>{
+                    setFeedback(false)
+                    feedbackRef.current?.close()
+                }}
+            />
+        )
+      }
     </>
   );
 }

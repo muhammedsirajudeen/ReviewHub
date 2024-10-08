@@ -4,73 +4,50 @@ export default function StarRating({
   starCount,
   setStarcount,
   initialCount,
-  disabled
+  disabled,
 }: {
   starCount: number;
   setStarcount?: Dispatch<SetStateAction<number>>;
-  initialCount:number,
-  disabled?:boolean
+  initialCount: number;
+  disabled?: boolean;
 }): ReactElement {
-  // Modify the array to start from 1 instead of 0
-  const [count] = useState<number[]>(
-    Array.from({ length: starCount }, (_, i) => i + 1)
-  );
-  useEffect(()=>{
-    for (let i = 1; i <= initialCount; i++) {
-        const element = document.querySelector(`#count-${i}`) as HTMLImageElement;
-  
-        if (element) {
-          element.src = '/feedback/starfilled.png';
-        }
-      }
-  },[initialCount])
+  // State to track filled stars
+  const [filledStars, setFilledStars] = useState<number[]>([]);
+
+  useEffect(() => {
+    // Initialize filled stars based on initialCount
+    const newFilledStars = Array.from({ length: starCount }, (_, i) => (i < initialCount ? 1 : 0));
+    setFilledStars(newFilledStars);
+  }, [initialCount, starCount]);
 
   const starHandler = (c: number) => {
-    console.log(c);
-    if(setStarcount){
+    // Update filled stars
+    const newFilledStars = filledStars.map((_, index) => (index < c ? 1 : 0));
+    setFilledStars(newFilledStars);
 
-        setStarcount(c);
-    }
-    const element = document.querySelector(`#count-${c}`) as HTMLImageElement;
-    const elementSrc = element.src.split('/')[4];
-    console.log(elementSrc);
-    if (elementSrc === 'starfilled.png') {
-      for (let i = c+1; i <= starCount; i++) {
-        console.log(i);
-        const element = document.querySelector(
-          `#count-${i}`
-        ) as HTMLImageElement;
-        if (element) {
-          element.src = '/feedback/star.png';
-        }
-      }
-      return;
-    }
-    for (let i = 1; i <= c; i++) {
-      const element = document.querySelector(`#count-${i}`) as HTMLImageElement;
-
-      if (element) {
-        element.src = '/feedback/starfilled.png';
-      }
+    // Update the external state if provided
+    if (setStarcount) {
+      setStarcount(c);
     }
   };
 
   return (
     <div className="w-auto flex items-center justify-center">
-      {count.map((c) => {
+      {filledStars.map((filled, index) => {
         return (
           <button
-          disabled={disabled}
-          type='button'
-            key={c}
-            onClick={() => starHandler(c)}
+            disabled={disabled}
+            type="button"
+            key={index}
+            onClick={() => starHandler(index + 1)}
             aria-roledescription="set star"
             aria-label="button"
           >
             <img
-              id={`count-${c}`}
+              id={`count-${index + 1}`}
               className="h-10 w-10 m-3"
-              src="/feedback/star.png"
+              src={filled ? '/feedback/starfilled.png' : '/feedback/star.png'}
+              alt={`Star ${index + 1}`}
             />
           </button>
         );
