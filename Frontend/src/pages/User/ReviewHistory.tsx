@@ -5,45 +5,58 @@ import url from '../../helper/backendUrl';
 import { flushSync } from 'react-dom';
 import { ToastContainer } from 'react-toastify';
 import ReviewHistoryForm from '../../components/Form/Review/ReviewHistoryForm';
+import PaginationComponent from '../../components/pagination/PaginationComponent';
 
 export default function ReviewHistory(): ReactElement {
+  const [currentpage, setCurrentpage] = useState<number>(1);
+  const [pagecount, setPagecount] = useState<number>(0);
   const [reviews, setReviews] = useState<reviewProps[]>([]);
-  const [review,setReview]=useState<reviewProps>()
-  const feedbackRef=useRef<HTMLDialogElement>(null);
-  const viewfeedbackRef=useRef<HTMLDialogElement>(null);
-  const [feedback,setFeedback]=useState<boolean>(false)
-  const [viewfeedback,setViewfeedback]=useState<boolean>(false)
-  
+  const [review, setReview] = useState<reviewProps>();
+  const feedbackRef = useRef<HTMLDialogElement>(null);
+  const [feedback, setFeedback] = useState<boolean>(false);
+  const viewfeedbackRef = useRef<HTMLDialogElement>(null);
+  const [viewfeedback, setViewfeedback] = useState<boolean>(false);
     
-    useEffect(() => {
-      async function historyFetcher() {
-        try {
-          const response = (await axiosInstance.get('/user/review/history'))
-            .data;
-          if (response.message === 'success') {
-            setReviews(response.reviews);
-          }
-        } catch (error) {
-          console.log(error);
+  useEffect(() => {
+    async function historyFetcher() {
+      try {
+        const response = (await axiosInstance.get('/user/review/history')).data;
+        if (response.message === 'success') {
+          setReviews(response.reviews);
+          setPagecount(response.pageLength)
         }
+      } catch (error) {
+        console.log(error);
       }
-      historyFetcher();
-    }, []);
-
-    const feedbackHandler=(review:reviewProps)=>{
-        
-        flushSync(()=>{
-            setFeedback(true)
-            setReview(review)
-        })
-        feedbackRef.current?.showModal()
     }
+    historyFetcher();
+  }, []);
 
-    const closeFeedbackHandler=()=>{
-        setFeedback(false)
-        setReview(undefined)
-        feedbackRef.current?.close()
-    }
+  const feedbackHandler = (review: reviewProps) => {
+    flushSync(() => {
+      setFeedback(true);
+      setReview(review);
+    });
+    feedbackRef.current?.showModal();
+  };
+
+  const closeFeedbackHandler = () => {
+    setFeedback(false);
+    setReview(undefined);
+    feedbackRef.current?.close();
+  };
+  const pageHandler = (count: number) => {
+    const page = Math.ceil(count / 10);
+    return Array.from({ length: page }, (_, i) => i + 1);
+  };
+
+  const previouspageHandler = () => {
+    setCurrentpage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const nextpageHandler = () => {
+    setCurrentpage((prev) => Math.min(prev + 1, Math.ceil(pagecount / 10)));
+  };
 
   return (
     <>
@@ -72,26 +85,38 @@ export default function ReviewHistory(): ReactElement {
                 <button className="px-2 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
                   View Feedback
                 </button>
-                <button onClick={()=>feedbackHandler(review)} className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                <button
+                  onClick={() => feedbackHandler(review)}
+                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                >
                   Give Feedback
                 </button>
               </div>
             </div>
           ))}
         </div>
-        {
-          feedback && (
-              <ReviewHistoryForm dialogRef={feedbackRef} closeHandler={closeFeedbackHandler} review={review} />
-          )
-        }
+        {feedback && (
+          <ReviewHistoryForm
+            dialogRef={feedbackRef}
+            closeHandler={closeFeedbackHandler}
+            review={review}
+          />
+        )}
         <ToastContainer
-        style={{
-          backgroundColor: 'gray',
-          color: 'white',
-          borderRadius: '10px',
-        }}
-      />
+          style={{
+            backgroundColor: 'gray',
+            color: 'white',
+            borderRadius: '10px',
+          }}
+        />
       </div>
+      <PaginationComponent
+        previouspageHandler={previouspageHandler}
+        nextpageHandler={nextpageHandler}
+        pageHandler={pageHandler}
+        pagecount={pagecount}
+        currentpage={currentpage}
+      />
     </>
   );
 }
