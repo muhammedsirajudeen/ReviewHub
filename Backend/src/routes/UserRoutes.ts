@@ -20,6 +20,7 @@ import DomainController from '../controller/user/DomainController';
 import ReviewController from '../controller/user/review/ReviewController';
 import NotificationController from '../controller/user/notification/NotificationController';
 import multer = require('multer');
+import ReviewHistoryController from '../controller/user/review/ReviewHistoryController';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -267,6 +268,14 @@ router.delete(
   '/notification/:notificationId',
   passport.authenticate('jwt',{session:false}),
   NotificationController.DeleteNotification
+)
+
+
+//review history management
+router.get(
+  '/review/history',
+  passport.authenticate('jwt',{session:false}),
+  ReviewHistoryController.GetHistory
 )
 
 export default router;
