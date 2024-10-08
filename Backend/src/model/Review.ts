@@ -1,8 +1,13 @@
 import mongoose, { Schema } from 'mongoose';
 
-interface IFeedback extends Document {
-  reviewerFeedback: string;
-  revieweeFeedback: string;
+interface IDetails {
+  comment:string,
+  star:number
+}
+
+export interface IFeedback  {
+  reviewerFeedback: IDetails;
+  revieweeFeedback: IDetails;
 }
 
 export interface IReview extends Document {
@@ -17,9 +22,16 @@ export interface IReview extends Document {
   domainName: string;
 }
 
+const DetailsSchema=new Schema<IDetails>(
+  {
+    comment:String,
+    star:Number
+  }
+)
+
 const FeedbackSchema = new Schema<IFeedback>({
-  revieweeFeedback: String,
-  reviewerFeedback: String,
+  revieweeFeedback: DetailsSchema,
+  reviewerFeedback: DetailsSchema,
 });
 
 const ReviewSchema = new Schema<IReview>({

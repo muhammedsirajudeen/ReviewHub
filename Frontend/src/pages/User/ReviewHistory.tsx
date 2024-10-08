@@ -100,6 +100,7 @@ export default function ReviewHistory(): ReactElement {
             dialogRef={feedbackRef}
             closeHandler={closeFeedbackHandler}
             review={review}
+            setReviews={setReviews}
           />
         )}
         <ToastContainer

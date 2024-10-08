@@ -1,7 +1,11 @@
-import { ReactElement, Ref, useState } from 'react';
+import { Dispatch, ReactElement, Ref, SetStateAction, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { reviewProps } from '../../../types/reviewProps';
 import StarRating from '../../CustomComponents/StarRating';
+import axiosInstance from '../../../helper/axiosInstance';
+import { toast } from 'react-toastify';
+import { useAppSelector } from '../../../store/hooks';
+import { produce } from 'immer';
 
 // Define the form data interface
 interface FeedbackFormData {
@@ -12,10 +16,12 @@ export default function ReviewHistoryForm({
   dialogRef,
   closeHandler,
   review,
+  setReviews,
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   review: reviewProps | undefined;
+  setReviews: Dispatch<SetStateAction<reviewProps[]>>;
 }): ReactElement {
   const {
     register,
@@ -23,12 +29,56 @@ export default function ReviewHistoryForm({
     formState: { errors },
     reset,
   } = useForm<FeedbackFormData>();
-  const [starcount, setStarcount] = useState<number>(-1);
+  const user = useAppSelector((state) => state.global.user);
+
+  const [starcount, setStarcount] = useState<number>(
+    ()=>{
+      if(user.authorization==='reviewer'){
+        if(review?.feedback){
+          if(review.feedback.reviewerFeedback){
+            return review.feedback.reviewerFeedback.star ?? 0
+          }
+          return 0
+        }
+      }else{
+        if(review?.feedback){
+          if(review.feedback.revieweeFeedback){
+            return review.feedback.revieweeFeedback.star ?? 0
+          }
+        }
+        return 0
+      }
+      return 0
+    }
+  );
   // Handle form submission
-  const onSubmit: SubmitHandler<FeedbackFormData> = (data) => {
-    console.log(data);
-    // reset(); // Reset the form after submission
-    // closeHandler(); // Optionally close the dialog after submission
+  const onSubmit: SubmitHandler<FeedbackFormData> = async (data) => {
+    try {
+      const response = (
+        await axiosInstance.put(`/user/review/history/${review?._id}`, {
+          comment: data.feedback,
+          star: starcount,
+        })
+      ).data;
+      if (response.message === 'success') {
+        toast.success('Feedback Submitted');
+        console.log(response);
+        setReviews(
+          produce((draft) => {
+            draft.forEach((d) => {
+              if (d._id === review?._id) {
+                Object.assign(d, response.review); // Mutate the review with the new data
+              }
+            });
+          })
+        );
+        reset();
+        closeHandler();
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error('Please try again');
+    }
   };
 
   return (
@@ -55,10 +105,21 @@ export default function ReviewHistoryForm({
           </span>
         </p>
 
-        <StarRating setStarcount={setStarcount} starCount={5} />
+        <StarRating
+          initialCount={
+            starcount
+          }
+          setStarcount={setStarcount}
+          starCount={5}
+        />
 
         {/* Feedback Text Area */}
         <textarea
+          defaultValue={
+            user.authorization === 'reviewer'
+              ? review?.feedback?.reviewerFeedback?.comment ?? ""
+              : review?.feedback?.revieweeFeedback?.comment ?? ""
+          }
           {...register('feedback', {
             required: 'Feedback is required',
             minLength: {
@@ -74,13 +135,12 @@ export default function ReviewHistoryForm({
                 'Feedback cannot contain only spaces',
             },
           })}
-          className="p-2 border rounded"
+          className="p-2 border rounded h-52 w-96"
           placeholder="Provide your feedback"
         />
         {errors.feedback && (
           <p className="text-red-500 text-xs mt-1">{errors.feedback.message}</p>
         )}
-
 
         <button
           type="submit"

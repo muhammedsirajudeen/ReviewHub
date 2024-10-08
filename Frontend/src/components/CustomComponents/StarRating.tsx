@@ -1,16 +1,27 @@
-import { Dispatch, ReactElement, SetStateAction, useState } from 'react';
+import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from 'react';
 
 export default function StarRating({
   starCount,
   setStarcount,
+  initialCount
 }: {
   starCount: number;
   setStarcount: Dispatch<SetStateAction<number>>;
+  initialCount:number
 }): ReactElement {
   // Modify the array to start from 1 instead of 0
   const [count] = useState<number[]>(
     Array.from({ length: starCount }, (_, i) => i + 1)
   );
+  useEffect(()=>{
+    for (let i = 1; i <= initialCount; i++) {
+        const element = document.querySelector(`#count-${i}`) as HTMLImageElement;
+  
+        if (element) {
+          element.src = '/feedback/starfilled.png';
+        }
+      }
+  },[initialCount])
 
   const starHandler = (c: number) => {
     console.log(c);
@@ -19,7 +30,7 @@ export default function StarRating({
     const elementSrc = element.src.split('/')[4];
     console.log(elementSrc);
     if (elementSrc === 'starfilled.png') {
-      for (let i = c; i <= starCount; i++) {
+      for (let i = c+1; i <= starCount; i++) {
         console.log(i);
         const element = document.querySelector(
           `#count-${i}`

@@ -278,4 +278,10 @@ router.get(
   ReviewHistoryController.GetHistory
 )
 
+router.put(
+  '/review/history/:reviewId',
+  passport.authenticate('jwt',{session:false}),
+  ReviewHistoryController.AddFeedback
+)
+
 export default router;
