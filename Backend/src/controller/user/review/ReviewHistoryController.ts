@@ -22,13 +22,11 @@ const GetHistory = async (req: Request, res: Response) => {
         .populate(['roadmapId', 'revieweeId'])
         .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
         .limit(PAGE_LIMIT);
-      res
-        .status(200)
-        .json({
-          message: 'success',
-          reviews: reviewHistory,
-          pageLength: length,
-        });
+      res.status(200).json({
+        message: 'success',
+        reviews: reviewHistory,
+        pageLength: length,
+      });
     } else {
       const reviewHistory = await Review.find({
         revieweeId: user.id,
@@ -39,13 +37,11 @@ const GetHistory = async (req: Request, res: Response) => {
         .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
         .limit(PAGE_LIMIT);
 
-      res
-        .status(200)
-        .json({
-          message: 'success',
-          reviews: reviewHistory,
-          pageLength: length,
-        });
+      res.status(200).json({
+        message: 'success',
+        reviews: reviewHistory,
+        pageLength: length,
+      });
     }
   } catch (error) {
     console.log(error);
@@ -57,7 +53,7 @@ const GetHistory = async (req: Request, res: Response) => {
 
 const AddFeedback = async (req: Request, res: Response) => {
   try {
-    const user=req.user as IUser
+    const user = req.user as IUser;
     const { reviewId } = req.params;
     const { comment, star } = req.body;
     if (!isValidObjectId(reviewId)) {
@@ -80,43 +76,54 @@ const AddFeedback = async (req: Request, res: Response) => {
     if (!updateReview) {
       return res.status(400).json({ message: 'Bad Request' });
     }
-    if(user.authorization==='reviewer'){
-        //that logic here
-        const feedbackObject={
-            reviewerFeedback:{
-                comment:comment,
-                star:star
-            }
-        } as IFeedback
-        if(!updateReview.feedback){
-            await Review.updateOne({_id:reviewId},{$set:{feedback:feedbackObject}})
-        }else{
-            updateReview.feedback.reviewerFeedback={
-                comment:comment,
-                star:star
-            }
-        }
-        const updatedReview=await (await updateReview.save()).populate('roadmapId')
-        res.status(200).json({ message: 'success',review:updatedReview });
+    if (user.authorization === 'reviewer') {
+      //that logic here
+      const feedbackObject = {
+        reviewerFeedback: {
+          comment: comment,
+          star: star,
+        },
+      } as IFeedback;
+      if (!updateReview.feedback) {
+        await Review.updateOne(
+          { _id: reviewId },
+          { $set: { feedback: feedbackObject } }
+        );
+      } else {
+        updateReview.feedback.reviewerFeedback = {
+          comment: comment,
+          star: star,
+        };
+      }
+      await updateReview.save();
+      const updatedReview = await Review.findById(reviewId).populate(
+        'roadmapId'
+      );
 
-    }else{
-        const feedbackObject={
-            revieweeFeedback:{
-                comment:comment,
-                star:star
-            }
-        } as IFeedback
-        if(!updateReview.feedback){
-            await Review.updateOne({_id:reviewId},{$set:{feedback:feedbackObject}})
-        }else{
-            updateReview.feedback.revieweeFeedback={
-                comment:comment,
-                star:star
-            }
-        }
-        const updatedReview=await updateReview.save()
-        res.status(200).json({ message: 'success',review:updatedReview });
-
+      res.status(200).json({ message: 'success', review: updatedReview });
+    } else {
+      const feedbackObject = {
+        revieweeFeedback: {
+          comment: comment,
+          star: star,
+        },
+      } as IFeedback;
+      if (!updateReview.feedback) {
+        await Review.updateOne(
+          { _id: reviewId },
+          { $set: { feedback: feedbackObject } }
+        );
+      } else {
+        updateReview.feedback.revieweeFeedback = {
+          comment: comment,
+          star: star,
+        };
+      }
+      await updateReview.save();
+      const updatedReview = await Review.findById(reviewId).populate(
+        'roadmapId'
+      );
+      res.status(200).json({ message: 'success', review: updatedReview });
     }
   } catch (error) {
     console.log(error);
