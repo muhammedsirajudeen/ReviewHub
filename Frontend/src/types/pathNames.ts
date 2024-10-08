@@ -1,4 +1,5 @@
 export  enum Path{
-    reviewhistory="/user/reviewhistory"
+    reviewhistory="/user/reviewhistory",
+    adminreviewhistory="/admin/reviewhistory"
 }
 

@@ -12,6 +12,7 @@ import { IUser } from '../model/User';
 import PaymentController from '../controller/admin/PaymentController';
 import WithdrawalController from '../controller/admin/WithdrawalController';
 import DomainController from '../controller/admin/DomainController';
+import ReviewController from '../controller/admin/ReviewController';
 const router = express.Router();
 
 const AdminMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -253,7 +254,16 @@ router.put(
 router.delete(
   '/domain/:domain',
   passport.authenticate('jwt', { session: false }),
+  AdminMiddleware,
   DomainController.DeleteDomain
 );
+
+//review history management
+router.get(
+  '/review',
+  passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+  ReviewController.ReviewController
+)
 
 export default router;

@@ -23,6 +23,7 @@ import AdminChapter from './pages/Admin/Chapter';
 import AdminCourse from './pages/Admin/Course';
 import AdminResource from './pages/Admin/Resource';
 import AdminChat from './pages/Admin/Chat';
+import AdminReviewHistory from './pages/Admin/ReviewHistory';
 import Forgot from './pages/Authentication/Forgot';
 
 import Course from './pages/User/Course';
@@ -140,6 +141,11 @@ const router = createBrowserRouter([
       {
         path:'/admin/withdrawals',
         element:<AdminPrivateRoute Component={Withdrawals}/>,
+        loader:tokenVerifier
+      },
+      {
+        path:'/admin/reviewhistory',
+        element:<AdminPrivateRoute Component={AdminReviewHistory}/>,
         loader:tokenVerifier
       }
     ],

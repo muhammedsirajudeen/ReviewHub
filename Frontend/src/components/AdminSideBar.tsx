@@ -2,6 +2,7 @@ import { ReactElement } from 'react';
 import { Outlet, useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { clearAuthenticated, setUser } from '../store/globalSlice';
+import { Path } from '../types/pathNames';
 export default function AdminSideBar(): ReactElement {
   // const authenticated = useAppSelector((state) => state.global.authenticated);
   const user = useAppSelector((state) => state.global.user);
@@ -55,7 +56,7 @@ export default function AdminSideBar(): ReactElement {
         </div>
 
         <div className="flex items-center justify-center mt-14">
-          <a href="/admin/review">
+          <a href={Path.adminreviewhistory}>
             <img src="/sidebar/review.png" />
           </a>
         </div>
