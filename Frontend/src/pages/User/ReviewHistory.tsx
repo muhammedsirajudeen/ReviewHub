@@ -4,6 +4,7 @@ import { reviewProps } from '../../types/reviewProps';
 import url from '../../helper/backendUrl';
 import { flushSync } from 'react-dom';
 import { ToastContainer } from 'react-toastify';
+import ReviewHistoryForm from '../../components/Form/Review/ReviewHistoryForm';
 
 export default function ReviewHistory(): ReactElement {
   const [reviews, setReviews] = useState<reviewProps[]>([]);
@@ -30,6 +31,7 @@ export default function ReviewHistory(): ReactElement {
     }, []);
 
     const feedbackHandler=(review:reviewProps)=>{
+        
         flushSync(()=>{
             setFeedback(true)
             setReview(review)
@@ -77,6 +79,11 @@ export default function ReviewHistory(): ReactElement {
             </div>
           ))}
         </div>
+        {
+          feedback && (
+              <ReviewHistoryForm dialogRef={feedbackRef} closeHandler={closeFeedbackHandler} review={review} />
+          )
+        }
         <ToastContainer
         style={{
           backgroundColor: 'gray',
@@ -85,7 +92,6 @@ export default function ReviewHistory(): ReactElement {
         }}
       />
       </div>
-      
     </>
   );
 }
