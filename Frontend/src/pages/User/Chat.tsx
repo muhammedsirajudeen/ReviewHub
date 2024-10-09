@@ -27,6 +27,11 @@ interface messageProps {
   message: string;
 }
 
+interface ExtendedUser extends Pick<userProps,'email' | 'profileImage'>{
+  _id:string
+  online?:boolean
+}
+
 export default function Chat(): ReactElement {
   const dispatch = useAppDispatch();
   const [users, setUsers] = useState<Array<userProps>>([]);
@@ -35,7 +40,7 @@ export default function Chat(): ReactElement {
   const [user, setUser] = useState<userProps | null>(null);
   const [chats, setChats] = useState<Array<chatProps>>([]);
   const currentUser = useAppSelector((state) => state.global.user);
-  const [connectedusers, setConnectedusers] = useState<Array<Pick<userProps,'_id' | 'email' | 'profileImage'>>>([]);
+  const [connectedusers, setConnectedusers] = useState<Array<ExtendedUser>>([]);
   const [chatcount,setChatcount]=useState<Array<messageCount>>([])
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { register, handleSubmit, reset } = useForm<messageProps>();
@@ -52,6 +57,7 @@ export default function Chat(): ReactElement {
         connected.forEach((connected)=>{
           if(connected.email===message.from){
             flag=true
+            
           }
         })
         if(!flag){
@@ -215,6 +221,7 @@ export default function Chat(): ReactElement {
               className="flex items-center justify-start mt-4 hover:bg-gray-50 p-2 rounded-lg transition"
               key={connecteduser._id}
               >
+                <div className={`h-2 w-2 mr-4 rounded-full ${connecteduser.online ? "bg-green-500" : "bg-gray-500"}`}/>
                 <img
                   className="h-8 w-8 rounded-full"
                   src={

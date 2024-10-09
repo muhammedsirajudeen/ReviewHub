@@ -3,6 +3,7 @@ import User, { IUser } from "../../../model/User";
 import Chat from "../../../model/Chat";
 import mongoose from "mongoose";
 import UnreadChat from "../../../model/UnreadChat";
+import { getValueFromCache } from "../../../helper/redisHelper";
 
 interface queryProps{
     email?:RegExp
@@ -30,6 +31,26 @@ const GetUsers=async (req:Request,res:Response)=>{
 
 interface ExtendedUser extends Pick<IUser,'email' | 'profileImage'>{
     _id:string
+    online?:boolean
+}
+
+
+const PromiseWrapper=(connectedUsers:ExtendedUser[]):Promise<ExtendedUser[]>=>{
+    return new Promise(async (resolve,reject)=>{
+        try{
+            for(let i=0;i<connectedUsers.length;i++){
+                const socketId:string=await getValueFromCache(`socket-${connectedUsers[i]._id}`)
+                if(socketId){
+                    connectedUsers[i].online=true
+                }else{
+                    connectedUsers[i].online=false
+                }
+            }
+            resolve(connectedUsers)
+        }catch(error){
+            reject(error)
+        }
+    }) 
 }
 
 const GetConnectedUsers=async (req:Request,res:Response)=>{
@@ -49,7 +70,18 @@ const GetConnectedUsers=async (req:Request,res:Response)=>{
                 })
             })
             //populate with username and email
-            res.status(200).json({message:"success",users:connectedUsers})
+            connectedUsers.forEach(async   (connectedUser)=>{
+                const id=await getValueFromCache(`socket-${connectedUser._id}`)
+                if(id){
+                    connectedUser.online=true
+                }else{
+                    connectedUser.online=false
+                }
+
+            })
+            const onlineConnectedUsers=await PromiseWrapper(connectedUsers)
+
+            res.status(200).json({message:"success",users:onlineConnectedUsers})
         }else{
             return res.status(404).json({message:"chat not found"})
         }
