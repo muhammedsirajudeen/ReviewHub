@@ -1,6 +1,7 @@
 import { Dispatch, ReactElement, Ref, SetStateAction } from 'react';
 import userProps from '../../types/userProps';
 import url from '../../helper/backendUrl';
+import { ExtendedUser } from '../../pages/User/Chat';
 
 export default function ChatFindDialog({
   dialogRef,
@@ -12,7 +13,7 @@ export default function ChatFindDialog({
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   users: Array<userProps>;
-  setUser:Dispatch<SetStateAction<userProps | null>>
+  setUser:Dispatch<SetStateAction<ExtendedUser | null>>
   setConnectedUsers:Dispatch<SetStateAction<Array<Pick<userProps,'_id'|'profileImage'|'email'>>>>
 
 }): ReactElement {

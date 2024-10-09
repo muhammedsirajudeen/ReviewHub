@@ -15,6 +15,7 @@ import { flushSync } from 'react-dom';
 import useSocket from '../../customHooks/SocketHook';
 import axiosInstance from '../../helper/axiosInstance';
 import messagecountFetching from '../../helper/datafetching/messagecountFetching';
+import { format } from 'date-fns';
 
 export interface messageCount {
   //
@@ -36,7 +37,7 @@ export default function Chat(): ReactElement {
   const [users, setUsers] = useState<Array<userProps>>([]);
   const [chatfind, setChatfind] = useState<boolean>(false);
   const chatFindDialogRef = useRef<HTMLDialogElement>(null);
-  const [user, setUser] = useState<userProps | null>(null);
+  const [user, setUser] = useState<ExtendedUser | null>(null);
   const [chats, setChats] = useState<Array<chatProps>>([]);
   const currentUser = useAppSelector((state) => state.global.user);
   const [connectedusers, setConnectedusers] = useState<Array<ExtendedUser>>([]);
@@ -191,7 +192,7 @@ export default function Chat(): ReactElement {
       toast('Please enter a message', { type: 'warning' });
     }
   };
-  const setUserHandler = async (user: userProps) => {
+  const setUserHandler = async (user: ExtendedUser) => {
     const response = (
       await axiosInstance.post('/user/chat/clear', {
         messageUserId: currentUser._id,
@@ -263,7 +264,7 @@ export default function Chat(): ReactElement {
                   }
                 })}
                 <button
-                  onClick={() => setUserHandler(connecteduser as userProps)}
+                  onClick={() => setUserHandler(connecteduser as ExtendedUser)}
                   className="bg-green-500  right-0 p-2 rounded-xl hover:bg-green-600 transition"
                 >
                   <img className="h-6 w-6" src="/chat/chat.png" alt="Chat" />
@@ -291,7 +292,7 @@ export default function Chat(): ReactElement {
                   <p className='text-xs'>online</p>
                 </div>
               ) : (
-                <div>bro is offline</div>
+                <div>Last seen {format(new Date(user.lastSeen ?? ""), 'PPpp')}</div>
               )}
               <div className="flex flex-col w-full ">
                 {/* Chat Messages */}

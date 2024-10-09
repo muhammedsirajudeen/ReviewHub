@@ -57,6 +57,9 @@ const RefreshToken = async (req: Request, res: Response) => {
   }
 };
 
+
+//TODO: implement the logout handler and add the last seen status here too
+
 export default {
     TokenVerifier,
     RefreshToken

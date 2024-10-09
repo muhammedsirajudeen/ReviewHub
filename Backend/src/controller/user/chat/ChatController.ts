@@ -32,6 +32,7 @@ const GetUsers=async (req:Request,res:Response)=>{
 interface ExtendedUser extends Pick<IUser,'email' | 'profileImage'>{
     _id:string
     online?:boolean
+    lastSeen:Date
 }
 
 
@@ -56,7 +57,8 @@ const PromiseWrapper=(connectedUsers:ExtendedUser[]):Promise<ExtendedUser[]>=>{
 const GetConnectedUsers=async (req:Request,res:Response)=>{
     try{
         const currentuser=req.user as IUser
-        const findUsers=await Chat.find({userId:{$in:[new mongoose.Types.ObjectId(currentuser.id as string)]}}).populate('userId','email profileImage')
+        const findUsers=await Chat.find({userId:{$in:[new mongoose.Types.ObjectId(currentuser.id as string)]}}).populate('userId','email profileImage lastSeen')
+        
         const connectedUsers:ExtendedUser[]=[]
         //optimize this method as the last stage
         if(findUsers.length!==0){
@@ -65,7 +67,7 @@ const GetConnectedUsers=async (req:Request,res:Response)=>{
                     const userId=user._id as mongoose.Types.ObjectId
                     user=user as IUser
                     if(userId.toHexString()!==currentuser.id){
-                        connectedUsers.push({_id:userId.toHexString(),email:user.email,profileImage:user.profileImage})
+                        connectedUsers.push({_id:userId.toHexString(),email:user.email,profileImage:user.profileImage,lastSeen:new Date(user.lastSeen ?? "")})
                     }
                 })
             })
