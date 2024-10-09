@@ -49,6 +49,7 @@ export default function Chat(): ReactElement {
   const onlineDataRef=useRef<Record<string,boolean>>({})
   const [chatmodal,setChatmodal]=useState<boolean>()
   const [chatposition,setChatposition]=useState({ClientX:0,ClientY:0})
+  const [chat,setChat]=useState<chatmessageProps>()
 
   const onMessage = async (msg: string) => {
     const message = JSON.parse(msg);
@@ -241,9 +242,39 @@ export default function Chat(): ReactElement {
     }))
     console.log(chat)
     setChatmodal(true)
+    setChat(chat)
   }
-  const chatdeleteHandler=()=>{
-    
+  const chatdeleteHandler=async ()=>{
+    try{
+
+      const response=(
+        await axiosInstance.patch('/user/chat',
+          {
+            userId:currentUser._id,
+            alternateUserId:user?._id,
+            date:chat?.time
+          }
+        )
+      ).data
+      if(response.message==="success"){
+        toast.success("Deleted Successfully")
+        setChats(produce((draft)=>{
+          let indexChat=0
+          const messages=draft[0].messages
+          messages.map((message,index)=>{
+            if(message.time===chat?.time){
+              indexChat=index
+            }
+          })
+          messages.splice(indexChat,1)
+          setChatmodal(false)
+        }))
+      }
+    }catch(error){
+      console.log(error)
+      toast.error("Please try again")
+    }
+
   }
   return (
     <>

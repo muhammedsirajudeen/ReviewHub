@@ -140,10 +140,42 @@ const ClearUnread=async (req:Request,res:Response)=>{
     }
 }
 
+
+
+const DeleteChat=async (req:Request,res:Response)=>{
+    try{
+        const {userId,alternateUserId,date}=req.body
+        console.log(date,userId,alternateUserId)
+        const findChat=await Chat.findOne({userId:{$all:[new mongoose.Types.ObjectId(userId as string),new mongoose.Types.ObjectId(alternateUserId as string)]}})
+        console.log(findChat)
+
+        if(!findChat){
+            return res.status(400).json({message:'Bad Request'})
+        }
+        console.log(findChat)
+        let indexChat=0
+        //hella slow optimize this
+        findChat.messages.forEach((message,index)=>{
+            if(message.time?.toISOString()===date){
+                indexChat=index
+            }
+        })
+        findChat.messages.splice(indexChat,1)
+        await findChat.save()
+        
+        
+        res.status(200).json({message:'success'})
+    }catch(error){
+        console.log(error)
+        res.status(500).json({message:'server error occured'})
+    }
+}
+
 export default {
     GetUsers,
     GetConnectedUsers,
     GetHistory,
     GetUnread,
-    ClearUnread
+    ClearUnread,
+    DeleteChat
 }

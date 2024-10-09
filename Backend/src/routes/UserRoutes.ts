@@ -184,6 +184,11 @@ router.post(
   passport.authenticate('jwt',{session:false}),
   ChatController.GetHistory
 )
+router.patch(
+  '/chat',
+  passport.authenticate('jwt',{session:false}),
+  ChatController.DeleteChat
+)
 
 
 
