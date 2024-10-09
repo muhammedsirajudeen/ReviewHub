@@ -16,6 +16,7 @@ import useSocket from '../../customHooks/SocketHook';
 import axiosInstance from '../../helper/axiosInstance';
 import messagecountFetching from '../../helper/datafetching/messagecountFetching';
 import { format } from 'date-fns';
+import { produce } from 'immer';
 
 export interface messageCount {
   //
@@ -45,6 +46,7 @@ export default function Chat(): ReactElement {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { register, handleSubmit, reset } = useForm<messageProps>();
   const onlineDataRef=useRef<Record<string,boolean>>({})
+
   const onMessage = async (msg: string) => {
     const message = JSON.parse(msg);
     const fromUser = (
@@ -81,6 +83,18 @@ export default function Chat(): ReactElement {
         }
         return connected;
       });
+
+      setConnectedusers(produce((draft)=>{
+        let index=-1
+        for(let i=0;i<draft.length;i++){
+          if(draft[i].email===fromUser.email){
+            index=i
+          }
+        }
+        const copy=draft[index]
+        draft.splice(index,1)
+        draft.splice(0,0,copy)
+      }))
 
       setChats((prevChats) => {
         const updatedChats = prevChats.map((chat) => {
@@ -292,7 +306,7 @@ export default function Chat(): ReactElement {
                   <p className='text-xs'>online</p>
                 </div>
               ) : (
-                <div>Last seen {format(new Date(user.lastSeen ?? ""), 'PPpp')}</div>
+                <div>Last seen {format(user.lastSeen ? new Date(user.lastSeen) : new Date(), 'PPpp')}</div>
               )}
               <div className="flex flex-col w-full ">
                 {/* Chat Messages */}
