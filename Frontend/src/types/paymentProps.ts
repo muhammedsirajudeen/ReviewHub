@@ -1,4 +1,4 @@
-import userProps from "./userProps";
+import userProps from './userProps';
 
 export default interface paymentProps {
   amount: number;
@@ -7,4 +7,5 @@ export default interface paymentProps {
   userId: userProps;
   type: string;
   _id: string;
+  paymentDate: string;
 }

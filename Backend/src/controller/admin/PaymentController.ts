@@ -14,7 +14,7 @@ interface queryProps{
 
 const GetPayments = async  (req:Request,res:Response)=>{
     try{
-        const {page,date,status,search}=req.query ?? '1'
+        const {page,date,status}=req.query ?? '1'
         const query:queryProps={}
         if(date!=="undefined"){
             query.paymentDate={$gt:new Date(date as string)}

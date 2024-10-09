@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import axiosInstance from '../../helper/axiosInstance';
 import paymentProps from '../../types/paymentProps';
 import PaginationComponent from '../../components/pagination/PaginationComponent';
@@ -6,11 +6,17 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
 import PaymentFilterBar from '../../components/Filter/PaymentFilter';
 import PaymentTopBar from '../../components/Topbar/PaymentTopBar';
+import { flushSync } from 'react-dom';
+import PaymentDetailsDialog from '../../components/Dialog/PaymentDetailsDialog';
 
 export default function Payments(): ReactElement {
   const [payments, setPayments] = useState<paymentProps[]>([]);
+  const [payment,setPayment]=useState<paymentProps>()
   const [currentpage, setCurrentpage] = useState<number>(1);
   const [pagecount, setPagecount] = useState<number>(0);
+  const paymentDetailsRef=useRef<HTMLDialogElement>(null)
+  const [paymentdetails,setPaymentdetails]=useState<boolean>(false)
+
   const date=useAppSelector((state)=>state.global.filterProps.date)
   const status=useAppSelector((state)=>state.global.filterProps.status)
   const dispatch=useAppDispatch()
@@ -37,6 +43,20 @@ export default function Payments(): ReactElement {
     }
     dataWrapper();
   }, [currentpage, date, dispatch, status]);
+
+  const paymentDetailsHandler=(payment:paymentProps)=>{
+    flushSync(()=>{
+      setPaymentdetails(true)
+      setPayment(payment)
+    })
+    paymentDetailsRef.current?.showModal()
+  }
+  const closePaymentDetailsHandler=()=>{
+    flushSync(()=>{
+      setPaymentdetails(false)
+    })
+    paymentDetailsRef.current?.close()
+  }
 
   const pageHandler = (count: number) => {
     const page = Math.ceil(count / 10);
@@ -101,6 +121,9 @@ export default function Payments(): ReactElement {
                     {payment.status ? 'Success' : 'Failed'}
                   </span>
                 </td>
+                <td className="px-4 py-2 text-sm">
+                      <button onClick={()=>paymentDetailsHandler(payment)} className='bg-blue-950 text-white p-1 rounded-lg' >Details</button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -113,6 +136,12 @@ export default function Payments(): ReactElement {
         pagecount={pagecount}
         currentpage={currentpage}
       />
+      {
+        paymentdetails && 
+        (
+          <PaymentDetailsDialog payment={payment} closeHandler={closePaymentDetailsHandler} dialogRef={paymentDetailsRef} />
+        )
+      }
     </>
   );
 }
