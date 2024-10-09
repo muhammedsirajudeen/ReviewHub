@@ -16,20 +16,19 @@ import useSocket from '../../customHooks/SocketHook';
 import axiosInstance from '../../helper/axiosInstance';
 import messagecountFetching from '../../helper/datafetching/messagecountFetching';
 
-
-
-export interface messageCount{
+export interface messageCount {
   //
-  userId:string,
-  messageCount:number
+  userId: string;
+  messageCount: number;
 }
 interface messageProps {
   message: string;
 }
 
-interface ExtendedUser extends Pick<userProps,'email' | 'profileImage'>{
-  _id:string
-  online?:boolean
+interface ExtendedUser
+  extends Pick<userProps, 'email' | 'profileImage' | 'lastSeen'> {
+  _id: string;
+  online?: boolean;
 }
 
 export default function Chat(): ReactElement {
@@ -41,38 +40,45 @@ export default function Chat(): ReactElement {
   const [chats, setChats] = useState<Array<chatProps>>([]);
   const currentUser = useAppSelector((state) => state.global.user);
   const [connectedusers, setConnectedusers] = useState<Array<ExtendedUser>>([]);
-  const [chatcount,setChatcount]=useState<Array<messageCount>>([])
+  const [chatcount, setChatcount] = useState<Array<messageCount>>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { register, handleSubmit, reset } = useForm<messageProps>();
-  const onMessage=async (msg:string)=>{
-    
+  const onMessage = async (msg: string) => {
     const message = JSON.parse(msg);
-    const fromUser=((await axiosInstance.get(`/user/chat/users?email=${message.from}`)).data).user
+    const fromUser = (
+      await axiosInstance.get(`/user/chat/users?email=${message.from}`)
+    ).data.user;
 
     flushSync(() => {
       //if the user isnt connected yet we have to add them here so lets handle it here an api call might be required
-      setConnectedusers((connected)=>{
-        console.log(connected)
-        let flag=false
-        connected.forEach((connected)=>{
-          if(connected.email===message.from){
-            flag=true
-            
+      setConnectedusers((connected) => {
+        console.log(connected);
+        let flag = false;
+        connected.forEach((connected) => {
+          if (connected.email === message.from) {
+            flag = true;
           }
-        })
-        if(!flag){
+        });
+        if (!flag) {
           // console.log("new user")
-          if(fromUser){
-            console.log("new user is",fromUser)
-            toast("you have a message from",message.from)
-            return [...connected,{_id:fromUser._id,profileImage:fromUser.profileImage,email:fromUser.email}]
+          if (fromUser) {
+            console.log('new user is', fromUser);
+            toast('you have a message from', message.from);
+            return [
+              ...connected,
+              {
+                _id: fromUser._id,
+                profileImage: fromUser.profileImage,
+                email: fromUser.email,
+              },
+            ];
           }
           //perform api call and fetch the user forst
-          
+
           // return [...connected,{}]
         }
-        return connected
-      })
+        return connected;
+      });
 
       setChats((prevChats) => {
         const updatedChats = prevChats.map((chat) => {
@@ -86,29 +92,31 @@ export default function Chat(): ReactElement {
           }
           return chat;
         });
-    
+
         return updatedChats;
       });
-      
-      const currentChat=window.localStorage.getItem("chatuser")
+
+      const currentChat = window.localStorage.getItem('chatuser');
       setChatcount((prevChatcount) => {
         let flag = false;
         const updatedChatcount = prevChatcount.map((chat) => {
           //temporary hack fix it
           if (chat.userId === message.from) {
             flag = true;
-            if(currentChat===message.from){
-              return { ...chat, messageCount: 0};
-
+            if (currentChat === message.from) {
+              return { ...chat, messageCount: 0 };
             }
             return { ...chat, messageCount: chat.messageCount + 1 };
           }
-          return chat; 
+          return chat;
         });
-        if (!flag ) {
-          return [...updatedChatcount, { userId: message.from, messageCount: 1 }];
+        if (!flag) {
+          return [
+            ...updatedChatcount,
+            { userId: message.from, messageCount: 1 },
+          ];
         }
-      
+
         return updatedChatcount;
       });
     });
@@ -116,22 +124,25 @@ export default function Chat(): ReactElement {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current?.scrollHeight;
     }
-  }
-  const socketRef=useSocket(url,onMessage)
-
+  };
+  const socketRef = useSocket(url, onMessage);
 
   useEffect(() => {
-    window.localStorage.removeItem('chatuser')
+    window.localStorage.removeItem('chatuser');
     dispatch(setPage('chat'));
-    getConnectedUser(setConnectedusers)
+    getConnectedUser(setConnectedusers);
     //get count of chat here
-    messagecountFetching(setChatcount)
-
+    messagecountFetching(setChatcount);
   }, [dispatch]);
-  
+
   useEffect(() => {
     setChats([]);
-    historyFetching(user?._id as string,user?.email as string ,setChats, chatContainerRef);
+    historyFetching(
+      user?._id as string,
+      user?.email as string,
+      setChats,
+      chatContainerRef
+    );
   }, [user]);
   const closeHandler = () => {
     chatFindDialogRef.current?.close();
@@ -147,23 +158,24 @@ export default function Chat(): ReactElement {
           message: data.message,
           time: new Date(),
         };
-        
+
         socketRef.current.emit('message', JSON.stringify(message));
         flushSync(() => {
-          if(chats.length===0){
-            setChats((prev)=>{
-              return(
-                [...prev,{userId:user?.email as string,messages:[message]}]
-              )
-            })
-            return
+          if (chats.length === 0) {
+            setChats((prev) => {
+              return [
+                ...prev,
+                { userId: user?.email as string, messages: [message] },
+              ];
+            });
+            return;
           }
-          const copyChats=[...chats]
-          copyChats.forEach((chat)=>{
-            if(chat.userId===user?.email){
-              chat.messages.push(message)
+          const copyChats = [...chats];
+          copyChats.forEach((chat) => {
+            if (chat.userId === user?.email) {
+              chat.messages.push(message);
             }
-          })
+          });
           setChats(copyChats);
         });
         if (chatContainerRef.current) {
@@ -179,28 +191,26 @@ export default function Chat(): ReactElement {
     }
   };
   const setUserHandler = async (user: userProps) => {
-    const response=(await axiosInstance.post('/user/chat/clear'
-      ,
-      {
-        messageUserId:currentUser._id,
-        userId:user._id
-      }
-    )).data
-    if(response.message==="success"){
-      console.log(response)
+    const response = (
+      await axiosInstance.post('/user/chat/clear', {
+        messageUserId: currentUser._id,
+        userId: user._id,
+      })
+    ).data;
+    if (response.message === 'success') {
+      console.log(response);
     }
-    flushSync(()=>{
+    flushSync(() => {
       setUser(user);
-
-    })
-    window.localStorage.setItem("chatuser",user.email)
-    const copymessage=chatcount
-    copymessage.forEach((chat)=>{
-      if(user.email===chat.userId){
-        chat.messageCount=0
+    });
+    window.localStorage.setItem('chatuser', user.email);
+    const copymessage = chatcount;
+    copymessage.forEach((chat) => {
+      if (user.email === chat.userId) {
+        chat.messageCount = 0;
       }
-    })
-    setChatcount(copymessage)
+    });
+    setChatcount(copymessage);
   };
 
   return (
@@ -209,7 +219,7 @@ export default function Chat(): ReactElement {
         dialogRef={chatFindDialogRef}
         setChatFind={setChatfind}
         setUsers={setUsers}
-        />
+      />
       <h1 className="text-start text-4xl ml-36 mt-5 mb-5">CHAT</h1>
       <div className="flex h-screen bg-gray-100 ">
         <div className="w-1/4 bg-white shadow-lg p-4 ml-36 rounded-lg">
@@ -218,35 +228,43 @@ export default function Chat(): ReactElement {
             <p>No chat history available yet.</p>
             {connectedusers.map((connecteduser) => (
               <div
-              className="flex items-center justify-start mt-4 hover:bg-gray-50 p-2 rounded-lg transition"
-              key={connecteduser._id}
+                className="flex items-center justify-start mt-4 hover:bg-gray-50 p-2 rounded-lg transition"
+                key={connecteduser._id}
               >
-                <div className={`h-2 w-2 mr-4 rounded-full ${connecteduser.online ? "bg-green-500" : "bg-gray-500"}`}/>
+                <div
+                  className={`h-2 w-2 mr-4 rounded-full ${
+                    connecteduser.online ? 'bg-green-500' : 'bg-gray-500'
+                  }`}
+                />
                 <img
                   className="h-8 w-8 rounded-full"
                   src={
                     connecteduser.profileImage?.includes('http')
-                    ? connecteduser.profileImage
-                    : connecteduser.profileImage
-                    ? `${url}/profile/${connecteduser.profileImage}`
-                    : '/user.png'
+                      ? connecteduser.profileImage
+                      : connecteduser.profileImage
+                      ? `${url}/profile/${connecteduser.profileImage}`
+                      : '/user.png'
                   }
                   alt={`${connecteduser.email}'s profile`}
-                  />
+                />
                 <p className="text-sm ml-2 w-3/4">{connecteduser.email}</p>
-                {
-                  chatcount.map((count)=>{
-                    if(count.userId===connecteduser.email && connecteduser.email!==user?.email && count.messageCount>0  ){
-                      return(
-                        <p className='w-10 text-xs p-2 rounded-xl bg-blue-500 mr-4 text-white text-center align-middle ' >{count.messageCount}</p>
-                      )
-                    }
-                 })
-                }
+                {chatcount.map((count) => {
+                  if (
+                    count.userId === connecteduser.email &&
+                    connecteduser.email !== user?.email &&
+                    count.messageCount > 0
+                  ) {
+                    return (
+                      <p className="w-10 text-xs p-2 rounded-xl bg-blue-500 mr-4 text-white text-center align-middle ">
+                        {count.messageCount}
+                      </p>
+                    );
+                  }
+                })}
                 <button
                   onClick={() => setUserHandler(connecteduser as userProps)}
                   className="bg-green-500  right-0 p-2 rounded-xl hover:bg-green-600 transition"
-                  >
+                >
                   <img className="h-6 w-6" src="/chat/chat.png" alt="Chat" />
                 </button>
               </div>
@@ -259,12 +277,12 @@ export default function Chat(): ReactElement {
               <img
                 src={
                   user.profileImage?.includes('http')
-                  ? user.profileImage
-                  : `${url}/profile/${user.profileImage}`
+                    ? user.profileImage
+                    : `${url}/profile/${user.profileImage}`
                 }
                 className="h-16 w-16 rounded-full border-2 border-gray-300"
                 alt="Profile"
-                />
+              />
               <p className="ml-4 text-lg font-semibold">{user.email}</p>
               <div className="flex flex-col w-full ">
                 {/* Chat Messages */}
@@ -272,64 +290,69 @@ export default function Chat(): ReactElement {
                   style={{ height: '65vh' }}
                   ref={chatContainerRef}
                   className="flex-grow bg-gray-50  overflow-x-hidden border border-gray-300 rounded-lg w-full p-4   overflow-y-auto shadow-inner"
-                  >
+                >
                   <p className="text-gray-500">
                     Chat messages will appear here...
                   </p>
                   {chats.map((chat) => {
-  if (chat.userId === user?.email) {
-    return chat.messages.map((indi) => {
-      return (
-        <div
-          key={v4()}
-          className={`flex items-start space-x-4 mb-4 ${
-            indi.from === currentUser.email ? 'justify-end' : 'justify-start'
-          }`}
-        >
-          {indi.from !== currentUser.email && (
-            <div className="flex-shrink-0">
-              {/* <img
+                    if (chat.userId === user?.email) {
+                      return chat.messages.map((indi) => {
+                        return (
+                          <div
+                            key={v4()}
+                            className={`flex items-start space-x-4 mb-4 ${
+                              indi.from === currentUser.email
+                                ? 'justify-end'
+                                : 'justify-start'
+                            }`}
+                          >
+                            {indi.from !== currentUser.email && (
+                              <div className="flex-shrink-0">
+                                {/* <img
                 src="/path-to-avatar.jpg" // Use real user image or initials
                 alt="User avatar"
                 className="h-10 w-10 rounded-full"
               /> */}
-            </div>
-          )}
+                              </div>
+                            )}
 
-          <div
-            className={`max-w-lg p-4 text-white font-bold text-lg rounded-2xl shadow-md ${
-              indi.from === currentUser.email
-                ? 'bg-blue-500 text-right' // User's message bubble
-                : 'bg-green-500 text-left' // Other's message bubble
-            }`}
-            style={indi.from === currentUser.email ? { marginRight: '30px' } : {}}
-          >
-            <div className="text-sm font-normal mb-1 text-gray-300">
-              {indi.time.toString()}
-            </div>
-            <p className="break-words">{indi.message}</p>
-          </div>
+                            <div
+                              className={`max-w-lg p-4 text-white font-bold text-lg rounded-2xl shadow-md ${
+                                indi.from === currentUser.email
+                                  ? 'bg-blue-500 text-right' // User's message bubble
+                                  : 'bg-green-500 text-left' // Other's message bubble
+                              }`}
+                              style={
+                                indi.from === currentUser.email
+                                  ? { marginRight: '30px' }
+                                  : {}
+                              }
+                            >
+                              <div className="text-sm font-normal mb-1 text-gray-300">
+                                {indi.time.toString()}
+                              </div>
+                              <p className="break-words">{indi.message}</p>
+                            </div>
 
-          {indi.from === currentUser.email && (
-            <div className="flex-shrink-0">
-              {/* <img
+                            {indi.from === currentUser.email && (
+                              <div className="flex-shrink-0">
+                                {/* <img
                 src="/path-to-current-user-avatar.jpg"
                 alt="Your avatar"
                 className="h-10 w-10 rounded-full"
               /> */}
-            </div>
-          )}
-        </div>
-      );
-    });
-  }
-})}
-
+                              </div>
+                            )}
+                          </div>
+                        );
+                      });
+                    }
+                  })}
                 </div>
                 <form
                   onSubmit={handleSubmit(onSubmit)}
                   className="flex items-center justify-between fixed bottom-4 left-1/2 transform  bg-white border border-gray-300 rounded-lg shadow-md p-2"
-                  >
+                >
                   <input
                     {...register('message', {
                       required: {
@@ -343,11 +366,11 @@ export default function Chat(): ReactElement {
                     })}
                     className="flex-grow w-72 bg-transparent border-none p-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
                     placeholder="Type your message..."
-                    />
+                  />
                   <button
                     type="submit"
                     className="bg-green-500 p-2 rounded-lg ml-2 flex items-center justify-center shadow hover:bg-green-600 transition duration-200"
-                    >
+                  >
                     <img className="h-5 w-5" src="/chat/chat.png" alt="Send" />
                   </button>
                 </form>
@@ -372,14 +395,14 @@ export default function Chat(): ReactElement {
           color: '#fff',
           borderRadius: '10px',
         }}
-        />
+      />
       {chatfind && (
         <ChatFindDialog
-        setUser={setUser}
-        closeHandler={closeHandler}
-        users={users}
-        dialogRef={chatFindDialogRef}
-        setConnectedUsers={setConnectedusers}
+          setUser={setUser}
+          closeHandler={closeHandler}
+          users={users}
+          dialogRef={chatFindDialogRef}
+          setConnectedUsers={setConnectedusers}
         />
       )}
     </>

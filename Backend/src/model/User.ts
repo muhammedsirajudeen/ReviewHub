@@ -1,9 +1,9 @@
-import mongoose, { Document, Mongoose, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
-interface paymentMethodprops{
-  bankaccount:string,
-  ifsc:string,
-  holdername:string,
+interface paymentMethodprops {
+  bankaccount: string;
+  ifsc: string;
+  holdername: string;
 }
 export interface IUser extends Document {
   email: string; // Optional field for user's name
@@ -14,32 +14,30 @@ export interface IUser extends Document {
   authorization: string;
   enrolledCourses: Array<mongoose.Types.ObjectId>;
   rewardPoints: number;
-  walletId:mongoose.Types.ObjectId;
-  attendedQuizes:mongoose.Types.ObjectId[];
-  verified:boolean;
-  reviewerApproval:boolean
-  premiumMember:boolean;
-  favoriteCourses:Array<mongoose.Types.ObjectId>,
-  paymentMethod:paymentMethodprops[]
+  walletId: mongoose.Types.ObjectId;
+  attendedQuizes: mongoose.Types.ObjectId[];
+  verified: boolean;
+  reviewerApproval: boolean;
+  premiumMember: boolean;
+  favoriteCourses: Array<mongoose.Types.ObjectId>;
+  paymentMethod: paymentMethodprops[];
+  lastSeen?: Date;
 }
 
-const PaymentMethodSchema=new Schema<paymentMethodprops>(
-  {
-      bankaccount:{
-        type:String,
-        required:false
-      },
-      ifsc:{
-        type:String,
-        required:false
-      },
-      holdername:{
-        type:String,
-        required:false
-      }
-  }
-)
-
+const PaymentMethodSchema = new Schema<paymentMethodprops>({
+  bankaccount: {
+    type: String,
+    required: false,
+  },
+  ifsc: {
+    type: String,
+    required: false,
+  },
+  holdername: {
+    type: String,
+    required: false,
+  },
+});
 
 const userSchema: Schema<IUser> = new Schema({
   email: {
@@ -52,13 +50,13 @@ const userSchema: Schema<IUser> = new Schema({
     required: true,
     unique: false,
     minlength: 8,
-    validate:(password:string)=>{
-      if(password.trim()===''){
-        return false
-      }else{
-        return true
+    validate: (password: string) => {
+      if (password.trim() === '') {
+        return false;
+      } else {
+        return true;
       }
-    }
+    },
   },
   profileImage: {
     type: String,
@@ -84,7 +82,7 @@ const userSchema: Schema<IUser> = new Schema({
     type: [mongoose.Schema.ObjectId],
     required: false,
     unique: false,
-    ref:'courses'
+    ref: 'courses',
   },
   rewardPoints: {
     type: Number,
@@ -109,24 +107,28 @@ const userSchema: Schema<IUser> = new Schema({
   },
   reviewerApproval: {
     type: Boolean,
-    default:false
+    default: false,
   },
-  premiumMember:{
-    type:Boolean,
-    required:false,
-    default:false
+  premiumMember: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
-  favoriteCourses:{
-    type:[mongoose.Schema.ObjectId],
-    required:false,
-    default:[]
+  favoriteCourses: {
+    type: [mongoose.Schema.ObjectId],
+    required: false,
+    default: [],
   },
-  paymentMethod:{
-    type:[PaymentMethodSchema],
+  paymentMethod: {
+    type: [PaymentMethodSchema],
+    required: false,
+    default: [],
+  },
+  lastSeen:{
+    type:Date,
     required:false,
-    default:[]
+    default:new Date()
   }
-  
 });
 const User = mongoose.model<IUser>('User', userSchema);
 export default User;

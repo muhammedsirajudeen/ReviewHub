@@ -32,7 +32,8 @@ interface userProps {
   premiumMember?:boolean;
   favoriteCourses?:string[]
   verified?:boolean
-  paymentMethod?:paymentMethodprops[]
+  paymentMethod?:paymentMethodprops[],
+  lastSeen?:Date
 
 }
 

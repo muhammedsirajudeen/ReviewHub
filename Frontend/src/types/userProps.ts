@@ -30,6 +30,7 @@ export default interface userProps {
   favoriteCourses?:string[]
   verified:boolean
   paymentMethod:paymentMethodprops[]
+  lastSeen?:Date
 }
 
 export interface approvalProps {
