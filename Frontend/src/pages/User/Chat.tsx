@@ -17,6 +17,7 @@ import axiosInstance from '../../helper/axiosInstance';
 import messagecountFetching from '../../helper/datafetching/messagecountFetching';
 import { format } from 'date-fns';
 import { produce } from 'immer';
+import { FaTrash } from 'react-icons/fa';
 
 export interface messageCount {
   //
@@ -46,6 +47,8 @@ export default function Chat(): ReactElement {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { register, handleSubmit, reset } = useForm<messageProps>();
   const onlineDataRef=useRef<Record<string,boolean>>({})
+  const [chatmodal,setChatmodal]=useState<boolean>()
+  const [chatposition,setChatposition]=useState({ClientX:0,ClientY:0})
 
   const onMessage = async (msg: string) => {
     const message = JSON.parse(msg);
@@ -228,10 +231,19 @@ export default function Chat(): ReactElement {
     });
     setChatcount(copymessage);
   };
-  const chatPopupHandler=(e:React.MouseEvent<HTMLDivElement, MouseEvent>,chat:chatmessageProps)=>{
+  const chatPopupHandler=(e:React.MouseEvent<HTMLButtonElement, MouseEvent>,chat:chatmessageProps)=>{
     console.log(e.clientX)
     console.log(e.clientY)
+    //beauty of immer worth the 17KB's deps
+    setChatposition(produce((draft)=>{
+      draft.ClientX=e.clientX
+      draft.ClientY=e.clientY
+    }))
     console.log(chat)
+    setChatmodal(true)
+  }
+  const chatdeleteHandler=()=>{
+    
   }
   return (
     <>
@@ -326,57 +338,61 @@ export default function Chat(): ReactElement {
                     if (chat.userId === user?.email) {
                       return chat.messages.map((indi) => {
                         return (
-                          <div
-                            key={v4()}
-                            onClick={(e)=>{
-
-                                chatPopupHandler(e,indi)
-                              
-                            }}
-                            className={`flex items-start space-x-4 mb-4 ${
-                              indi.from === currentUser.email
-                                ? 'justify-end'
-                                : 'justify-start'
-                            }`}
-                          >
-                            {indi.from !== currentUser.email && (
-                              <div className="flex-shrink-0">
-                                {/* <img
-                src="/path-to-avatar.jpg" // Use real user image or initials
-                alt="User avatar"
-                className="h-10 w-10 rounded-full"
-              /> */}
-                              </div>
-                            )}
-
+                          <>
                             <div
-                              className={`max-w-lg p-4 text-white font-bold text-lg rounded-2xl shadow-md ${
+                              key={v4()}
+                              className={`flex items-start space-x-4 mb-4 ${
                                 indi.from === currentUser.email
-                                  ? 'bg-blue-500 text-right' // User's message bubble
-                                  : 'bg-green-500 text-left' // Other's message bubble
+                                  ? 'justify-end'
+                                  : 'justify-start'
                               }`}
-                              style={
-                                indi.from === currentUser.email
-                                  ? { marginRight: '30px' }
-                                  : {}
-                              }
                             >
-                              <div className="text-sm font-normal mb-1 text-gray-300">
-                                {indi.time.toString()}
-                              </div>
-                              <p className="break-words">{indi.message}</p>
-                            </div>
+                              {indi.from !== currentUser.email && (
+                                <div className="flex-shrink-0">
+                                  {/* <img
+                  src="/path-to-avatar.jpg" // Use real user image or initials
+                  alt="User avatar"
+                  className="h-10 w-10 rounded-full"
+                /> */}
+                                </div>
+                              )}
 
-                            {indi.from === currentUser.email && (
-                              <div className="flex-shrink-0">
-                                {/* <img
-                src="/path-to-current-user-avatar.jpg"
-                alt="Your avatar"
-                className="h-10 w-10 rounded-full"
-              /> */}
+                              <div
+                                className={`max-w-lg p-4 text-white font-bold text-lg rounded-2xl shadow-md ${
+                                  indi.from === currentUser.email
+                                    ? 'bg-blue-500 text-right' // User's message bubble
+                                    : 'bg-green-500 text-left' // Other's message bubble
+                                }`}
+                                style={
+                                  indi.from === currentUser.email
+                                    ? { marginRight: '30px' }
+                                    : {}
+                                }
+                              >
+                                <div className="text-sm font-normal mb-1 text-gray-300">
+                                  <button
+                                    onClick={(e) => {
+                                      chatPopupHandler(e, indi);
+                                    }}
+                                  >
+                                    <img className='h-3 w-3' src='/chat/down.png'/>
+                                  </button>{' '}
+                                  {indi.time.toString()}
+                                </div>
+                                <p className="break-words">{indi.message}</p>
                               </div>
-                            )}
-                          </div>
+
+                              {indi.from === currentUser.email && (
+                                <div className="flex-shrink-0">
+                                  {/* <img
+                  src="/path-to-current-user-avatar.jpg"
+                  alt="Your avatar"
+                  className="h-10 w-10 rounded-full"
+                /> */}
+                                </div>
+                              )}
+                            </div>
+                          </>
                         );
                       });
                     }
@@ -437,6 +453,29 @@ export default function Chat(): ReactElement {
           dialogRef={chatFindDialogRef}
           setConnectedUsers={setConnectedusers}
         />
+      )}
+      {chatmodal && (
+        <div
+          style={{
+            position: 'absolute',
+            top: chatposition.ClientY, // Use clientY for vertical position
+            left: chatposition.ClientX, // Use clientX for horizontal position
+            // transform: 'translate(-100%, -100%)', // Adjust position to center the popup on the click
+            width: '200px',
+            height: '100px',
+            backgroundColor: 'white',
+            color: 'black',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          className='flex flex-col shadow-xl border border-gray-400 rounded-xl items-center justify-start'
+        >
+          <button className='absolute top-0 left-0 hover:text-red-500' onClick={() => setChatmodal(false)} style={{ marginLeft: '10px' }}>
+            x
+          </button>
+          <button onClick={()=>chatdeleteHandler()} className='flex items-center justify-center w-full' ><FaTrash/>Delete</button>
+        </div>
       )}
     </>
   );
