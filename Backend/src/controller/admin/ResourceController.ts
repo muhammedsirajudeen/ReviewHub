@@ -20,7 +20,7 @@ const GetResource = async (req: Request, res: Response) => {
       res.status(404).json({ message: 'requested resource not found' });
     }
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     res.status(500).json({ message: 'server error occured' });
   }
 };
@@ -109,6 +109,7 @@ const AddQuiz=async (req:Request,res:Response)=>{
   try{
     const {quizId}=req.params
     const quizBody=req.body as quizProps
+    console.log(quizBody)
     const addQuiz=await Quiz.findById(quizId)
     if(addQuiz){
       addQuiz.Quiz.push(quizBody)
@@ -118,6 +119,7 @@ const AddQuiz=async (req:Request,res:Response)=>{
       res.status(404).json({message:"requested resource not found"})
     }
   }catch(error){
+    console.log(error)
     res.status(500).json({message:"success"})
   }
 }
@@ -128,6 +130,7 @@ const EditQuiz=async (req:Request,res:Response)=>{
   try{
     const {quizId,questionId}=req.params
     const quizBody=req.body as quizProps
+
     const updateQuiz=await Quiz.findById(quizId)
     if(updateQuiz){
       updateQuiz.Quiz.forEach((quiz)=>{
@@ -136,6 +139,7 @@ const EditQuiz=async (req:Request,res:Response)=>{
           quiz.answer=quizBody.answer ?? quiz.answer
           quiz.reward=quizBody.reward ?? quiz.reward
           quiz.options=quizBody.options ?? quiz.options
+          quiz.multiselect=quizBody.multiselect ?? quiz.multiselect
         }
       })      
       await updateQuiz.save()

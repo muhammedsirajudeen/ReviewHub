@@ -225,6 +225,7 @@ export default function Resource(): ReactElement {
                 <h1 className="text-black text-xl font-semibold">
                   {quiz.question}
                 </h1>
+                <p className='text-xs'>{quiz.multiselect && "It is a multiselect question"}</p>
                 <div className="flex items-center">
                   <img src="/quiz/reward.png" alt="Reward" className="mr-2" />
                   <p className="text-xs font-bold text-green-500">

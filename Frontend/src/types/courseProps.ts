@@ -52,6 +52,7 @@ export interface quizProps {
   options: Array<string>;
   reward: number;
   _id: string;
+  multiselect:boolean
 }
 
 export interface QuizProps {

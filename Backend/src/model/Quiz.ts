@@ -6,6 +6,7 @@ export interface quizProps {
   options: Array<string>;
   reward: number;
   _id: string;
+  multiselect:boolean
 }
 
 interface IQuiz extends Document {
@@ -42,6 +43,11 @@ const questionSchema = new Schema<quizProps>({
     required: true,
     unique: false,
   },
+  multiselect:{
+    type:Boolean,
+    required:false,
+    default:false
+  }
 });
 
 const QuizSchema = new Schema<IQuiz>({

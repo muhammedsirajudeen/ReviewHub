@@ -6,6 +6,9 @@ import axios from 'axios';
 import url from '../../../helper/backendUrl';
 import { toast, ToastContainer } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
+import Toggle from 'react-toggle';
+import axiosInstance from '../../../helper/axiosInstance';
+
 
 export default function QuizForm({
   dialogRef,
@@ -21,6 +24,7 @@ export default function QuizForm({
   method: string;
 }): ReactElement {
   const [options, setOptions] = useState<Array<string>>(quiz?.options ?? []);
+  const [multiplestatus, setMultiplestatus] = useState<boolean>(false);
 
   const {
     register,
@@ -33,6 +37,7 @@ export default function QuizForm({
       answer: quiz?.answer,
       reward: quiz?.reward,
       options: options,
+      multiselect:quiz?.multiselect
     },
   });
   const addHandler = () => {
@@ -64,11 +69,9 @@ export default function QuizForm({
       }
       return;
     }
+    data.multiselect=multiplestatus
     const response = (
-      await axios.put(`${url}/admin/quiz/${quizId}/${quiz?._id}`, data, {
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-        },
+      await axiosInstance.put(`/admin/quiz/${quizId}/${quiz?._id}`, data, {
       })
     ).data;
     if (response.message === 'success') {
@@ -122,9 +125,20 @@ export default function QuizForm({
             {errors.question && (
               <p className="text-red-500 text-xs">{errors.question.message}</p>
             )}
+            <p className="text-xs mt-4">Is it a multiple select questions?</p>
+            <Toggle
+              defaultChecked={quiz?.multiselect}
+              onChange={(e) => setMultiplestatus(e.target.checked)}
+            />
           </div>
 
           <div>
+          {
+              multiplestatus &&
+              <p className='text-xs font-light '>Please enter all the answers as , seperated values</p>
+              
+              
+            }
             <label
               htmlFor="answer"
               className="block text-sm font-medium text-gray-700"
