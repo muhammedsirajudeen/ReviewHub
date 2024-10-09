@@ -88,7 +88,7 @@ const CredentialSignup = async (req: Request, res: Response) => {
     }
 
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     res.status(500).json({ message: "server error occured" });
   }
 };
@@ -160,6 +160,7 @@ const CredentialForgot=async (req:Request,res:Response)=>{
       res.status(200).json({message:"User not found"})
     }
   }catch(error){
+    console.log(error)
     res.status(500).json({message:"server error"})
   }
 
@@ -183,6 +184,7 @@ const CredentialPasswordChange = async (req: Request, res: Response) => {
       res.status(401).json({message:"unauthorized"})
     }
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: 'server error occured' });
   }
 };
