@@ -54,6 +54,8 @@ export default function QuizForm({
 
     if (method === 'post') {
       data._id = uuidv4();
+      data.multiselect=multiplestatus
+
       const response = (
         await axios.post(`${url}/admin/quiz/${quizId}`, data, {
           headers: {

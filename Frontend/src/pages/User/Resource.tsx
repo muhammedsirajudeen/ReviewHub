@@ -59,11 +59,17 @@ export default function Resource(): ReactElement {
     e.preventDefault();
     let flag = true;
     const formData = new FormData(e.currentTarget as HTMLFormElement);
+    console.log(formData)
     const formValues: Record<string, string> = {};
     formData.forEach((value, key) => {
       flag = false;
+      if(formValues[key]){
+        formValues[key]=formValues[key]+','+value     
+        return   
+      }
       formValues[key] = value as string;
     });
+    console.log(formValues)
     if (flag) {
       toast('please answer all questions before submitting');
     }else{
@@ -125,12 +131,8 @@ export default function Resource(): ReactElement {
   }
   return (
     <div className="ml-36 flex items-start justify-start">
-              
-          
-          
-        
       <div className="w-1/4 h-screen flex flex-col mt-10">
-      <h1 className="text-3xl text-gray-800 font-bold mb-6">Lessons</h1>
+        <h1 className="text-3xl text-gray-800 font-bold mb-6">Lessons</h1>
 
         {resources.map((resource) => (
           <div
@@ -210,27 +212,35 @@ export default function Resource(): ReactElement {
                     {quiz.reward} + pts
                   </p>
                 </div>
+                <p className="text-xs">
+                  {quiz.multiselect && 'It is a multiple select question'}
+                </p>
 
-                {quiz.options.map((option) => (
-                  <div
-                    key={option}
-                    className="flex items-center justify-start mt-2 transition-transform transform hover:scale-105"
-                  >
-                    <input
-                      className="mr-4 h-5 w-5 border-2 border-gray-300 rounded-full checked:bg-blue-600 focus:ring-2 focus:ring-blue-500"
-                      name={quiz.question}
-                      type="radio"
-                      value={option}
-                      id={`option-${option}`}
-                    />
-                    <label
-                      htmlFor={`option-${option}`}
-                      className="text-lg text-gray-800 hover:text-blue-600 transition duration-200"
-                    >
-                      {option}
-                    </label>
-                  </div>
-                ))}
+              {
+                  quiz.options.map((option,index) => (
+                    
+                      <div
+                        key={option}
+                        className="flex items-center justify-start mt-2 transition-transform transform hover:scale-105"
+                      >
+                        <input
+                          className="mr-4 h-5 w-5 border-2 border-gray-300 rounded-full checked:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+                          name={`${quiz.question}`}
+                          type={quiz.multiselect ? "checkbox" : "radio"}
+                          value={option}
+                          id={`option-${quiz.question}-${index}`}
+                          />
+                        <label
+                          htmlFor={`option-${option}`}
+                          className="text-lg text-gray-800 hover:text-blue-600 transition duration-200"
+                        >
+                          {option}
+                        </label>
+                      </div>
+                    
+                  ))
+                
+                }
               </div>
             ))}
             <button
@@ -242,9 +252,12 @@ export default function Resource(): ReactElement {
           </form>
         </div>
       )}
-      <button onClick={()=>reviewRequestHandler()} className='text-xs w-20 text-nowrap border mr-10 mt-10 border-white border-b-black '>Request Review</button>
-
-
+      <button
+        onClick={() => reviewRequestHandler()}
+        className="text-xs w-20 text-nowrap border mr-10 mt-10 border-white border-b-black "
+      >
+        Request Review
+      </button>
 
       <ToastContainer
         style={{
@@ -253,14 +266,15 @@ export default function Resource(): ReactElement {
           borderRadius: '10px',
         }}
       />
-      {
-        result && (
-          <QuizCheck finalReward={finalReward} verifydialogRef={resultdialogRef} closeHandler={resultCloseHandler} responseData={responseData}/>
-        )
-      }
-      {
-        result && <ConfettiExplosion/> 
-      }
+      {result && (
+        <QuizCheck
+          finalReward={finalReward}
+          verifydialogRef={resultdialogRef}
+          closeHandler={resultCloseHandler}
+          responseData={responseData}
+        />
+      )}
+      {result && <ConfettiExplosion />}
     </div>
   );
 }
