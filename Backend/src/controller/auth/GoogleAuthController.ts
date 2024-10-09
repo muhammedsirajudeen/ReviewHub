@@ -57,7 +57,8 @@ const GoogleLogin = async (req: Request, res: Response) => {
         {expiresIn:"7d"}
       ) 
       addValueToCache(`refresh-${checkUser.email}`,refresh_token,10000)
-
+      checkUser.lastSeen=new Date()
+      await checkUser.save()
       res.status(200).json({ message: "success", token: token, refresh_token:refresh_token });
     } else {
       res.status(404).json({ message: "user doesnt exist" });
