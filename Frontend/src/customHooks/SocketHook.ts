@@ -34,6 +34,7 @@ const useSocket:UseSocket = (url, onMessage) => {
         socket.disconnect();
         console.log('Socket disconnected');
       };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
   
     return socketRef;

@@ -87,7 +87,7 @@ export default function Chat(): ReactElement {
         }
         return connected;
       });
-
+      //pushing latest chat to the top
       setConnectedusers(produce((draft)=>{
         let index=-1
         for(let i=0;i<draft.length;i++){
@@ -102,7 +102,7 @@ export default function Chat(): ReactElement {
 
       setChats((prevChats) => {
         const updatedChats = prevChats.map((chat) => {
-          // Check if the message belongs to the current chat
+          // Check if the message belongs to the current chat then pushing it 
           if (chat.userId === message.from) {
             // Instead of pushing to the existing messages array (mutating it),
             return {
@@ -505,7 +505,8 @@ export default function Chat(): ReactElement {
           <button className='absolute top-0 left-0 hover:text-red-500' onClick={() => setChatmodal(false)} style={{ marginLeft: '10px' }}>
             x
           </button>
-          <button onClick={()=>chatdeleteHandler()} className='flex items-center justify-center w-full' ><FaTrash/>Delete</button>
+          {/* currently its delete for two people as there is only one copy of the chat */}
+          <button onClick={()=>chatdeleteHandler()} className='flex items-center justify-center w-full' ><FaTrash/>Delete For Two?</button>
         </div>
       )}
     </>
