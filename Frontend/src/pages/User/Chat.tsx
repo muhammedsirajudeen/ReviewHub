@@ -25,7 +25,7 @@ interface messageProps {
   message: string;
 }
 
-interface ExtendedUser
+export interface ExtendedUser
   extends Pick<userProps, 'email' | 'profileImage' | 'lastSeen'> {
   _id: string;
   online?: boolean;
@@ -43,6 +43,7 @@ export default function Chat(): ReactElement {
   const [chatcount, setChatcount] = useState<Array<messageCount>>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { register, handleSubmit, reset } = useForm<messageProps>();
+  const onlineDataRef=useRef<Record<string,boolean>>({})
   const onMessage = async (msg: string) => {
     const message = JSON.parse(msg);
     const fromUser = (
@@ -130,7 +131,7 @@ export default function Chat(): ReactElement {
   useEffect(() => {
     window.localStorage.removeItem('chatuser');
     dispatch(setPage('chat'));
-    getConnectedUser(setConnectedusers);
+    getConnectedUser(setConnectedusers,onlineDataRef);
     //get count of chat here
     messagecountFetching(setChatcount);
   }, [dispatch]);
@@ -284,6 +285,14 @@ export default function Chat(): ReactElement {
                 alt="Profile"
               />
               <p className="ml-4 text-lg font-semibold">{user.email}</p>
+              {onlineDataRef.current[user.email] ? (
+                <div className="flex items-center mb-2 justify-center">
+                  <div className='h-3 w-3 rounded-full bg-green-500'></div>
+                  <p className='text-xs'>online</p>
+                </div>
+              ) : (
+                <div>bro is offline</div>
+              )}
               <div className="flex flex-col w-full ">
                 {/* Chat Messages */}
                 <div
