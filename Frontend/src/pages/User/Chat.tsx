@@ -7,7 +7,7 @@ import ChatTopBar from '../../components/Topbar/ChatTopBar';
 import userProps from '../../types/userProps';
 import ChatFindDialog from '../../components/Dialog/ChatFindDialog';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { chatProps } from '../../types/chatProps';
+import { chatmessageProps, chatProps } from '../../types/chatProps';
 import { v4 } from 'uuid';
 import getConnectedUser from '../../helper/datafetching/connectedUser';
 import { historyFetching } from '../../helper/datafetching/historyFetching';
@@ -172,7 +172,7 @@ export default function Chat(): ReactElement {
           from: currentUser.email,
           to: user?.email,
           message: data.message,
-          time: new Date(),
+          time: new Date().toISOString(),
         };
 
         socketRef.current.emit('message', JSON.stringify(message));
@@ -228,7 +228,11 @@ export default function Chat(): ReactElement {
     });
     setChatcount(copymessage);
   };
-
+  const chatPopupHandler=(e:React.MouseEvent<HTMLDivElement, MouseEvent>,chat:chatmessageProps)=>{
+    console.log(e.clientX)
+    console.log(e.clientY)
+    console.log(chat)
+  }
   return (
     <>
       <ChatTopBar
@@ -324,6 +328,11 @@ export default function Chat(): ReactElement {
                         return (
                           <div
                             key={v4()}
+                            onClick={(e)=>{
+
+                                chatPopupHandler(e,indi)
+                              
+                            }}
                             className={`flex items-start space-x-4 mb-4 ${
                               indi.from === currentUser.email
                                 ? 'justify-end'
