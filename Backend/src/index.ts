@@ -37,6 +37,7 @@ const peerServer = ExpressPeerServer(server, {
 
 });
 const connectedPeers:Record<string,IClient>={}
+// To do add guard like only the current review participants would be able to call the other user tomorrow night branch out and try to fix it
 peerServer.on('connection',(peer)=>{
   connectedPeers[peer.getId()]=peer
 })

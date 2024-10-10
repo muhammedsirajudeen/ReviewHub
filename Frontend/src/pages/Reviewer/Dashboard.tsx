@@ -5,10 +5,10 @@ import DashboardTopbar from '../../components/DashboardTopbar';
 import { BarChart, Gauge } from '@mui/x-charts';
 import { Stack } from '@mui/material';
 import axiosInstance from '../../helper/axiosInstance';
-import { courseProps } from '../../types/courseProps';
 import { reviewProps } from '../../types/reviewProps';
+import StarRating from '../../components/CustomComponents/StarRating';
+import userProps from '../../types/userProps';
 import url from '../../helper/backendUrl';
-import { format } from 'date-fns';
 
 function urlB64ToUint8Array(base64String: string) {
   // Replace '-' with '+' and '_' with '/' to make it standard base64
@@ -19,18 +19,20 @@ function urlB64ToUint8Array(base64String: string) {
   return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0))); // Convert to Uint8Array
 }
 
+interface ExtendedReviewProps extends Omit<reviewProps,'revieweeId'>{
+  revieweeId:userProps
+}
 interface dashboardProps {
-  courses:courseProps[] ;
   reviews: reviewProps[];
-  completedReviews: reviewProps[];
+  reviewsuccess: ExtendedReviewProps[];
   points:number;
+  
 }
 
 export default function Dashboard(): ReactElement {
   //proper initialization of state with type safety
   const [aggregate, setAggregate] = useState<dashboardProps>({
-    completedReviews: [],
-    courses: [],
+    reviewsuccess: [],
     reviews: [],
     points: 0,
   });
@@ -62,8 +64,7 @@ export default function Dashboard(): ReactElement {
           setAggregate(
             {
               reviews:response.reviews ?? [],
-              completedReviews:response.completedreviews ?? [],
-              courses:response.courses ?? [],
+              reviewsuccess:response.reviewsuccess ?? [],
               points:response.points ?? 0
             }
           )
@@ -80,51 +81,49 @@ export default function Dashboard(): ReactElement {
     <>
       <DashboardTopbar />
       <p className="flex ml-36 text-3xl  w-full items-center justify-start">
-       REVIEWER DASHBOARD
+        REVIEWER DASHBOARD
       </p>
       <div className="w-full flex items-center justify-center ml-36">
         <div className="w-3/4 flex flex-col items-center justify-start mt-4">
           <h1 className="text-2xl font-bold text-gray-500 w-full">OVERVIEW</h1>
           {/* Overview Container */}
           <div className="flex justify-evenly w-full items-center">
-          <div
-                className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white"
-              >
-                <div className="text-xs font-bold  flex justify-evenly w-full">
-                  <img
-                    className="bg-blue-500 p-1 rounded-lg"
-                    src="/dashboard/school.png"
-                  />
-                  <p>COMPLETED REVIEWS</p>
-                </div>
-                <p className="font-bold text-4xl mt-4">{aggregate.completedReviews.length}</p>
+            <div className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white">
+              <div className="text-xs font-bold  flex justify-evenly w-full">
+                <img
+                  className="bg-blue-500 p-1 rounded-lg"
+                  src="/dashboard/school.png"
+                />
+                <p>COMPLETED REVIEWS</p>
               </div>
-              <div
-                className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white"
-              >
-                <div className="text-xs font-bold  flex justify-evenly w-full">
-                  <img
-                    className="bg-blue-500 p-1 rounded-lg"
-                    src="/dashboard/school.png"
-                  />
-                  <p>PENDING REVIEWS</p>
-                </div>
-                <p className="font-bold text-4xl mt-4">{aggregate.reviews.length}</p>
+              <p className="font-bold text-4xl mt-4">
+                {aggregate.reviewsuccess.length}
+              </p>
+            </div>
+            <div className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white">
+              <div className="text-xs font-bold  flex justify-evenly w-full">
+                <img
+                  className="bg-blue-500 p-1 rounded-lg"
+                  src="/dashboard/school.png"
+                />
+                <p>PENDING REVIEWS</p>
               </div>
-              <div
-                className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white"
-              >
-                <div className="text-xs font-bold  flex justify-evenly w-full">
-                  <img
-                    className="bg-blue-500 p-1 rounded-lg"
-                    src="/dashboard/school.png"
-                  />
-                  <p>WALLET BALANCE</p>
-                </div>
-                <p className="font-bold text-4xl mt-4">{aggregate.points}</p>
+              <p className="font-bold text-4xl mt-4">
+                {aggregate.reviews.length}
+              </p>
+            </div>
+            <div className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white">
+              <div className="text-xs font-bold  flex justify-evenly w-full">
+                <img
+                  className="bg-blue-500 p-1 rounded-lg"
+                  src="/dashboard/school.png"
+                />
+                <p>WALLET BALANCE</p>
               </div>
+              <p className="font-bold text-4xl mt-4">{aggregate.points}</p>
+            </div>
           </div>
-          
+
           {/* Study Statistics */}
           <h1 className="font-bold text-gray-500 text-2xl w-full mt-10">
             STUDY STATISTICS
@@ -166,21 +165,42 @@ export default function Dashboard(): ReactElement {
           </div>
           {/* My Courses Section */}
           <h1 className="mt-4 text-2xl font-bold w-full text-gray-500">
-            MY COURSES
+            MY FEEDBACKS
           </h1>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-4 mt-4">
-              {
-                aggregate.courses.map((course)=>{
-                  return(
-                    <div key={course._id} className='flex flex-col items-center justify-start'>
-                      <img className='h-32 w-32 rounded-xl' src={`${url}/course/${course.courseImage}`}/>
-                      <p className='text-xs' >{format(new Date(course.postedDate),"PPp")}</p>
-                      <p className='text-lg mt-4' >{course.courseName}</p>
-                      <p className='text-xs font-semibold' >{course.courseDescription}</p>
-                    </div>
-                  )
-                })
-              }
+          {aggregate.reviewsuccess.map((reviewsuccess) => {
+  return (
+    <div className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg p-6 m-4 w-full max-w-xs">
+      <img
+        src={
+          reviewsuccess.revieweeId.profileImage?.includes('http')
+            ? reviewsuccess.revieweeId.profileImage
+            : reviewsuccess.revieweeId.profileImage
+            ? `${url}/profile/${reviewsuccess.revieweeId.profileImage}`
+            : '/user.png'
+        }
+        className="h-16 w-16 rounded-full border-4 border-gray-300 mt-4 cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
+        alt="Profile"
+      />
+      <p className="text-gray-700 font-semibold mt-4">
+        {reviewsuccess.revieweeId.email}
+      </p>
+
+      <div className="mt-2">
+        <StarRating
+          starCount={5}
+          disabled={true}
+          initialCount={reviewsuccess.feedback?.revieweeFeedback.star ?? 0}
+        />
+      </div>
+
+      <p className="text-sm text-gray-600 mt-2 text-center px-4">
+        {reviewsuccess.feedback?.revieweeFeedback.comment || 'No feedback provided'}
+      </p>
+    </div>
+  );
+})}
+
           </div>
         </div>
         {/* Right Container for Additional Analytics */}
