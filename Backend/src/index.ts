@@ -201,7 +201,8 @@ io.on('connection', async (socket:SocketwithUser) => {
                   from:socket.email,
                   to:parsedMessage.to,
                   message:parsedMessage.message,
-                  uuid:parsedMessage.uuid
+                  uuid:parsedMessage.uuid,
+                  repliedto:parsedMessage.repliedto ?? ""
                 }
               ]
             }
@@ -214,7 +215,9 @@ io.on('connection', async (socket:SocketwithUser) => {
               from:socket.email as string,
               to:parsedMessage.to,
               message:parsedMessage.message,
-              uuid:parsedMessage.uuid
+              uuid:parsedMessage.uuid,
+              repliedto:parsedMessage.repliedto ?? ""
+
             }
           )
           await newChat.save()

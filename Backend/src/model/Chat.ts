@@ -6,7 +6,8 @@ export interface messageProps {
   to: String;
   message: string;
   time?: Date;
-  uuid:string
+  uuid:string;
+  repliedto?:string
 }
 
 export interface IChat extends Document {
@@ -41,6 +42,11 @@ export const messageSchema = new mongoose.Schema<messageProps>({
   uuid:{
     type:String,
     required:true
+  },
+  repliedto:{
+    type:String,
+    required:false,
+    
   }
 });
 

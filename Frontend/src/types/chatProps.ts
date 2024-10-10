@@ -4,7 +4,8 @@ export interface chatmessageProps{
   message: string | undefined;
   time: string;
   _id?: string | undefined;
-  uuid:string | undefined
+  uuid:string | undefined;
+  repliedto?:string | undefined
 }
 export interface chatProps {
   userId: string;

@@ -51,7 +51,7 @@ export default function Chat(): ReactElement {
   const [chatposition, setChatposition] = useState({ ClientX: 0, ClientY: 0 });
   const [chat, setChat] = useState<chatmessageProps>();
   const [typing, setTyping] = useState<boolean>(false);
-
+  const [reply, setReply] = useState<chatmessageProps>();
   const onMessage = async (msg: string) => {
     setTyping(false);
     const message = JSON.parse(msg);
@@ -199,6 +199,7 @@ export default function Chat(): ReactElement {
   };
 
   const onSubmit: SubmitHandler<messageProps> = (data) => {
+    setReply(undefined);
     if (data.message.trim()) {
       if (socketRef.current) {
         const message = {
@@ -207,7 +208,11 @@ export default function Chat(): ReactElement {
           message: data.message,
           time: new Date().toISOString(),
           uuid: v4(),
-        };
+        } as chatmessageProps;
+        //this is just a base
+        if (reply) {
+          message.repliedto = reply.message;
+        }
 
         socketRef.current.emit('message', JSON.stringify(message));
         flushSync(() => {
@@ -309,9 +314,10 @@ export default function Chat(): ReactElement {
       toast.error('Please try again');
     }
   };
-  const replyHandler=()=>{
-    setChatmodal(false)
-  }
+  const replyHandler = () => {
+    setChatmodal(false);
+    setReply(chat);
+  };
   return (
     <>
       <ChatTopBar
@@ -422,6 +428,17 @@ export default function Chat(): ReactElement {
                                 : 'justify-start'
                             }`}
                           >
+                            {indi.repliedto && indi.from === currentUser.email && (
+                              <div className="bg-gray-100 p-3 rounded-lg shadow-md border border-gray-200 max-w-full">
+                                <p className="text-sm text-gray-600 font-medium">
+                                  <span className="font-semibold text-gray-800">
+                                    Replied to:
+                                  </span>{' '}
+                                  {indi.repliedto}
+                                </p>
+                              </div>
+                            )}
+
                             {indi.from !== currentUser.email && (
                               <div className="flex-shrink-0">
                                 {/* <img
@@ -483,6 +500,22 @@ export default function Chat(): ReactElement {
                     <p className="text-gray-600 text-sm font-medium animate-pulse">
                       Typing...
                     </p>
+                  </div>
+                )}
+
+                {reply && (
+                  <div className="flex items-center  relative bottom-28 w-full justify-center">
+                    <div className="relative w-96 bg-gray-200 shadow-lg rounded-lg p-4">
+                      <button
+                        onClick={() => setReply(undefined)}
+                        className="absolute top-2 right-2 text-gray-500 hover:text-red-500 focus:outline-none transition duration-300"
+                      >
+                        &times;
+                      </button>
+                      <p className="text-center text-gray-700 font-medium w-full bg-gray-100 h-12 flex items-center justify-center rounded-lg mt-2 px-4">
+                        {reply.message}
+                      </p>
+                    </div>
                   </div>
                 )}
 
@@ -574,14 +607,14 @@ export default function Chat(): ReactElement {
           <div>
             <h2 className="text-lg font-semibold mb-4"></h2>
             {/* Modal Body */}
-            {
-              chat?.to === currentUser.email && (
-              <button onClick={()=>replyHandler()} className="bg-green-500 text-xs text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300">
-                Reply 
+            {chat?.to === currentUser.email && (
+              <button
+                onClick={() => replyHandler()}
+                className="bg-green-500 text-xs text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300"
+              >
+                Reply
               </button>
-
-              )
-            }
+            )}
             {chat?.from === currentUser.email && (
               <button
                 onClick={() => chatdeleteHandler()}
