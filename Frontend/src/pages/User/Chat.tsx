@@ -80,6 +80,7 @@ export default function Chat(): ReactElement {
                 _id: fromUser._id,
                 profileImage: fromUser.profileImage,
                 email: fromUser.email,
+                online:true
               },
             ];
           }
