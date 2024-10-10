@@ -18,7 +18,7 @@ import { setPage } from '../../store/globalSlice';
 export interface ExtendedReviewProps
   extends Omit<reviewProps, 'revieweeId' | 'reviewerId'> {
   revieweeId: userProps;
-  reviewerId: userProps;
+  reviewerId?: userProps;
 }
 
 export default function ReviewHistory(): ReactElement {
@@ -103,7 +103,7 @@ export default function ReviewHistory(): ReactElement {
 
             {/* Reviewee Info */}
             <div className="flex items-center space-x-2">
-              <Tooltip label={`Reviewee: ${review.revieweeId.email}`}>
+              <Tooltip label={`Reviewee: ${review?.revieweeId?.email}`}>
                 <img
                   className="h-10 w-10 rounded-full object-cover border border-gray-300 hover:shadow-lg transition-shadow"
                   src={
@@ -121,23 +121,23 @@ export default function ReviewHistory(): ReactElement {
 
             {/* Reviewer Info */}
             <div className="flex items-center space-x-2">
-              <Tooltip label={`Reviewer: ${review.reviewerId.email}`}>
+              <Tooltip label={`Reviewer: ${review?.reviewerId?.email}`}>
                 <img
                   className="h-10 w-10 rounded-full object-cover border border-gray-300 hover:shadow-lg transition-shadow"
                   src={
-                    review.reviewerId.profileImage?.includes('http')
+                    review?.reviewerId?.profileImage?.includes('http')
                       ? review.reviewerId.profileImage
-                      : review.reviewerId.profileImage
+                      : review?.reviewerId?.profileImage
                       ? `${url}/profile/${review.reviewerId.profileImage}`
                       : '/user.png'
                   }
                   alt="Reviewer Profile"
                 />
               </Tooltip>
-              <p className="text-sm text-gray-500">{review.reviewerId.email}</p>
+              <p className="text-sm text-gray-500">{review?.reviewerId?.email}</p>
             </div>
             <button onClick={()=>openHandler(review)} className='bg-blue-900 p-2 text-white rounded-lg' >Feedback</button>
-            <button onClick={()=>videoHandler(review)} className='bg-red-500 text-white p-2 rounded-lg' > Recording</button>
+            <button disabled={!review.reviewStatus}  onClick={()=>videoHandler(review)} className='bg-red-500 text-white p-2 rounded-lg' > Recording</button>
           </div>
         ))}
       </div>

@@ -16,4 +16,5 @@ export interface reviewProps {
   feedback?: feedbackProps;
   roadmapId: roadmapProps;
   _id: string;
+  reviewStatus:boolean
 }

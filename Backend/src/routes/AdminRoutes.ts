@@ -272,7 +272,6 @@ router.get(
   '/dashboard',
   passport.authenticate('jwt',{session:false}),
   AdminDashboardController.AdminDashboardDetails
-
 )
 
 export default router;
