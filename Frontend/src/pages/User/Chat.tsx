@@ -46,14 +46,14 @@ export default function Chat(): ReactElement {
   const [chatcount, setChatcount] = useState<Array<messageCount>>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { register, handleSubmit, reset, watch } = useForm<messageProps>();
-  const onlineDataRef=useRef<Record<string,boolean>>({})
-  const [chatmodal,setChatmodal]=useState<boolean>()
-  const [chatposition,setChatposition]=useState({ClientX:0,ClientY:0})
-  const [chat,setChat]=useState<chatmessageProps>()
-  const [typing,setTyping]=useState<boolean>(false)
+  const onlineDataRef = useRef<Record<string, boolean>>({});
+  const [chatmodal, setChatmodal] = useState<boolean>();
+  const [chatposition, setChatposition] = useState({ ClientX: 0, ClientY: 0 });
+  const [chat, setChat] = useState<chatmessageProps>();
+  const [typing, setTyping] = useState<boolean>(false);
 
   const onMessage = async (msg: string) => {
-    setTyping(false)
+    setTyping(false);
     const message = JSON.parse(msg);
     const fromUser = (
       await axiosInstance.get(`/user/chat/users?email=${message.from}`)
@@ -80,7 +80,7 @@ export default function Chat(): ReactElement {
                 _id: fromUser._id,
                 profileImage: fromUser.profileImage,
                 email: fromUser.email,
-                online:true
+                online: true,
               },
             ];
           }
@@ -91,21 +91,23 @@ export default function Chat(): ReactElement {
         return connected;
       });
       //pushing latest chat to the top
-      setConnectedusers(produce((draft)=>{
-        let index=-1
-        for(let i=0;i<draft.length;i++){
-          if(draft[i].email===fromUser.email){
-            index=i
+      setConnectedusers(
+        produce((draft) => {
+          let index = -1;
+          for (let i = 0; i < draft.length; i++) {
+            if (draft[i].email === fromUser.email) {
+              index = i;
+            }
           }
-        }
-        const copy=draft[index]
-        draft.splice(index,1)
-        draft.splice(0,0,copy)
-      }))
+          const copy = draft[index];
+          draft.splice(index, 1);
+          draft.splice(0, 0, copy);
+        })
+      );
 
       setChats((prevChats) => {
         const updatedChats = prevChats.map((chat) => {
-          // Check if the message belongs to the current chat then pushing it 
+          // Check if the message belongs to the current chat then pushing it
           if (chat.userId === message.from) {
             // Instead of pushing to the existing messages array (mutating it),
             return {
@@ -149,24 +151,23 @@ export default function Chat(): ReactElement {
     }
   };
 
-  
-  const onTyping=(msg:string)=>{
-    const message=JSON.parse(msg)
-    console.log(message)
-    if(message.from===user?.email){
-      setTyping(true)
+  const onTyping = (msg: string) => {
+    const message = JSON.parse(msg);
+    console.log(message);
+    if (message.from === user?.email) {
+      setTyping(true);
       //potentially hiding the issue for now make it smoother if u get enough time
 
-      const timerId=setTimeout(()=>setTyping(false),2000)
-      console.log(timerId)
+      const timerId = setTimeout(() => setTyping(false), 2000);
+      console.log(timerId);
     }
-  }
+  };
   const socketRef = useSocket(url, onMessage, onTyping);
 
   useEffect(() => {
     window.localStorage.removeItem('chatuser');
     dispatch(setPage('chat'));
-    getConnectedUser(setConnectedusers,onlineDataRef);
+    getConnectedUser(setConnectedusers, onlineDataRef);
     //get count of chat here
     messagecountFetching(setChatcount);
   }, [dispatch]);
@@ -180,19 +181,18 @@ export default function Chat(): ReactElement {
       chatContainerRef
     );
   }, [user]);
-  useEffect(()=>{
-    if(watch('message')){
-
-      if(watch('message').length>0){
-        const typingstatus={
-          from:currentUser.email,
-          to:user?.email,
-          typing:true
-        }
-        socketRef.current?.emit('typing',JSON.stringify(typingstatus))
+  useEffect(() => {
+    if (watch('message')) {
+      if (watch('message').length > 0) {
+        const typingstatus = {
+          from: currentUser.email,
+          to: user?.email,
+          typing: true,
+        };
+        socketRef.current?.emit('typing', JSON.stringify(typingstatus));
       }
     }
-  },[watch('message')])
+  }, [currentUser.email, socketRef, user?.email, watch]);
   const closeHandler = () => {
     chatFindDialogRef.current?.close();
     setChatfind(false);
@@ -206,7 +206,7 @@ export default function Chat(): ReactElement {
           to: user?.email,
           message: data.message,
           time: new Date().toISOString(),
-          uuid:v4()
+          uuid: v4(),
         };
 
         socketRef.current.emit('message', JSON.stringify(message));
@@ -262,49 +262,55 @@ export default function Chat(): ReactElement {
     });
     setChatcount(copymessage);
   };
-  const chatPopupHandler=(e:React.MouseEvent<HTMLButtonElement, MouseEvent>,chat:chatmessageProps)=>{
-    console.log(e.clientX)
-    console.log(e.clientY)
+  const chatPopupHandler = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    chat: chatmessageProps
+  ) => {
+    console.log(e.clientX);
+    console.log(e.clientY);
     //beauty of immer worth the 17KB's deps
-    setChatposition(produce((draft)=>{
-      draft.ClientX=e.clientX
-      draft.ClientY=e.clientY
-    }))
-    console.log(chat)
-    setChatmodal(true)
-    setChat(chat)
-  }
-  const chatdeleteHandler=async ()=>{
-    try{
-
-      const response=(
-        await axiosInstance.patch('/user/chat',
-          {
-            userId:currentUser._id,
-            alternateUserId:user?._id,
-            uuid:chat?.uuid
-          }
-        )
-      ).data
-      if(response.message==="success"){
-        toast.success("Deleted Successfully")
-        setChats(produce((draft)=>{
-          let indexChat=0
-          const messages=draft[0].messages
-          messages.map((message,index)=>{
-            if(message.uuid===chat?.uuid){
-              indexChat=index
-            }
+    setChatposition(
+      produce((draft) => {
+        draft.ClientX = e.clientX;
+        draft.ClientY = e.clientY;
+      })
+    );
+    console.log(chat);
+    setChatmodal(true);
+    setChat(chat);
+  };
+  const chatdeleteHandler = async () => {
+    try {
+      const response = (
+        await axiosInstance.patch('/user/chat', {
+          userId: currentUser._id,
+          alternateUserId: user?._id,
+          uuid: chat?.uuid,
+        })
+      ).data;
+      if (response.message === 'success') {
+        toast.success('Deleted Successfully');
+        setChats(
+          produce((draft) => {
+            let indexChat = 0;
+            const messages = draft[0].messages;
+            messages.map((message, index) => {
+              if (message.uuid === chat?.uuid) {
+                indexChat = index;
+              }
+            });
+            messages.splice(indexChat, 1);
+            setChatmodal(false);
           })
-          messages.splice(indexChat,1)
-          setChatmodal(false)
-        }))
+        );
       }
-    }catch(error){
-      console.log(error)
-      toast.error("Please try again")
+    } catch (error) {
+      console.log(error);
+      toast.error('Please try again');
     }
-
+  };
+  const replyHandler=()=>{
+    setChatmodal(false)
   }
   return (
     <>
@@ -564,22 +570,29 @@ export default function Chat(): ReactElement {
           </button>
 
           {/* Modal Header */}
-          <h2 className="text-lg font-semibold mb-4">Delete Chat</h2>
 
-          {/* Modal Body */}
-          <p className="text-sm text-gray-600 mb-6">
-            Are you sure you want to delete this chat for both users? This
-            action cannot be undone.
-          </p>
+          <div>
+            <h2 className="text-lg font-semibold mb-4"></h2>
+            {/* Modal Body */}
+            {
+              chat?.to === currentUser.email && (
+              <button onClick={()=>replyHandler()} className="bg-green-500 text-xs text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300">
+                Reply 
+              </button>
 
-          {/* Action Button */}
-          <button
-            onClick={() => chatdeleteHandler()}
-            className="flex items-center justify-center w-full py-2 px-4 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-300"
-          >
-            <FaTrash className="mr-2" />
-            <p className="text-xs">Delete for Both Users</p>
-          </button>
+              )
+            }
+            {chat?.from === currentUser.email && (
+              <button
+                onClick={() => chatdeleteHandler()}
+                className={`flex  items-center justify-center w-full py-2 px-4 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-300`}
+              >
+                <FaTrash className="mr-2" />
+                <p className="text-xs">Delete for Both Users</p>
+              </button>
+            )}
+            {/* Action Button */}
+          </div>
         </div>
       )}
     </>
