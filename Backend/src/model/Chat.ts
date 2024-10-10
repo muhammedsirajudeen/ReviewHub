@@ -5,7 +5,8 @@ export interface messageProps {
   from: String;
   to: String;
   message: string;
-  time?:Date
+  time?: Date;
+  uuid:string
 }
 
 export interface IChat extends Document {
@@ -32,18 +33,21 @@ export const messageSchema = new mongoose.Schema<messageProps>({
         return true;
       }
     },
-
   },
-  time:{
-    type:Date,
-    default:new Date()
+  time: {
+    type: Date,
+    default: new Date(),
+  },
+  uuid:{
+    type:String,
+    required:true
   }
 });
 
 const ChatSchema = new mongoose.Schema<IChat>({
   userId: {
-    type:[mongoose.Schema.Types.Mixed],
-    ref:'User'
+    type: [mongoose.Schema.Types.Mixed],
+    ref: 'User',
   },
   messages: [messageSchema],
 });

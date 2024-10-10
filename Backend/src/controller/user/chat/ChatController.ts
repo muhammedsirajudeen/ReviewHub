@@ -144,8 +144,7 @@ const ClearUnread=async (req:Request,res:Response)=>{
 
 const DeleteChat=async (req:Request,res:Response)=>{
     try{
-        const {userId,alternateUserId,date}=req.body
-        console.log(date,userId,alternateUserId)
+        const {userId,alternateUserId,uuid}=req.body
         const findChat=await Chat.findOne({userId:{$all:[new mongoose.Types.ObjectId(userId as string),new mongoose.Types.ObjectId(alternateUserId as string)]}})
         console.log(findChat)
 
@@ -156,7 +155,7 @@ const DeleteChat=async (req:Request,res:Response)=>{
         let indexChat=0
         //hella slow optimize this
         findChat.messages.forEach((message,index)=>{
-            if(message.time?.toISOString()===date){
+            if(message.uuid===uuid){
                 indexChat=index
             }
         })

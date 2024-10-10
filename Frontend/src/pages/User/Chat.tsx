@@ -45,13 +45,15 @@ export default function Chat(): ReactElement {
   const [connectedusers, setConnectedusers] = useState<Array<ExtendedUser>>([]);
   const [chatcount, setChatcount] = useState<Array<messageCount>>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const { register, handleSubmit, reset } = useForm<messageProps>();
+  const { register, handleSubmit, reset, watch } = useForm<messageProps>();
   const onlineDataRef=useRef<Record<string,boolean>>({})
   const [chatmodal,setChatmodal]=useState<boolean>()
   const [chatposition,setChatposition]=useState({ClientX:0,ClientY:0})
   const [chat,setChat]=useState<chatmessageProps>()
+  const [typing,setTyping]=useState<boolean>(false)
 
   const onMessage = async (msg: string) => {
+    setTyping(false)
     const message = JSON.parse(msg);
     const fromUser = (
       await axiosInstance.get(`/user/chat/users?email=${message.from}`)
@@ -145,7 +147,20 @@ export default function Chat(): ReactElement {
         chatContainerRef.current?.scrollHeight;
     }
   };
-  const socketRef = useSocket(url, onMessage);
+
+  
+  const onTyping=(msg:string)=>{
+    const message=JSON.parse(msg)
+    console.log(message)
+    if(message.from===user?.email){
+      setTyping(true)
+      //potentially hiding the issue for now make it smoother if u get enough time
+
+      const timerId=setTimeout(()=>setTyping(false),2000)
+      console.log(timerId)
+    }
+  }
+  const socketRef = useSocket(url, onMessage, onTyping);
 
   useEffect(() => {
     window.localStorage.removeItem('chatuser');
@@ -164,6 +179,19 @@ export default function Chat(): ReactElement {
       chatContainerRef
     );
   }, [user]);
+  useEffect(()=>{
+    if(watch('message')){
+
+      if(watch('message').length>0){
+        const typingstatus={
+          from:currentUser.email,
+          to:user?.email,
+          typing:true
+        }
+        socketRef.current?.emit('typing',JSON.stringify(typingstatus))
+      }
+    }
+  },[watch('message')])
   const closeHandler = () => {
     chatFindDialogRef.current?.close();
     setChatfind(false);
@@ -177,6 +205,7 @@ export default function Chat(): ReactElement {
           to: user?.email,
           message: data.message,
           time: new Date().toISOString(),
+          uuid:v4()
         };
 
         socketRef.current.emit('message', JSON.stringify(message));
@@ -252,7 +281,7 @@ export default function Chat(): ReactElement {
           {
             userId:currentUser._id,
             alternateUserId:user?._id,
-            date:chat?.time
+            uuid:chat?.uuid
           }
         )
       ).data
@@ -262,7 +291,7 @@ export default function Chat(): ReactElement {
           let indexChat=0
           const messages=draft[0].messages
           messages.map((message,index)=>{
-            if(message.time===chat?.time){
+            if(message.uuid===chat?.uuid){
               indexChat=index
             }
           })
@@ -311,14 +340,17 @@ export default function Chat(): ReactElement {
                   alt={`${connecteduser.email}'s profile`}
                 />
                 <p className="text-sm ml-2 w-3/4">{connecteduser.email}</p>
-                {chatcount.map((count) => {
+                {chatcount.map((count, index) => {
                   if (
                     count.userId === connecteduser.email &&
                     connecteduser.email !== user?.email &&
                     count.messageCount > 0
                   ) {
                     return (
-                      <p className="w-10 text-xs p-2 rounded-xl bg-blue-500 mr-4 text-white text-center align-middle ">
+                      <p
+                        key={index}
+                        className="w-10 text-xs p-2 rounded-xl bg-blue-500 mr-4 text-white text-center align-middle "
+                      >
                         {count.messageCount}
                       </p>
                     );
@@ -349,11 +381,17 @@ export default function Chat(): ReactElement {
               <p className="ml-4 text-lg font-semibold">{user.email}</p>
               {onlineDataRef.current[user.email] ? (
                 <div className="flex items-center mb-2 justify-center">
-                  <div className='h-3 w-3 rounded-full bg-green-500'></div>
-                  <p className='text-xs'>online</p>
+                  <div className="h-3 w-3 rounded-full bg-green-500"></div>
+                  <p className="text-xs">online</p>
                 </div>
               ) : (
-                <div>Last seen {format(user.lastSeen ? new Date(user.lastSeen) : new Date(), 'PPpp')}</div>
+                <div>
+                  Last seen{' '}
+                  {format(
+                    user.lastSeen ? new Date(user.lastSeen) : new Date(),
+                    'PPpp'
+                  )}
+                </div>
               )}
               <div className="flex flex-col w-full ">
                 {/* Chat Messages */}
@@ -367,68 +405,80 @@ export default function Chat(): ReactElement {
                   </p>
                   {chats.map((chat) => {
                     if (chat.userId === user?.email) {
-                      return chat.messages.map((indi) => {
+                      return chat.messages.map((indi, index) => {
                         return (
-                          <>
-                            <div
-                              key={v4()}
-                              className={`flex items-start space-x-4 mb-4 ${
-                                indi.from === currentUser.email
-                                  ? 'justify-end'
-                                  : 'justify-start'
-                              }`}
-                            >
-                              {indi.from !== currentUser.email && (
-                                <div className="flex-shrink-0">
-                                  {/* <img
+                          <div
+                            key={index}
+                            className={`flex items-start space-x-4 mb-4 ${
+                              indi.from === currentUser.email
+                                ? 'justify-end'
+                                : 'justify-start'
+                            }`}
+                          >
+                            {indi.from !== currentUser.email && (
+                              <div className="flex-shrink-0">
+                                {/* <img
                   src="/path-to-avatar.jpg" // Use real user image or initials
                   alt="User avatar"
                   className="h-10 w-10 rounded-full"
                 /> */}
-                                </div>
-                              )}
-
-                              <div
-                                className={`max-w-lg p-4 text-white font-bold text-lg rounded-2xl shadow-md ${
-                                  indi.from === currentUser.email
-                                    ? 'bg-blue-500 text-right' // User's message bubble
-                                    : 'bg-green-500 text-left' // Other's message bubble
-                                }`}
-                                style={
-                                  indi.from === currentUser.email
-                                    ? { marginRight: '30px' }
-                                    : {}
-                                }
-                              >
-                                <div className="text-sm font-normal mb-1 text-gray-300">
-                                  <button
-                                    onClick={(e) => {
-                                      chatPopupHandler(e, indi);
-                                    }}
-                                  >
-                                    <img className='h-3 w-3' src='/chat/down.png'/>
-                                  </button>{' '}
-                                  {indi.time.toString()}
-                                </div>
-                                <p className="break-words">{indi.message}</p>
                               </div>
+                            )}
 
-                              {indi.from === currentUser.email && (
-                                <div className="flex-shrink-0">
-                                  {/* <img
+                            <div
+                              className={`max-w-lg p-4 text-white font-bold text-lg rounded-2xl shadow-md ${
+                                indi.from === currentUser.email
+                                  ? 'bg-blue-500 text-right' // User's message bubble
+                                  : 'bg-green-500 text-left' // Other's message bubble
+                              }`}
+                              style={
+                                indi.from === currentUser.email
+                                  ? { marginRight: '30px' }
+                                  : {}
+                              }
+                            >
+                              <div className="text-sm font-normal mb-1 text-gray-300">
+                                <button
+                                  onClick={(e) => {
+                                    chatPopupHandler(e, indi);
+                                  }}
+                                >
+                                  <img
+                                    className="h-3 w-3"
+                                    src="/chat/down.png"
+                                  />
+                                </button>{' '}
+                                {indi.time.toString()}
+                              </div>
+                              <p className="break-words">{indi.message}</p>
+                            </div>
+
+                            {indi.from === currentUser.email && (
+                              <div className="flex-shrink-0">
+                                {/* <img
                   src="/path-to-current-user-avatar.jpg"
                   alt="Your avatar"
                   className="h-10 w-10 rounded-full"
                 /> */}
-                                </div>
-                              )}
-                            </div>
-                          </>
+                              </div>
+                            )}
+                          </div>
                         );
                       });
                     }
                   })}
                 </div>
+                {typing && (
+                  <div className="flex items-center space-x-2">
+                    <div className="typing-dot bg-gray-500 w-2.5 h-2.5 rounded-full animate-bounce"></div>
+                    <div className="typing-dot bg-gray-500 w-2.5 h-2.5 rounded-full animate-bounce delay-75"></div>
+                    <div className="typing-dot bg-gray-500 w-2.5 h-2.5 rounded-full animate-bounce delay-150"></div>
+                    <p className="text-gray-600 text-sm font-medium animate-pulse">
+                      Typing...
+                    </p>
+                  </div>
+                )}
+
                 <form
                   onSubmit={handleSubmit(onSubmit)}
                   className="flex items-center justify-between fixed bottom-4 left-1/2 transform  bg-white border border-gray-300 rounded-lg shadow-md p-2"
@@ -489,24 +539,46 @@ export default function Chat(): ReactElement {
         <div
           style={{
             position: 'absolute',
-            top: chatposition.ClientY, // Use clientY for vertical position
-            left: chatposition.ClientX, // Use clientX for horizontal position
-            // transform: 'translate(-100%, -100%)', // Adjust position to center the popup on the click
-            width: '200px',
-            height: '100px',
-            backgroundColor: 'white',
-            color: 'black',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            top: chatposition.ClientY,
+            left: chatposition.ClientX,
+            transform: 'translate(-50%, -50%)', // Center the modal based on click position
+            width: '250px',
+            padding: '20px', // Add padding for spacing
+            backgroundColor: '#fff', // White background for clarity
+            color: '#333', // Darker text color for better readability
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', // Subtle shadow for depth
+            borderRadius: '12px', // Rounded corners for a modern look
+            zIndex: 1000, // Ensure it's on top
+            transition: 'all 0.3s ease-in-out', // Smooth opening effect
           }}
-          className='flex flex-col shadow-xl border border-gray-400 rounded-xl items-center justify-start'
+          className="flex flex-col shadow-lg border border-gray-300 items-center justify-start"
         >
-          <button className='absolute top-0 left-0 hover:text-red-500' onClick={() => setChatmodal(false)} style={{ marginLeft: '10px' }}>
-            x
+          {/* Close button */}
+          <button
+            className="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors"
+            onClick={() => setChatmodal(false)}
+            style={{ fontSize: '16px', fontWeight: 'bold' }}
+          >
+            ✕
           </button>
-          {/* currently its delete for two people as there is only one copy of the chat */}
-          <button onClick={()=>chatdeleteHandler()} className='flex items-center justify-center w-full' ><FaTrash/>Delete For Two?</button>
+
+          {/* Modal Header */}
+          <h2 className="text-lg font-semibold mb-4">Delete Chat</h2>
+
+          {/* Modal Body */}
+          <p className="text-sm text-gray-600 mb-6">
+            Are you sure you want to delete this chat for both users? This
+            action cannot be undone.
+          </p>
+
+          {/* Action Button */}
+          <button
+            onClick={() => chatdeleteHandler()}
+            className="flex items-center justify-center w-full py-2 px-4 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-300"
+          >
+            <FaTrash className="mr-2" />
+            <p className="text-xs">Delete for Both Users</p>
+          </button>
         </div>
       )}
     </>

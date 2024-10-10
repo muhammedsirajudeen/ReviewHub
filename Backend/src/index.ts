@@ -105,8 +105,8 @@ const worker = new Worker(
     )
     await newNotificationtwo.save()
     //this is for sending ws
-    const revieweeId=await getValueFromCache(`socket-${scheduledMessage.revieweeId}`)
-    const reviewerId=await getValueFromCache(`socket-${scheduledMessage.reviewerId}`)
+    // const revieweeId=await getValueFromCache(`socket-${scheduledMessage.revieweeId}`)
+    // const reviewerId=await getValueFromCache(`socket-${scheduledMessage.reviewerId}`)
     //if there is now reviewee id it means user is not online otherwise it means that the user is online we can make it accordingly then like a notification on the app bar
     const RevieweeEmail=(await User.findById(scheduledMessage.revieweeId))?.email
     const ReviewerEmail=(await User.findById(scheduledMessage.reviewerId))?.email
@@ -142,13 +142,21 @@ io.on('connection', async (socket:SocketwithUser) => {
 
   }
   console.log('A user connected:', socket.user);
+  socket.on('typing',async (msg)=>{
+    const parsedMessage=JSON.parse(msg)
+    const recieverUser=await User.findOne({email:parsedMessage.to})
+    const receieverId=recieverUser?.id
+    const socketId=await getValueFromCache(`socket-${receieverId}`)
+    if(socketId){
+      io.to(socketId).emit('typing',JSON.stringify(parsedMessage))
+    }
+  })
   socket.on('message', async (msg) => {
       const parsedMessage=JSON.parse(msg)
-      console.log(parsedMessage.to)
+      console.log(parsedMessage)
       const recieverUser=await User.findOne({email:parsedMessage.to})
       const receieverId=recieverUser?.id
       const socketId=await getValueFromCache(`socket-${receieverId}`)
-      console.log("the id is",socketId)
       //sending message to the user
       if(socketId){
         io.to(socketId).emit('message',JSON.stringify(parsedMessage))
@@ -192,7 +200,8 @@ io.on('connection', async (socket:SocketwithUser) => {
                 {
                   from:socket.email,
                   to:parsedMessage.to,
-                  message:parsedMessage.message
+                  message:parsedMessage.message,
+                  uuid:parsedMessage.uuid
                 }
               ]
             }
@@ -204,8 +213,8 @@ io.on('connection', async (socket:SocketwithUser) => {
             {
               from:socket.email as string,
               to:parsedMessage.to,
-              message:parsedMessage.message
-
+              message:parsedMessage.message,
+              uuid:parsedMessage.uuid
             }
           )
           await newChat.save()
