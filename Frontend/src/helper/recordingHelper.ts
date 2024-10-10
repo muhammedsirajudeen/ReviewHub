@@ -7,7 +7,7 @@ const recordingHelper = (stream: MediaStream, id: string, authorization:string) 
     if (event.data.size > 0) {
       console.log(event.data);
       const formData = new FormData();
-      formData.append('video', event.data, `${authorization}-${id}.webm`);
+      formData.append('video', event.data, `${authorization ?? "user"}-${id}.webm`);
       try {
         const response =( await axiosInstance.post(
           '/user/review/record',

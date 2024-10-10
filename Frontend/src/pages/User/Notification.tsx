@@ -5,7 +5,7 @@ import DashboardTopbar from '../../components/DashboardTopbar';
 import { notificationProps, Type } from '../../types/notificationProps';
 import axiosInstance from '../../helper/axiosInstance';
 import { AxiosError } from 'axios';
-import { FaBell, FaStar, FaTrash } from 'react-icons/fa';
+import { FaBell, FaSadCry, FaStar, FaTrash } from 'react-icons/fa';
 import { formatDistanceToNow } from 'date-fns';
 import { toast, ToastContainer } from 'react-toastify';
 import { produce } from 'immer';
@@ -58,10 +58,17 @@ export default function Notification(): ReactElement {
   return (
     <>
       <DashboardTopbar />
-      <h1 className="ml-36 text-4xl   text-gray-800">
-        NOTIFICATIONS
-      </h1>
+      <h1 className="ml-36 text-4xl   text-gray-800">NOTIFICATIONS</h1>
       <div className="flex flex-col items-center mt-8">
+        {notifications.length === 0 && (
+          <div className="w-3/4 flex items-center justify-center flex-col bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 h-24 p-4 rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+            <FaSadCry className="text-gray-400" size={50} />
+            <p className="text-sm font-semibold mt-3 text-gray-600">
+              No Notifications at the Moment
+            </p>
+          </div>
+        )}
+
         {notifications.map((notification, index) => (
           <div
             key={index}
@@ -94,7 +101,10 @@ export default function Notification(): ReactElement {
                 {notification.type}
               </span>
               {notification.type === Type.Review && (
-                <button onClick={()=>joinHandler(notification)} className="bg-blue-500 ml-72 text-white text-xs px-4 py-2 rounded-md hover:bg-blue-600 transition">
+                <button
+                  onClick={() => joinHandler(notification)}
+                  className="bg-blue-500 ml-72 text-white text-xs px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                >
                   Join
                 </button>
               )}

@@ -428,7 +428,9 @@ export default function Chat(): ReactElement {
                                 : 'justify-start'
                             }`}
                           >
-                            {indi.repliedto && indi.from === currentUser.email && (
+                            {
+                              indi.repliedto && 
+                              (
                               <div className="bg-gray-100 p-3 rounded-lg shadow-md border border-gray-200 max-w-full">
                                 <p className="text-sm text-gray-600 font-medium">
                                   <span className="font-semibold text-gray-800">
@@ -437,7 +439,10 @@ export default function Chat(): ReactElement {
                                   {indi.repliedto}
                                 </p>
                               </div>
-                            )}
+
+                              )
+                            }
+                            
 
                             {indi.from !== currentUser.email && (
                               <div className="flex-shrink-0">

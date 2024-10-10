@@ -176,8 +176,8 @@ const ReviewStatus = async (req: Request, res: Response) => {
       );
 
       console.log(estimateduration);
-      // the 10 is a placeholder 
-      if (estimateduration > 10) {
+      // the 10 is a placeholder just give 1 for now 
+      if (estimateduration > 1) {
         //this line is suscetible
         // await Notification.deleteMany({reviewId:reviewId})
         const reviewStatus=await Review.findById(reviewId)

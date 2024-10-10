@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import ReviewHistoryForm from '../../components/Form/Review/ReviewHistoryForm';
 import PaginationComponent from '../../components/pagination/PaginationComponent';
 import FeedbackDialog from '../../components/Dialog/FeedbackDialog';
+import { FaSadCry } from 'react-icons/fa';
 
 export default function ReviewHistory(): ReactElement {
   const [currentpage, setCurrentpage] = useState<number>(1);
@@ -71,6 +72,14 @@ export default function ReviewHistory(): ReactElement {
       <h1 className="text-4xl ml-36 mt-10 ">REVIEW HISTORY</h1>
       <div className="flex items-center justify-center mt-8">
         <div className="grid grid-cols-1 gap-6 w-3/4">
+          {reviews.length === 0 && (
+            <div className="w-3/4 ml-36 flex items-center justify-center flex-col bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 h-24 p-4 rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+              <FaSadCry className="text-gray-400" size={50} />
+              <p className="text-sm font-semibold mt-3 text-gray-600">
+                You have not attended reviews yet...
+              </p>
+            </div>
+          )}
           {reviews.map((review) => (
             <div
               key={review._id}
@@ -116,7 +125,7 @@ export default function ReviewHistory(): ReactElement {
         )}
         {viewfeedback && (
           <FeedbackDialog
-          review={review}
+            review={review}
             dialogRef={viewfeedbackRef}
             closeHandler={() => {
               setViewfeedback(false);

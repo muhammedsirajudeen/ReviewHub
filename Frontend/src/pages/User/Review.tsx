@@ -121,21 +121,20 @@ export default function Review(): ReactElement {
     <>
       <DashboardTopbar />
       <div className="container mx-auto p-8">
-        <h1 className="text-5xl  text-black-800 mb-6">
-          REVIEW SCHEDULING
-        </h1>
+        <h1 className="text-5xl  text-black-800 mb-6">REVIEW SCHEDULING</h1>
 
         <section className="mb-12">
           <h2 className="text-2xl font-light mb-6 text-gray-700">
             Scheduled Reviews
           </h2>
           <div className="w-full h-72 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg shadow-sm bg-gray-100">
-            {reviews.length === 0 && (
-              <p className="text-gray-500">No scheduled reviews yet.</p>
-            )}
+
             {reviews.map((review) => {
               return (
-                <div key={review._id} className="flex flex-col items-center justify-start">
+                <div
+                  key={review._id}
+                  className="flex flex-col items-center justify-start"
+                >
                   <img
                     className="h-20 w-20 rounded-lg"
                     src={`${url}/roadmap/${review.roadmapId.roadmapImage}`}
@@ -247,7 +246,9 @@ export default function Review(): ReactElement {
                       </p>
                       <button
                         className="mt-4 bg-blue-500 text-white text-sm font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                        onClick={() => selectRoadmap(pendingreview.roadmapId,pendingreview)}
+                        onClick={() =>
+                          selectRoadmap(pendingreview.roadmapId, pendingreview)
+                        }
                       >
                         Schedule
                       </button>
@@ -266,11 +267,15 @@ export default function Review(): ReactElement {
           }}
         />
       </div>
-      {
-        deletedialog && (
-            <ReviewDelete setPendingReviews={setPendingreviews} setReviews={setReviews} review={review} dialogRef={deleteDialogRef} closeHandler={deleteCloseHandler}/>
-        )
-      }
+      {deletedialog && (
+        <ReviewDelete
+          setPendingReviews={setPendingreviews}
+          setReviews={setReviews}
+          review={review}
+          dialogRef={deleteDialogRef}
+          closeHandler={deleteCloseHandler}
+        />
+      )}
     </>
   );
 }
