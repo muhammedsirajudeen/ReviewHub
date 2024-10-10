@@ -13,6 +13,7 @@ import PaymentController from '../controller/admin/PaymentController';
 import WithdrawalController from '../controller/admin/WithdrawalController';
 import DomainController from '../controller/admin/DomainController';
 import ReviewController from '../controller/admin/ReviewController';
+import AdminDashboardController from '../controller/admin/DashboardController';
 const router = express.Router();
 
 const AdminMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -264,6 +265,14 @@ router.get(
   passport.authenticate('jwt',{session:false}),
   AdminMiddleware,
   ReviewController.ReviewController
+)
+
+//dashboard details
+router.get(
+  '/dashboard',
+  passport.authenticate('jwt',{session:false}),
+  AdminDashboardController.AdminDashboardDetails
+
 )
 
 export default router;
