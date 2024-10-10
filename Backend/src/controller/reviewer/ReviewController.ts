@@ -14,6 +14,7 @@ import { existsSync } from 'fs';
 import Wallet from '../../model/Wallet';
 import { REVIEW_POINT } from '../user/review/ReviewController';
 import mongoose from 'mongoose';
+import Notification from '../../model/Notification';
 
 interface ExtendedRoadmapProps extends Omit<IRoadmap, 'courseId'> {
   courseId: ICourse;
@@ -108,6 +109,7 @@ const CommittedReview = async (req: Request, res: Response) => {
   }
 };
 
+//TODO: here check if there is date collission review joining based on date collission
 const CommitReview = async (req: Request, res: Response) => {
   try {
     const user = req.user as IUser;
@@ -190,6 +192,7 @@ const ReviewStatus = async (req: Request, res: Response) => {
         if(!userWallet){
           return res.status(404).json({message:'requested resource not found'})
         }
+        await Notification.deleteMany({reviewId:reviewId})
         let flag=false
         userWallet.history.forEach((history)=>{
           if(history.reviewId?.toHexString()===reviewId){

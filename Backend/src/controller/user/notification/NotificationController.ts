@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { IUser } from '../../../model/User';
 import Notification from '../../../model/Notification';
 
+// TODO: notification should be deleted in here if the user deletes the conversation then we clear all the notification
+
 const GetNotification = async (req: Request, res: Response) => {
   try {
     const user = req.user as IUser;
