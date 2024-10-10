@@ -21,6 +21,7 @@ import ReviewController from '../controller/user/review/ReviewController';
 import NotificationController from '../controller/user/notification/NotificationController';
 import multer = require('multer');
 import ReviewHistoryController from '../controller/user/review/ReviewHistoryController';
+import DashboardController from '../controller/user/dashboard/DashboardController';
 router.get(
   '/course',
   passport.authenticate('jwt', { session: false }),
@@ -287,6 +288,14 @@ router.put(
   '/review/history/:reviewId',
   passport.authenticate('jwt',{session:false}),
   ReviewHistoryController.AddFeedback
+)
+
+
+//dashboard management
+router.get(
+  '/dashboard',
+  passport.authenticate('jwt',{session:false}),
+  DashboardController.GetAnalytics
 )
 
 export default router;
