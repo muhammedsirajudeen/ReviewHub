@@ -56,7 +56,7 @@ export default function Dashboard(): ReactElement {
 
     async function getAnalytics() {
       try {
-        const response = (await axiosInstance.get('/user/dashboard')).data;
+        const response = (await axiosInstance.get('/reviewer/dashboard')).data;
         if (response.message === 'success') {
           console.log(response);
           setAggregate(
