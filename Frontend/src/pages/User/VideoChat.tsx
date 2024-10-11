@@ -32,22 +32,24 @@ interface messageProps {
 }
 
 export default function VideoChat(): ReactElement {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [chat, setChat] = useState<boolean>(false);
+  const [nudge,setNudge]=useState<boolean>(false)
   const dispatch = useAppDispatch();
   const location = useLocation().state;
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState<boolean>(true);
   const user = useLoaderData() as userProps;
   const streamRef = useRef<MediaStream>();
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const screenVideoRef = useRef<HTMLVideoElement>(null);
   const messageInputRef = useRef<HTMLInputElement>(null);
   const peerRef = useRef<Peer>();
-  const [chat, setChat] = useState<boolean>(false);
   const [messages, setMessages] = useState<messageProps[]>([]);
   const connectionRef = useRef<DataConnection>();
   const chatContainer = useRef<HTMLDivElement>(null);
   const renderCount=useRef<number>(0)
+  
   useEffect(() => {
     dispatch(setPage('review'));
     async function mediaStreamFetcher(): Promise<MediaStream> {
@@ -93,8 +95,10 @@ export default function VideoChat(): ReactElement {
     });
     peer.on('connection', (conn) => {
       connectionRef.current = conn;
+      //part of chat as well
       conn.on('data', (data) => {
         console.log(data);
+        setNudge(true)
         flushSync(() => {
           setMessages(
             produce((draft) => {
@@ -119,8 +123,10 @@ export default function VideoChat(): ReactElement {
         const call = await peer.call(callerId as string, stream);
         const connection = await peer.connect(callerId);
         connectionRef.current = connection;
+        //this  is  the part of chat 
         connection.on('data', (data) => {
           console.log(data);
+          setNudge(true)
           flushSync(() => {
             setMessages(
               produce((draft) => {
@@ -276,6 +282,7 @@ export default function VideoChat(): ReactElement {
   };
   const chatHandler = () => {
     setChat((prev) => !prev);
+    setNudge(false)
   };
   const messageSendHandler = () => {
     if (!messageInputRef.current) {
@@ -374,6 +381,10 @@ export default function VideoChat(): ReactElement {
             <img className="h-6 w-6" src="/videochat/screenshare.png" />
           </button>
         )}
+        {
+          nudge && 
+          (<div className='h-4 w-4 bg-green-600 rounded-full relative left-14 bottom-3'/>)
+        }
         <button
           onClick={() => chatHandler()}
           className="flex ml-10 items-center justify-center"

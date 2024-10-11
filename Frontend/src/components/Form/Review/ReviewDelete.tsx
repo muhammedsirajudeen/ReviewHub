@@ -35,14 +35,14 @@ export default function ReviewDelete({
                 )
 
             }))
-            // if(setPendingReviews){
-            //   setPendingReviews(produce((draft)=>{
-            //     if(review){
+            if(setPendingReviews){
+              setPendingReviews(produce((draft)=>{
+                if(review){
 
-            //       draft.push(review)
-            //     }
-            //   }))
-            // }
+                  draft.push(review)
+                }
+              }))
+            }
             toast.success("Deleted Successfully")
             closeHandler()
             
