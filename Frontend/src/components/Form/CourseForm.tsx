@@ -1,11 +1,12 @@
-import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, Dispatch, ReactElement, SetStateAction, useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Select from 'react-select';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import url from '../../helper/backendUrl';
 import { courseProps } from '../../types/courseProps';
 import Toggle from 'react-toggle';
 import axiosInstance from '../../helper/axiosInstance';
+import { produce } from 'immer';
 
 interface Inputs {
   courseName: string;
@@ -32,9 +33,11 @@ export interface optionProps{
 export default function CourseForm({
   closeForm,
   course,
+  setCourses
 }: {
   closeForm: VoidFunction;
   course: courseProps | undefined;
+  setCourses:Dispatch<SetStateAction<courseProps[]>>
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
   const {
@@ -139,8 +142,19 @@ export default function CourseForm({
           });
       
       if (response.data.message === 'success') {
-        toast('Course saved successfully');
-        setTimeout(() => window.location.reload(), 1000);
+        toast.success('Course saved successfully');
+        setCourses(produce((draft)=>{
+          if(!course){
+            draft.push(response.data.course)
+          }else{
+            draft.forEach((d)=>{
+              if(d._id===course._id){
+                Object.assign(d,response.data.course)
+              }
+            })
+          }
+        }))
+        closeForm()
       } else {
         toast(response.data.message);
       }
@@ -261,7 +275,7 @@ export default function CourseForm({
         </button>
       </div>
 
-      <ToastContainer />
+      {/* <ToastContainer /> */}
     </form>
   );
 }

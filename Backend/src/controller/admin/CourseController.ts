@@ -35,9 +35,11 @@ const AddCourse = async (req: Request, res: Response) => {
         unlistStatus:unlistStatus
       });
       await newCourse.save();
-      res.status(200).json({ message: 'success' });
+      
+      res.status(200).json({ message: 'success',course:newCourse });
     }
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: 'server error occured' });
   }
 };
@@ -71,7 +73,8 @@ const UpdateCourse=async (req:Request,res:Response)=>{
         checkCourse.courseImage=req.file?.filename ?? checkCourse.courseImage
         checkCourse.unlistStatus=unlistStatus ?? checkCourse.unlistStatus
         await checkCourse.save()
-        res.status(200).json({message:"success"})
+        const newCourse=await Course.findById(checkCourse.id)
+        res.status(200).json({message:"success",course:newCourse})
       }else{
         res.status(404).json({message:"No course found"})
       }

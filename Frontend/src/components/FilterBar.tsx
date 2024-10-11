@@ -17,7 +17,7 @@ export default function FilterBar({
   const [active, setActive] = useState<string>('');
   const [domain, setDomain] = useState<string>('');
   const [domains,setDomains]=useState<domainProps[]>([])
-  const [date, setDate] = useState<Value>(new Date());
+  const [date, setDate] = useState<Value|null>(new Date());
   const [selectdate, setSelectdate] = useState<boolean>(false);
   const [favorite,setFavorite]=useState<boolean>(false)
   useEffect(()=>{
@@ -162,7 +162,9 @@ export default function FilterBar({
           </button>
         )}
         <button
-          onClick={() => window.location.reload()}
+          onClick={() =>{
+            window.location.reload()
+          }}
           className="border border-gray-300 text-gray-700 p-2 rounded-lg flex items-center justify-center text-xs font-light hover:bg-gray-100 transition-colors duration-300"
         >
           Clear all X

@@ -22,7 +22,7 @@ export default function ReviewHistory(): ReactElement {
   useEffect(() => {
     async function historyFetcher() {
       try {
-        const response = (await axiosInstance.get('/user/review/history')).data;
+        const response = (await axiosInstance.get(`/user/review/history?page=${currentpage}`)).data;
         if (response.message === 'success') {
           setReviews(response.reviews);
           setPagecount(response.pageLength);
@@ -32,7 +32,7 @@ export default function ReviewHistory(): ReactElement {
       }
     }
     historyFetcher();
-  }, []);
+  }, [currentpage]);
 
   const feedbackHandler = (review: reviewProps) => {
     flushSync(() => {

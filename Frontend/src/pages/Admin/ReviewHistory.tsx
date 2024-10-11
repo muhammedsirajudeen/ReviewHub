@@ -34,7 +34,7 @@ export default function ReviewHistory(): ReactElement {
   useEffect(() => {
     dispatch(setPage('review'))
     async function getReviews() {
-      const response = (await axiosInstance.get('/admin/review')).data;
+      const response = (await axiosInstance.get(`/admin/review?page=${currentpage}`)).data;
       if (response.message === 'success') {
         console.log(response);
         setReviews(response.reviews ?? []);
@@ -42,7 +42,7 @@ export default function ReviewHistory(): ReactElement {
       }
     }
     getReviews();
-  }, [dispatch]);
+  }, [dispatch,currentpage]);
   const pageHandler = (count: number) => {
     const page = Math.ceil(count / 10) + 1;
     const array = [];
@@ -84,6 +84,18 @@ export default function ReviewHistory(): ReactElement {
       <h1 className="ml-36 text-3xl mt-8">REVIEW HISTORY</h1>
 
       <div className="ml-36 flex-col flex items-center justify-center mt-6 space-y-6">
+        {reviews.length === 0 && (
+          <div className="flex flex-col items-center justify-center w-96 h-32 bg-gray-100 border border-gray-300 rounded-lg shadow-lg">
+            <i className="fas fa-comments-slash text-gray-500 text-4xl mb-2"></i>
+            <p className="text-gray-700 text-lg font-semibold">
+              No Reviews Available
+            </p>
+            <p className="text-gray-500 text-sm">
+              Be the first to add a review!
+            </p>
+          </div>
+        )}
+
         {reviews.map((review) => (
           <div
             key={review._id}
@@ -134,10 +146,24 @@ export default function ReviewHistory(): ReactElement {
                   alt="Reviewer Profile"
                 />
               </Tooltip>
-              <p className="text-sm text-gray-500">{review?.reviewerId?.email}</p>
+              <p className="text-sm text-gray-500">
+                {review?.reviewerId?.email}
+              </p>
             </div>
-            <button onClick={()=>openHandler(review)} className='bg-blue-900 p-2 text-white rounded-lg' >Feedback</button>
-            <button disabled={!review.reviewStatus}  onClick={()=>videoHandler(review)} className='bg-red-500 text-white p-2 rounded-lg' > Recording</button>
+            <button
+              onClick={() => openHandler(review)}
+              className="bg-blue-900 p-2 text-white rounded-lg"
+            >
+              Feedback
+            </button>
+            <button
+              disabled={!review.reviewStatus}
+              onClick={() => videoHandler(review)}
+              className="bg-red-500 text-white p-2 rounded-lg"
+            >
+              {' '}
+              Recording
+            </button>
           </div>
         ))}
       </div>
@@ -148,19 +174,16 @@ export default function ReviewHistory(): ReactElement {
         pagecount={pagecount}
         currentpage={currentpage}
       />
-      {
-        feedback && 
-        (
-            <AdminFeedbackDialog
-                dialogRef={feedbackRef}
-                review={review}
-                closeHandler={()=>{
-                    setFeedback(false)
-                    feedbackRef.current?.close()
-                }}
-            />
-        )
-      }
+      {feedback && (
+        <AdminFeedbackDialog
+          dialogRef={feedbackRef}
+          review={review}
+          closeHandler={() => {
+            setFeedback(false);
+            feedbackRef.current?.close();
+          }}
+        />
+      )}
     </>
   );
 }
