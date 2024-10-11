@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 async function hashPassword(plainTextPassword: string): Promise<string> {
   try {
     // Generate salt
@@ -10,7 +10,7 @@ async function hashPassword(plainTextPassword: string): Promise<string> {
     // Return the hash or store it in your database
     return hash;
   } catch (error) {
-    console.error("Error hashing password:", error);
+    console.error('Error hashing password:', error);
     throw error; // Rethrow the error if needed
   }
 }
@@ -21,9 +21,9 @@ async function comparePasswords(plainTextPassword: string, hash: string) {
     const match = await bcrypt.compare(plainTextPassword, hash);
     return match; // Returns true if passwords match, otherwise false
   } catch (error) {
-    console.error("Error comparing passwords:", error);
+    console.error('Error comparing passwords:', error);
     throw error; // Rethrow the error if needed
   }
 }
 
-export {hashPassword,comparePasswords}
+export { hashPassword, comparePasswords };

@@ -3,20 +3,20 @@ import mongoose, { Schema } from 'mongoose';
 interface resourceProps {
   subheading: string;
   article: string;
-  _id:string
+  _id: string;
 }
 
 export interface sectionProps {
   sectionName: string;
   content: Array<resourceProps>;
-  _id:string
+  _id: string;
 }
 
 interface IResource extends Document {
   chapterName: string;
   Section: Array<sectionProps>;
   chapterId: mongoose.Types.ObjectId;
-  roadmapId:mongoose.Types.ObjectId;
+  roadmapId: mongoose.Types.ObjectId;
 }
 
 const ContentSchema = new Schema<resourceProps>({
@@ -30,11 +30,11 @@ const ContentSchema = new Schema<resourceProps>({
     required: false,
     unique: false,
   },
-  _id:{
-    type:String,
-    required:false,
-    unique:false
-  }
+  _id: {
+    type: String,
+    required: false,
+    unique: false,
+  },
 });
 
 const SectionSchema = new Schema<sectionProps>({
@@ -43,17 +43,15 @@ const SectionSchema = new Schema<sectionProps>({
     required: false,
     unique: false,
   },
-  _id:{
-    type:String,
-    required:false,
-    unique:false
+  _id: {
+    type: String,
+    required: false,
+    unique: false,
   },
   content: [ContentSchema],
 });
 
 const ResourceSchema = new Schema<IResource>({
-
-
   chapterName: {
     type: String,
     required: true,
@@ -67,13 +65,11 @@ const ResourceSchema = new Schema<IResource>({
     required: true,
     unique: false,
   },
-  roadmapId:{
-    type:mongoose.Schema.ObjectId,
-    required:true,
-    unique:false
+  roadmapId: {
+    type: mongoose.Schema.ObjectId,
+    required: true,
+    unique: false,
   },
-  
-  
 });
 
 const Resource = mongoose.model('resource', ResourceSchema);

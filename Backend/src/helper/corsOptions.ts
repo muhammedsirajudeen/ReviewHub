@@ -1,6 +1,6 @@
-import { CorsOptions, CorsOptionsDelegate } from "cors";
-import { configDotenv } from "dotenv";
-configDotenv()
+import { CorsOptions, CorsOptionsDelegate } from 'cors';
+import { configDotenv } from 'dotenv';
+configDotenv();
 const allowedOrigin: string = process.env.CORS_ORIGIN as string;
 
 const corsOptions: CorsOptions | CorsOptionsDelegate = {
@@ -13,11 +13,11 @@ const corsOptions: CorsOptions | CorsOptionsDelegate = {
       callback(null, true);
     } else {
       // Deny requests from other origins
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE","PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 export default corsOptions;

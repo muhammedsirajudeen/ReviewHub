@@ -124,11 +124,11 @@ const userSchema: Schema<IUser> = new Schema({
     required: false,
     default: [],
   },
-  lastSeen:{
-    type:Date,
-    required:false,
-    default:new Date()
-  }
+  lastSeen: {
+    type: Date,
+    required: false,
+    default: new Date(),
+  },
 });
 const User = mongoose.model<IUser>('User', userSchema);
 export default User;

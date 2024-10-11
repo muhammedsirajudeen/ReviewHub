@@ -2,37 +2,38 @@ import { Queue } from 'bullmq';
 import { createClient } from 'redis';
 import { ConnectionOptions } from 'bullmq';
 import { configDotenv } from 'dotenv';
-configDotenv()
+configDotenv();
 
-export interface schedulerProps{
-    revieweeId:string,
-    reviewerId:string,
-    reviewId:string
+export interface schedulerProps {
+  revieweeId: string;
+  reviewerId: string;
+  reviewId: string;
 }
 
-
-
-export async function addDelayedTask(message:schedulerProps,delay:number): Promise<void> {
-    let delayHere=delay    
-    if(delay<=0){
-        delayHere=0
-    }
+export async function addDelayedTask(
+  message: schedulerProps,
+  delay: number
+): Promise<void> {
+  let delayHere = delay;
+  if (delay <= 0) {
+    delayHere = 0;
+  }
   const client = createClient({
-    url: process.env.REDIS_URL, 
+    url: process.env.REDIS_URL,
   });
   try {
     client.connect().then(() => console.log('Connected to Redis'));
 
     const connection: ConnectionOptions = {
-      host: 'localhost', 
+      host: 'localhost',
       port: 6379,
     };
     const myQueue = new Queue('reviewScheduler', { connection });
 
     await myQueue.add(
-      'reviewScheduler', 
-      { message: JSON.stringify(message) }, 
-      { delay: delayHere } 
+      'reviewScheduler',
+      { message: JSON.stringify(message) },
+      { delay: delayHere }
     );
 
     console.log(`Task added, will be executed after ${delayHere}ms`);
@@ -58,5 +59,3 @@ export async function addDelayedTask(message:schedulerProps,delay:number): Promi
 // worker.on('failed', (job, err) => {
 //   console.error(`Job failed`, err);
 // });
-
-

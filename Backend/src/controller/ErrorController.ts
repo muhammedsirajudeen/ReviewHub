@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 interface errorProps {
   stack: string;
@@ -6,12 +6,7 @@ interface errorProps {
   message: string;
 }
 
-const ErrorController = (
-  err: errorProps,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const ErrorController = (err: errorProps, req: Request, res: Response) => {
   console.error(err.stack); // Log the error stack
   res.status(err.status || 500).json({
     error: {

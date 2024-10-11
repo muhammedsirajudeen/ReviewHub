@@ -6,7 +6,7 @@ export interface quizProps {
   options: Array<string>;
   reward: number;
   _id: string;
-  multiselect:boolean
+  multiselect: boolean;
 }
 
 interface IQuiz extends Document {
@@ -14,7 +14,6 @@ interface IQuiz extends Document {
   roadmapId: mongoose.Types.ObjectId;
   Quiz: Array<quizProps>;
   chapterId: mongoose.Types.ObjectId;
-
 }
 
 const questionSchema = new Schema<quizProps>({
@@ -43,11 +42,11 @@ const questionSchema = new Schema<quizProps>({
     required: true,
     unique: false,
   },
-  multiselect:{
-    type:Boolean,
-    required:false,
-    default:false
-  }
+  multiselect: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const QuizSchema = new Schema<IQuiz>({
@@ -71,7 +70,6 @@ const QuizSchema = new Schema<IQuiz>({
     required: true,
     unique: false,
   },
-
 });
 
 const Quiz = mongoose.model<IQuiz>('quizes', QuizSchema);

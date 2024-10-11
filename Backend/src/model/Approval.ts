@@ -6,7 +6,7 @@ interface IApproval extends Document {
   domain: string;
   comment: string;
   resumeFile: string;
-  approvalStatus:boolean
+  approvalStatus: boolean;
 }
 
 const ApprovalSchema = new Schema<IApproval>({
@@ -14,7 +14,7 @@ const ApprovalSchema = new Schema<IApproval>({
     type: mongoose.Schema.ObjectId,
     required: true,
     unique: true,
-    ref:'User'
+    ref: 'User',
   },
   experience: {
     type: Number,
@@ -32,11 +32,11 @@ const ApprovalSchema = new Schema<IApproval>({
     type: String,
     required: true,
   },
-  approvalStatus:{
-    type:Boolean,
-    required:false,
-    default:false
-  }
+  approvalStatus: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const Approval = mongoose.model<IApproval>('approvals', ApprovalSchema);

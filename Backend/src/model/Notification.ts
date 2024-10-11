@@ -8,7 +8,7 @@ export interface INotification extends Document {
   userId: mongoose.Types.ObjectId;
   type: Type;
   date: Date;
-  reviewId:mongoose.Types.ObjectId
+  reviewId: mongoose.Types.ObjectId;
 }
 
 const NotificationSchema = new mongoose.Schema<INotification>({
@@ -30,11 +30,11 @@ const NotificationSchema = new mongoose.Schema<INotification>({
     required: false,
     default: new Date(),
   },
-  reviewId:{
-    type:mongoose.Schema.ObjectId,
-    required:true,
-    ref:'review'
-  }
+  reviewId: {
+    type: mongoose.Schema.ObjectId,
+    required: true,
+    ref: 'review',
+  },
 });
 
 const Notification = mongoose.model('notification', NotificationSchema);

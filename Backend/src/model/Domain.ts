@@ -8,7 +8,7 @@ const DomainSchema = new Schema<IDomain>({
   domain: {
     type: String,
     required: true,
-    unique:true
+    unique: true,
   },
 });
 

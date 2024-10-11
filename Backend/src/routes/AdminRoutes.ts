@@ -262,16 +262,16 @@ router.delete(
 //review history management
 router.get(
   '/review',
-  passport.authenticate('jwt',{session:false}),
+  passport.authenticate('jwt', { session: false }),
   AdminMiddleware,
   ReviewController.ReviewController
-)
+);
 
 //dashboard details
 router.get(
   '/dashboard',
-  passport.authenticate('jwt',{session:false}),
+  passport.authenticate('jwt', { session: false }),
   AdminDashboardController.AdminDashboardDetails
-)
+);
 
 export default router;

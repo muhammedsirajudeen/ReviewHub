@@ -65,7 +65,7 @@ const AddRoadmap = async (req: Request, res: Response) => {
         roadmapImage: req.file?.filename,
       });
       await newRoadmap.save();
-      res.status(201).json({ message: 'success' , roadmap: newRoadmap });
+      res.status(201).json({ message: 'success', roadmap: newRoadmap });
     }
   } catch (error) {
     console.log(error);
@@ -80,21 +80,18 @@ const EditRoadmap = async (req: Request, res: Response) => {
       res.status(401).json({ message: 'Unauthorized' });
     } else {
       let { roadmapName, roadmapDescription, unlistStatus } = req.body;
-      if (
-        spaceValidator(roadmapName) ||
-        spaceValidator(roadmapDescription) 
-      ) {
+      if (spaceValidator(roadmapName) || spaceValidator(roadmapDescription)) {
         return res.status(400).json({ messagee: 'bad request' });
       }
       if (
         minLengthValidator(roadmapName) ||
-        minLengthValidator(roadmapDescription) 
+        minLengthValidator(roadmapDescription)
       ) {
         return res.status(400).json({ message: 'bad request' });
       }
       if (
         specialCharValidator(roadmapName) ||
-        specialCharValidator(roadmapDescription) 
+        specialCharValidator(roadmapDescription)
       ) {
         return res.status(400).json({ message: 'bad request' });
       }
@@ -109,8 +106,8 @@ const EditRoadmap = async (req: Request, res: Response) => {
           req.file?.filename ?? updateRoadmap.roadmapImage;
         updateRoadmap.unlistStatus = unlistStatus ?? updateRoadmap.unlistStatus;
         await updateRoadmap.save();
-        const sendRoadmap=await Roadmap.findById(updateRoadmap.id)
-        res.status(200).json({ message: 'success' , roadmap: sendRoadmap });
+        const sendRoadmap = await Roadmap.findById(updateRoadmap.id);
+        res.status(200).json({ message: 'success', roadmap: sendRoadmap });
       } else {
         res.status(404).json({ message: 'roadmap not found' });
       }

@@ -75,7 +75,7 @@ const GetReviews = async (req: Request, res: Response) => {
       })
       .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
       .limit(PAGE_LIMIT)) as unknown as Array<ExtendedReviewProps>;
-      
+
     //now check filter out some stuff here
     const checkApproval = await Approval.findOne({ userId: user.id });
     const domain = checkApproval?.domain;
@@ -98,9 +98,10 @@ const GetReviews = async (req: Request, res: Response) => {
 const CommittedReview = async (req: Request, res: Response) => {
   try {
     const user = req.user as IUser;
-    const committedReview = await Review.find({ reviewerId: user.id,reviewStatus:false }).populate(
-      'roadmapId'
-    );
+    const committedReview = await Review.find({
+      reviewerId: user.id,
+      reviewStatus: false,
+    }).populate('roadmapId');
 
     res.status(200).json({ message: 'success', reviews: committedReview });
   } catch (error) {
@@ -178,43 +179,44 @@ const ReviewStatus = async (req: Request, res: Response) => {
       );
 
       console.log(estimateduration);
-      // the 10 is a placeholder just give 1 for now 
+      // the 10 is a placeholder just give 1 for now
       if (estimateduration > 1) {
         //this line is suscetible
         // await Notification.deleteMany({reviewId:reviewId})
-        const reviewStatus=await Review.findById(reviewId)
-        if(!reviewStatus){
-          return res.status(404).json({message:'resource not found'})
+        const reviewStatus = await Review.findById(reviewId);
+        if (!reviewStatus) {
+          return res.status(404).json({ message: 'resource not found' });
         }
-        reviewStatus.reviewStatus=true
-        await reviewStatus.save()
-        const userWallet=await Wallet.findById(user.walletId)
-        if(!userWallet){
-          return res.status(404).json({message:'requested resource not found'})
+        reviewStatus.reviewStatus = true;
+        await reviewStatus.save();
+        const userWallet = await Wallet.findById(user.walletId);
+        if (!userWallet) {
+          return res
+            .status(404)
+            .json({ message: 'requested resource not found' });
         }
-        await Notification.deleteMany({reviewId:reviewId})
-        let flag=false
-        userWallet.history.forEach((history)=>{
-          if(history.reviewId?.toHexString()===reviewId){
-            flag=true
+        await Notification.deleteMany({ reviewId: reviewId });
+        let flag = false;
+        userWallet.history.forEach((history) => {
+          if (history.reviewId?.toHexString() === reviewId) {
+            flag = true;
           }
-        })
-        console.log(flag)
-        if(!flag){
-
-          userWallet.redeemable+=REVIEW_POINT
-          userWallet.history.push(
-            {
-              type:'reviewpayment',
-              amount:REVIEW_POINT,
-              status:true,
-              paymentDate:new Date(),
-              reviewId:new mongoose.Types.ObjectId(reviewId as string)
-            }
-          )
-          await userWallet.save()
+        });
+        console.log(flag);
+        if (!flag) {
+          userWallet.redeemable += REVIEW_POINT;
+          userWallet.history.push({
+            type: 'reviewpayment',
+            amount: REVIEW_POINT,
+            status: true,
+            paymentDate: new Date(),
+            reviewId: new mongoose.Types.ObjectId(reviewId as string),
+          });
+          await userWallet.save();
         }
-        return res.status(200).json({ message: 'success the duration is enough' });
+        return res
+          .status(200)
+          .json({ message: 'success the duration is enough' });
       } else {
         return res.status(400).json({ message: 'Bad Request' });
       }

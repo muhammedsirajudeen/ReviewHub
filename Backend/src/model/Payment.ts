@@ -1,12 +1,12 @@
 import mongoose, { Schema } from 'mongoose';
 
-interface IPayment extends Document  {
+interface IPayment extends Document {
   amount: number;
   status: boolean;
   orderId: string;
   userId: mongoose.Types.ObjectId;
-  type:string
-  paymentDate:Date
+  type: string;
+  paymentDate: Date;
 }
 
 const PaymentSchema = new Schema<IPayment>({
@@ -16,7 +16,7 @@ const PaymentSchema = new Schema<IPayment>({
   },
   status: {
     type: Boolean,
-  required: true,
+    required: true,
     default: false,
   },
   orderId: {
@@ -28,16 +28,16 @@ const PaymentSchema = new Schema<IPayment>({
     required: true,
     ref: 'User',
   },
-  type:{
-    type:String,
-    required:false,
-    default:'wallet'
+  type: {
+    type: String,
+    required: false,
+    default: 'wallet',
   },
-  paymentDate:{
-    type:Date,
-    required:false,
-    default:new Date()
-  }
+  paymentDate: {
+    type: Date,
+    required: false,
+    default: new Date(),
+  },
 });
 
 const Payment = mongoose.model('payments', PaymentSchema);

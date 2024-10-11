@@ -11,24 +11,24 @@
 //   }
 // };
 
-export function spaceValidator(argument: string):boolean {
-  if(argument){
+export function spaceValidator(argument: string): boolean {
+  if (argument) {
     if (argument.trim() === '') {
       return true;
     } else {
       return false;
     }
-  }else{
-    return true
+  } else {
+    return true;
   }
 }
 
 export function specialCharValidator(argument: string): boolean {
   const specialCharRegex = /[!#$%^&*(),.?":{}|<>]/g;
   if (argument && specialCharRegex.test(argument)) {
-    return true; 
+    return true;
   }
-  return false; 
+  return false;
 }
 
 export function minLengthValidator(argument: string) {
@@ -38,4 +38,3 @@ export function minLengthValidator(argument: string) {
     return false;
   }
 }
-

@@ -1,16 +1,11 @@
-import multer from "multer";
-import path from "path";
-import { Request,Response } from "express";
-import sharp from "sharp";
-import fs from "fs"
+import multer from 'multer';
+import path from 'path';
+import { Request, Response } from 'express';
+import sharp from 'sharp';
+import fs from 'fs';
 
-
-
-
-
-
-function UploadHandler(pathName:string,type?:string){
-  const uploadDir = path.join(__dirname, "../public/",pathName);
+function UploadHandler(pathName: string, type?: string) {
+  const uploadDir = path.join(__dirname, '../public/', pathName);
 
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -18,86 +13,103 @@ function UploadHandler(pathName:string,type?:string){
     },
     filename: (req, file, cb) => {
       // Define the file name
-      if(type==="video"){
+      if (type === 'video') {
         // const uniqueSuffix = Date.now() + path.extname(file.originalname);
         cb(null, file.originalname);
-  
-      }else{
-
+      } else {
         const uniqueSuffix = Date.now() + path.extname(file.originalname);
-        cb(null, file.fieldname + "-" + uniqueSuffix);
+        cb(null, file.fieldname + '-' + uniqueSuffix);
       }
     },
   });
-  
+
   const upload = multer({
     storage: storage,
     limits: { fileSize: 2 * 1024 * 1024 },
   });
-  return upload
+  return upload;
 }
 
-
-export const resizeMiddleware = (req: Request, res: Response, next: Function) => {
+export const resizeMiddleware = (
+  req: Request,
+  res: Response,
+  next: Function
+) => {
   if (!req.file) return next(); // If no file, move on
-  const uploadDir = path.join(__dirname, "../public/","course");
+  const uploadDir = path.join(__dirname, '../public/', 'course');
 
   const filePath = path.join(uploadDir, req.file.filename);
 
   sharp(filePath)
     .resize(300, 300) // Resize the image to 300x300 pixels
-    .toFile(filePath.replace(path.extname(req.file.filename), '-resized' + path.extname(req.file.filename)), (err) => {
-      if (err) {
-        return next(err);
-      }
-
-      // Optional: Remove the original file if you only want to keep the resized one
-      fs.unlink(filePath, (unlinkErr) => {
-        if (unlinkErr) {
-          console.error("Error deleting the original file:", unlinkErr);
-        }
-        if(req.file?.filename){
-          const resizedFilePath = path.join(
-            path.dirname(filePath), 
-            path.basename(filePath, path.extname(filePath)) + '-resized' + path.extname(filePath)
-          );
-          req.file.filename=path.basename(resizedFilePath)
-        }
-        next();
-      });
-    });
-};
-
-export const resizeMiddlewareWrapper=(pathName:string)=>{
-  return   (req: Request, res: Response, next: Function) => {
-    if (!req.file) return next(); // If no file, move on
-    const uploadDir = path.join(__dirname, "../public/",pathName);
-  
-    const filePath = path.join(uploadDir, req.file.filename);
-  
-    sharp(filePath)
-      .resize(300, 300) // Resize the image to 300x300 pixels
-      .toFile(filePath.replace(path.extname(req.file.filename), '-resized' + path.extname(req.file.filename)), (err) => {
+    .toFile(
+      filePath.replace(
+        path.extname(req.file.filename),
+        '-resized' + path.extname(req.file.filename)
+      ),
+      (err) => {
         if (err) {
           return next(err);
         }
-  
+
         // Optional: Remove the original file if you only want to keep the resized one
         fs.unlink(filePath, (unlinkErr) => {
           if (unlinkErr) {
-            console.error("Error deleting the original file:", unlinkErr);
+            console.error('Error deleting the original file:', unlinkErr);
           }
-          if(req.file?.filename){
+          if (req.file?.filename) {
             const resizedFilePath = path.join(
-              path.dirname(filePath), 
-              path.basename(filePath, path.extname(filePath)) + '-resized' + path.extname(filePath)
+              path.dirname(filePath),
+              path.basename(filePath, path.extname(filePath)) +
+                '-resized' +
+                path.extname(filePath)
             );
-            req.file.filename=path.basename(resizedFilePath)
+            req.file.filename = path.basename(resizedFilePath);
           }
           next();
         });
-      });
+      }
+    );
+};
+
+export const resizeMiddlewareWrapper = (pathName: string) => {
+  return (req: Request, res: Response, next: Function) => {
+    if (!req.file) return next(); // If no file, move on
+    const uploadDir = path.join(__dirname, '../public/', pathName);
+
+    const filePath = path.join(uploadDir, req.file.filename);
+
+    sharp(filePath)
+      .resize(300, 300) // Resize the image to 300x300 pixels
+      .toFile(
+        filePath.replace(
+          path.extname(req.file.filename),
+          '-resized' + path.extname(req.file.filename)
+        ),
+        (err) => {
+          if (err) {
+            return next(err);
+          }
+
+          // Optional: Remove the original file if you only want to keep the resized one
+          fs.unlink(filePath, (unlinkErr) => {
+            if (unlinkErr) {
+              console.error('Error deleting the original file:', unlinkErr);
+            }
+            if (req.file?.filename) {
+              const resizedFilePath = path.join(
+                path.dirname(filePath),
+                path.basename(filePath, path.extname(filePath)) +
+                  '-resized' +
+                  path.extname(filePath)
+              );
+              req.file.filename = path.basename(resizedFilePath);
+            }
+            next();
+          });
+        }
+      );
   };
-}
+};
 
 export default UploadHandler;

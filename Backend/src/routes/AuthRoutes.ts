@@ -1,9 +1,8 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import GoogleAuthController from '../controller/auth/GoogleAuthController';
 import CredentialAuthController from '../controller/auth/CredentialAuthController';
 import passport from 'passport';
 import TokenVerifier from '../controller/auth/TokenVerifier';
-import upload from '../helper/fileuploadHelper';
 const router = express.Router();
 
 import './passport-setup/passport-setup';
@@ -29,19 +28,10 @@ router.get(
   TokenVerifier.TokenVerifier
 );
 //refresh oken
-router.post(
-  '/refresh',
-  TokenVerifier.RefreshToken
-)
+router.post('/refresh', TokenVerifier.RefreshToken);
 
-router.post(
-  '/resend',
-  CredentialAuthController.OtpResend
-)
+router.post('/resend', CredentialAuthController.OtpResend);
 
-router.post(
-  '/otp/verify',
-  CredentialAuthController.OtpVerifier
-)
+router.post('/otp/verify', CredentialAuthController.OtpVerifier);
 
 export default router;

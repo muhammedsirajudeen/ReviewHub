@@ -46,16 +46,16 @@ router.delete(
 );
 router.put(
   '/reviewcompletion',
-  passport.authenticate('jwt',{session:false}),
+  passport.authenticate('jwt', { session: false }),
   ReviewController.ReviewStatus
-)
+);
 
 //dashboard management
 
 router.get(
   '/dashboard',
-  passport.authenticate('jwt',{session:false}),
+  passport.authenticate('jwt', { session: false }),
   DashboardController.GetReviewerDashboard
-)
+);
 
 export default router;

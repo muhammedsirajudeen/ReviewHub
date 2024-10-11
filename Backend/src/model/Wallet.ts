@@ -4,9 +4,9 @@ interface HistoryProps {
   paymentDate: Date;
   type: string;
   amount: number;
-  status:boolean;
-  withdrawalId?:mongoose.Types.ObjectId;
-  reviewId?:mongoose.Types.ObjectId
+  status: boolean;
+  withdrawalId?: mongoose.Types.ObjectId;
+  reviewId?: mongoose.Types.ObjectId;
 }
 
 interface IWallet extends Document {
@@ -30,19 +30,19 @@ const HistorySchema = new Schema<HistoryProps>({
     type: Number,
     required: true,
   },
-  status:{
-    type:Boolean,
-    required:false,
-    default:false
+  status: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
-  withdrawalId:{
-    type:mongoose.Schema.ObjectId,
-    required:false,
+  withdrawalId: {
+    type: mongoose.Schema.ObjectId,
+    required: false,
   },
-  reviewId:{
-    type:mongoose.Schema.ObjectId,
-    required:false
-  }
+  reviewId: {
+    type: mongoose.Schema.ObjectId,
+    required: false,
+  },
 });
 
 const WalletSchema = new Schema<IWallet>({
@@ -67,8 +67,6 @@ const WalletSchema = new Schema<IWallet>({
     required: false,
     default: [],
   },
-  
-  
 });
 
 const Wallet = mongoose.model<IWallet>('wallets', WalletSchema);
