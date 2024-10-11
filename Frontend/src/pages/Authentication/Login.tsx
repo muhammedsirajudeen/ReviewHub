@@ -16,6 +16,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { flushSync } from 'react-dom';
 import OtpForm from '../../components/Form/Authentication/OtpForm';
 import axiosInstance from '../../helper/axiosInstance';
+import { AuthPath } from '../../types/pathNames';
 interface FormValues {
   email: string;
   password: string;
@@ -216,7 +217,7 @@ export default function Login(): ReactElement {
               <p className="text-xs font-normal ml-14">Sign in Using Google</p>
             </button>
             <a
-              href="/signup"
+              href={AuthPath.signup}
               className="h-10 w-72 bg-blue-200 mt-5  text-blue-600 text-xs flex items-center justify-center"
             >
               CREATE YOUR ACCOUNT

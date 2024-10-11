@@ -9,7 +9,7 @@ interface walletProps {
   userId?: string;
   redeemable?: number;
   balance?: number;
-  history?: HistoryProps[];
+  history: HistoryProps[];
 }
 export interface paymentMethodprops{
   bankaccount:string,
@@ -27,7 +27,7 @@ export default interface userProps {
   walletId: walletProps;
   reviewerApproval: boolean;
   premiumMember:boolean;
-  favoriteCourses?:string[]
+  favoriteCourses:string[]
   verified:boolean
   paymentMethod:paymentMethodprops[]
   lastSeen?:string

@@ -6,6 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import OtpForm from '../../components/Form/Authentication/OtpForm';
 import { flushSync } from 'react-dom';
 import axiosInstance from '../../helper/axiosInstance';
+import { AuthPath } from '../../types/pathNames';
 interface FormValues {
   email: string;
   password: string;
@@ -81,9 +82,9 @@ export default function Signup(): ReactElement {
       if (response.status === 201 && response.data.message === 'success') {
         toast('success');
         if(roleRef.current==="reviewer"){
-          setTimeout(()=>navigate('/signin',{state:{role:"reviewer"}}))
+          setTimeout(()=>navigate(AuthPath.signin,{state:{role:"reviewer"}}))
         }
-        setTimeout(() => navigate('/signin'), 1000);
+        setTimeout(() => navigate(AuthPath.signin), 1000);
       } else {
         toast(response.data.message);
       }

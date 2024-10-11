@@ -48,7 +48,7 @@ import Withdrawals from './pages/Admin/Withdrawals';
 import Review from './pages/User/Review';
 import Notification from './pages/User/Notification';
 import VideoChat from './pages/User/VideoChat';
-import { Path } from './types/pathNames';
+import { AuthPath, AdminPath, UserPath, ReviewerPath } from './types/pathNames';
 import ReviewHistory from './pages/User/ReviewHistory';
 import Recording from './pages/Admin/Recording';
 
@@ -64,17 +64,17 @@ const router = createBrowserRouter([
         loader: tokenVerifier,
       },
       {
-        path: '/signin',
+        path: AuthPath.signin,
         element: <AuthPrivateRoute Component={Login} />,
         loader: tokenVerifier,
       },
       {
-        path: '/signup',
+        path: AuthPath.signup,
         element: <AuthPrivateRoute Component={Signup} />,
         loader: tokenVerifier,
       },
       {
-        path: '/forgot',
+        path: AuthPath.forgot,
         element: <AuthPrivateRoute Component={Forgot} />,
         loader: tokenVerifier,
       },
@@ -90,70 +90,70 @@ const router = createBrowserRouter([
 
     children: [
       {
-        path: '/admin/dashboard',
+        path: AdminPath.admindashboard,
         element: <AdminPrivateRoute Component={AdminDashboard} />,
         loader: tokenVerifier,
       },
       {
-        path: '/admin/courses',
+        path: AdminPath.admincourses,
         element: <AdminPrivateRoute Component={AdminCourse} />,
         loader: tokenVerifier,
       },
       {
-        path: '/admin/roadmap',
+        path: AdminPath.adminroadmap,
         element: <AdminPrivateRoute Component={AdminRoadmap} />,
         loader: tokenVerifier,
       },
       {
-        path: '/admin/chapter',
+        path: AdminPath.adminchapter,
         element: <AdminPrivateRoute Component={AdminChapter} />,
         loader: tokenVerifier,
       },
       {
-        path: '/admin/resource',
+        path: AdminPath.adminresource,
         element: <AdminPrivateRoute Component={AdminResource} />,
         loader: tokenVerifier,
       },
       {
-        path: '/admin/users',
+        path: AdminPath.adminusers,
         element: <AdminPrivateRoute Component={User} />,
         loader: tokenVerifier,
       },
       {
-        path: '/admin/approvals',
+        path: AdminPath.adminapprovals,
         element: <AdminPrivateRoute Component={Approvals} />,
         loader: tokenVerifier,
       },
       {
-        path:'/admin/blog',
-        element:<AdminPrivateRoute Component={Blog}/>,
-        loader:tokenVerifier
+        path: AdminPath.adminblog,
+        element: <AdminPrivateRoute Component={Blog} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/admin/payments',
-        element:<AdminPrivateRoute Component={Payments}/>,
-        loader:tokenVerifier
+        path: AdminPath.adminpayments,
+        element: <AdminPrivateRoute Component={Payments} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/admin/chat',
-        element:<AdminPrivateRoute Component={AdminChat}/>,
-        loader:tokenVerifier
+        path: AdminPath.adminchat,
+        element: <AdminPrivateRoute Component={AdminChat} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/admin/withdrawals',
-        element:<AdminPrivateRoute Component={Withdrawals}/>,
-        loader:tokenVerifier
+        path: AdminPath.adminwithdrawals,
+        element: <AdminPrivateRoute Component={Withdrawals} />,
+        loader: tokenVerifier,
       },
       {
-        path:Path.adminreviewhistory,
-        element:<AdminPrivateRoute Component={AdminReviewHistory}/>,
-        loader:tokenVerifier
+        path: AdminPath.adminreviewhistory,
+        element: <AdminPrivateRoute Component={AdminReviewHistory} />,
+        loader: tokenVerifier,
       },
       {
-        path:Path.adminreviewrecording,
-        element:<AdminPrivateRoute Component={Recording}/>,
-        loader:tokenVerifier
-      }
+        path: AdminPath.adminreviewrecording,
+        element: <AdminPrivateRoute Component={Recording} />,
+        loader: tokenVerifier,
+      },
     ],
   },
   //user routes
@@ -165,75 +165,75 @@ const router = createBrowserRouter([
 
     children: [
       {
-        path: '/user/dashboard',
+        path: UserPath.userdashboard,
         element: <UserPrivateRoute Component={Dashboard} />,
         loader: tokenVerifier,
       },
       {
-        path: '/user/courses',
+        path: UserPath.usercourses,
         element: <UserPrivateRoute Component={Course} />,
         loader: tokenVerifier,
       },
       {
-        path: '/user/roadmap',
+        path: UserPath.userroadmap,
         element: <UserPrivateRoute Component={Roadmap} />,
         loader: tokenVerifier,
       },
       {
-        path: '/user/profile',
+        path: UserPath.userprofile,
         element: <UserPrivateRoute Component={Profile} />,
         loader: tokenVerifier,
       },
       {
-        path: '/user/resource',
+        path: UserPath.userresource,
         element: <UserPrivateRoute Component={Resource} />,
         loader: tokenVerifier,
       },
       {
-        path: '/user/wallet',
+        path: UserPath.userwallet,
         element: <UserPrivateRoute Component={Wallet} />,
         loader: tokenVerifier,
       },
       {
-        path:'/user/blog',
-        element:<UserPrivateRoute Component={Blog}/>,
-        loader:tokenVerifier
+        path: UserPath.userblog,
+        element: <UserPrivateRoute Component={Blog} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/user/blog/manage',
-        element:<UserPrivateRoute Component={ManageBlog}/>,
-        loader:tokenVerifier
+        path: UserPath.userblogmanage,
+        element: <UserPrivateRoute Component={ManageBlog} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/user/enrolled',
-        element:<UserPrivateRoute Component={ManageCourse}/>,
-        loader:tokenVerifier
+        path: UserPath.userenrolled,
+        element: <UserPrivateRoute Component={ManageCourse} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/user/chat',
-        element:<UserPrivateRoute Component={Chat}/>,
-        loader:tokenVerifier
+        path: UserPath.userchat,
+        element: <UserPrivateRoute Component={Chat} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/user/review',
-        element:<UserPrivateRoute Component={Review}/>,
-        loader:tokenVerifier
+        path: UserPath.userreview,
+        element: <UserPrivateRoute Component={Review} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/user/notifications',
-        element:<UserPrivateRoute Component={Notification}/>,
-        loader:tokenVerifier
+        path: UserPath.usernotifications,
+        element: <UserPrivateRoute Component={Notification} />,
+        loader: tokenVerifier,
       },
       {
-        path:'/user/videochat',
-        element:<UserPrivateRoute Component={VideoChat}/>,
-        loader:tokenVerifier
+        path: UserPath.uservideochat,
+        element: <UserPrivateRoute Component={VideoChat} />,
+        loader: tokenVerifier,
       },
       {
-        path:Path.reviewhistory,
-        element:<UserPrivateRoute Component={ReviewHistory}/>,
-        loader:tokenVerifier
-      }
+        path: UserPath.userreviewhistory,
+        element: <UserPrivateRoute Component={ReviewHistory} />,
+        loader: tokenVerifier,
+      },
     ],
   },
   {
@@ -243,20 +243,20 @@ const router = createBrowserRouter([
     errorElement: <ErrorElement />,
     children: [
       {
-        path: '/reviewer/dashboard',
+        path: ReviewerPath.reviewerdashboard,
         element: <ReviewerPrivateRoute Component={ReviewerDashboard} />,
         loader: tokenVerifier,
       },
       {
-        path: '/reviewer/approval',
+        path: ReviewerPath.reviewerapproval,
         element: <ReviewerPrivateRoute Component={Approval} />,
         loader: tokenVerifier,
       },
       {
-        path:'/reviewer/review',
-        element:<ReviewerPrivateRoute Component={ReviewerReview}/>,
-        loader:tokenVerifier
-      }
+        path: ReviewerPath.reviewerreview,
+        element: <ReviewerPrivateRoute Component={ReviewerReview} />,
+        loader: tokenVerifier,
+      },
     ],
   },
 ]);

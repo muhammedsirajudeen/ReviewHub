@@ -5,6 +5,7 @@ import url from '../../../helper/backendUrl';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import axiosInstance from '../../../helper/axiosInstance';
+import { AuthPath } from '../../../types/pathNames';
 
 interface FormData {
   otp: string;
@@ -75,17 +76,17 @@ export default function OtpForm({
         window.localStorage.removeItem("verifyemail")
         console.log(type);
         if (type) {
-          setTimeout(() => navigate('/forgot'), 1000);
+          setTimeout(() => navigate(AuthPath.forgot), 1000);
           return;
         }
         if (role) {
           setTimeout(
-            () => navigate('/signin', { state: { role: 'reviewer' } }),
+            () => navigate(AuthPath.signin, { state: { role: 'reviewer' } }),
             1000
           );
           return;
         }
-        setTimeout(() => navigate('/signin'), 1000);
+        setTimeout(() => navigate(AuthPath.signin), 1000);
       } else {
         toast(response.message);
       }

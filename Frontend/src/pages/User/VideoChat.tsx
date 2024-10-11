@@ -34,7 +34,7 @@ interface messageProps {
 export default function VideoChat(): ReactElement {
   const [loading, setLoading] = useState<boolean>(true);
   const [chat, setChat] = useState<boolean>(false);
-  const [nudge,setNudge]=useState<boolean>(false)
+  const [nudge, setNudge] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const location = useLocation().state;
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -48,8 +48,8 @@ export default function VideoChat(): ReactElement {
   const [messages, setMessages] = useState<messageProps[]>([]);
   const connectionRef = useRef<DataConnection>();
   const chatContainer = useRef<HTMLDivElement>(null);
-  const renderCount=useRef<number>(0)
-  
+  const renderCount = useRef<number>(0);
+
   useEffect(() => {
     dispatch(setPage('review'));
     async function mediaStreamFetcher(): Promise<MediaStream> {
@@ -98,7 +98,7 @@ export default function VideoChat(): ReactElement {
       //part of chat as well
       conn.on('data', (data) => {
         console.log(data);
-        setNudge(true)
+        setNudge(true);
         flushSync(() => {
           setMessages(
             produce((draft) => {
@@ -123,10 +123,10 @@ export default function VideoChat(): ReactElement {
         const call = await peer.call(callerId as string, stream);
         const connection = await peer.connect(callerId);
         connectionRef.current = connection;
-        //this  is  the part of chat 
+        //this  is  the part of chat
         connection.on('data', (data) => {
           console.log(data);
-          setNudge(true)
+          setNudge(true);
           flushSync(() => {
             setMessages(
               produce((draft) => {
@@ -143,12 +143,15 @@ export default function VideoChat(): ReactElement {
           if (remoteVideoRef.current) {
             remoteVideoRef.current.srcObject = remoteStream;
             remoteVideoRef.current.play();
-            if(renderCount.current===0){
-
-              recordingHelper(await mediaStreamFetcher(),location,user.authorization)
-              renderCount.current++
+            if (renderCount.current === 0) {
+              recordingHelper(
+                await mediaStreamFetcher(),
+                location,
+                user.authorization
+              );
+              renderCount.current++;
             }
-      
+
             setLoading(false);
             const videoTracks = remoteStream.getVideoTracks();
 
@@ -183,12 +186,15 @@ export default function VideoChat(): ReactElement {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
           remoteVideoRef.current.play();
-          if(renderCount.current===0){
-
-            recordingHelper(await mediaStreamFetcher(),location,user.authorization)
-            renderCount.current++
+          if (renderCount.current === 0) {
+            recordingHelper(
+              await mediaStreamFetcher(),
+              location,
+              user.authorization
+            );
+            renderCount.current++;
           }
-    
+
           setLoading(false);
           const videoTracks = remoteStream.getVideoTracks();
 
@@ -223,7 +229,6 @@ export default function VideoChat(): ReactElement {
       peer.destroy(); // Destroy the peer instance
     };
   }, [dispatch, location, user._id, user.authorization]);
-
 
   async function combineMediaStreams(
     screenStream: MediaStream,
@@ -282,7 +287,7 @@ export default function VideoChat(): ReactElement {
   };
   const chatHandler = () => {
     setChat((prev) => !prev);
-    setNudge(false)
+    setNudge(false);
   };
   const messageSendHandler = () => {
     if (!messageInputRef.current) {
@@ -310,27 +315,22 @@ export default function VideoChat(): ReactElement {
       messageInputRef.current.value = '';
     }
   };
-  const backHandler = async  () => {
-    
-    if(user.authorization==='reviewer'){
+  const backHandler = async () => {
+    if (user.authorization === 'reviewer') {
       try {
-        streamRef.current?.getTracks().forEach((track)=>{
-        track.stop()
+        streamRef.current?.getTracks().forEach((track) => {
+          track.stop();
+        });
+        const response = (
+          await axiosInstance.put('/reviewer/reviewcompletion', {
+            reviewId: location,
+          })
+        ).data;
+        if (response.message === 'success') {
+          console.log(response);
         }
-        )
-        const response=(
-          await axiosInstance.put('/reviewer/reviewcompletion',
-            {
-              reviewId:location
-            }
-          )
-        ).data
-        if(response.message==="success"){
-          console.log(response)
-        }
-        
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     }
     navigate('/user/dashboard');
@@ -381,10 +381,9 @@ export default function VideoChat(): ReactElement {
             <img className="h-6 w-6" src="/videochat/screenshare.png" />
           </button>
         )}
-        {
-          nudge && 
-          (<div className='h-4 w-4 bg-green-600 rounded-full relative left-14 bottom-3'/>)
-        }
+        {nudge && (
+          <div className="h-4 w-4 bg-green-600 rounded-full relative left-14 bottom-3" />
+        )}
         <button
           onClick={() => chatHandler()}
           className="flex ml-10 items-center justify-center"

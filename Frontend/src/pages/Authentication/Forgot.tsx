@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import axiosInstance from "../../helper/axiosInstance";
+import { AuthPath } from "../../types/pathNames";
 
 type Inputs = {
   password: string;
@@ -35,7 +36,7 @@ export default function Forgot(): ReactElement {
       if (response.message === "success") {
         toast("Password Changed Successfully");
         
-        setTimeout(() => navigate('/signin'), 1000);
+        setTimeout(() => navigate(AuthPath.signin), 1000);
       } else {
         toast(response.message);
       }
@@ -101,7 +102,7 @@ export default function Forgot(): ReactElement {
             </button>
             <button
               type="button"
-              onClick={() => navigate("/signin")}
+              onClick={() => navigate(AuthPath.signin)}
               className="border border-gray-300 text-gray-600 h-12 rounded-md transition hover:bg-gray-200"
             >
               Back to Login
