@@ -43,6 +43,7 @@ export default function BlogForm({
   const onSubmit = async (data: { heading: string; article: string }) => {
     if (fileRef.current?.files?.length === 0  && !method) {
       toast.error('please select a file');
+      
       return;
     } else {
       console.log(data);
@@ -69,8 +70,7 @@ export default function BlogForm({
             setBlogs(produce((draft)=>{
               draft.forEach((d)=>{
                 if(d._id===blog?._id){
-                  d.article=data.article
-                  d.heading=data.heading
+                  Object.assign(d,response.blog)
                 }
               })
             }))
@@ -79,11 +79,13 @@ export default function BlogForm({
             return
           }else{
             toast.error(response.message)
+            return
           }
   
         }catch(error){
           console.log(error)
           toast.error("error updating")
+          return
         }
       }
       const response = (
@@ -95,7 +97,10 @@ export default function BlogForm({
       ).data;
       if (response.message === 'success') {
         toast.success('blog posted');
-        setTimeout(() => window.location.reload(), 1000);
+        setBlogs(produce((draft)=>{
+          draft.push(response.blog)
+        }))
+        closeHandler()
       } else {
         toast(response.message);
       }

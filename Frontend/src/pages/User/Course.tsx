@@ -3,7 +3,7 @@ import url from '../../helper/backendUrl';
 import { courseProps } from '../../types/courseProps';
 import { useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { setPage } from '../../store/globalSlice';
+import { setFavorite, setPage } from '../../store/globalSlice';
 import TopBar from '../../components/TopBar';
 import FilterBar from '../../components/FilterBar';
 import { toast, ToastContainer } from 'react-toastify';
@@ -15,7 +15,9 @@ export default function Course(): ReactElement {
   const [pagecount, setPagecount] = useState<number>(0);
   const [search, setSearch] = useState<string>('');
   const [enrolledcourses, setEnrolledcourses] = useState<Array<string>>([]);
-  const user=useAppSelector((state)=>state.global.user)
+  // const user=useAppSelector((state)=>state.global.user)
+  const favorites=useAppSelector((state)=>state.global.user.favoriteCourses)
+  
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -61,7 +63,9 @@ export default function Course(): ReactElement {
       ).data
       if(response.message==="success"){
         toast.success("success")
-        setTimeout(()=>window.location.reload(),300)
+        
+        dispatch(setFavorite(id))
+        // setTimeout(()=>window.location.reload(),300)
       }else{
         toast.error(response.message)
       }
@@ -126,7 +130,7 @@ export default function Course(): ReactElement {
                     e.stopPropagation()
                     favHandler(course._id)
                   }}
-                  src={` ${user.favoriteCourses?.includes(course._id) ? "/course/favoritefilled.png"  :"/course/favorite.png"  } `}
+                  src={` ${favorites?.includes(course._id) ? "/course/favoritefilled.png"  :"/course/favorite.png"  } `}
                   className="h-5 w-5"
                 />
                 <img
