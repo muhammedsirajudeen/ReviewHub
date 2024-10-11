@@ -27,6 +27,7 @@ import socketInitializer from './socketio-server/socket';
 const app = express();
 const server = http.createServer(app);
 
+//TODO: Implement secret key based system inorder for the reviewer and reviewee to be connected right now its not that secure go with the first implementation
 const peerServer = ExpressPeerServer(server, {
   path: '/myapp',
 });
