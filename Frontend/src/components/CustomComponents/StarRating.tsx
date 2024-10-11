@@ -1,4 +1,10 @@
-import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
 
 export default function StarRating({
   starCount,
@@ -16,7 +22,9 @@ export default function StarRating({
 
   useEffect(() => {
     // Initialize filled stars based on initialCount
-    const newFilledStars = Array.from({ length: starCount }, (_, i) => (i < initialCount ? 1 : 0));
+    const newFilledStars = Array.from({ length: starCount }, (_, i) =>
+      i < initialCount ? 1 : 0
+    );
     setFilledStars(newFilledStars);
   }, [initialCount, starCount]);
 

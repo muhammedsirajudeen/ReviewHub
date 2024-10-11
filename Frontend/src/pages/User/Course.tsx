@@ -16,8 +16,10 @@ export default function Course(): ReactElement {
   const [search, setSearch] = useState<string>('');
   const [enrolledcourses, setEnrolledcourses] = useState<Array<string>>([]);
   // const user=useAppSelector((state)=>state.global.user)
-  const favorites=useAppSelector((state)=>state.global.user.favoriteCourses)
-  
+  const favorites = useAppSelector(
+    (state) => state.global.user.favoriteCourses
+  );
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -27,9 +29,7 @@ export default function Course(): ReactElement {
       let urlconstructor = `/user/course?page=${currentpage}`;
       if (search)
         urlconstructor = `/user/course?page=${currentpage}&search=${search}`;
-      const response = (
-        await axiosInstance.get(urlconstructor)
-      ).data;
+      const response = (await axiosInstance.get(urlconstructor)).data;
       console.log(response);
       setCourses(response.courses);
       setPagecount(response.pageLength);
@@ -37,9 +37,7 @@ export default function Course(): ReactElement {
     dataWrapper();
     async function enrollWrapper() {
       const urlconstructor = `/user/enroll`;
-      const response = (
-        await axiosInstance.get(urlconstructor)
-      ).data;
+      const response = (await axiosInstance.get(urlconstructor)).data;
       if (response.message === 'success') {
         console.log(response);
         setEnrolledcourses(response.enrolledCourses);
@@ -56,21 +54,19 @@ export default function Course(): ReactElement {
     e.stopPropagation();
     alert('clicked here');
   };
-  const favHandler = async (id:string) => {
-    try{
-      const response=(
-        await axiosInstance.post(`/user/favorite/${id}`)
-      ).data
-      if(response.message==="success"){
-        toast.success("success")
-        
-        dispatch(setFavorite(id))
+  const favHandler = async (id: string) => {
+    try {
+      const response = (await axiosInstance.post(`/user/favorite/${id}`)).data;
+      if (response.message === 'success') {
+        toast.success('success');
+
+        dispatch(setFavorite(id));
         // setTimeout(()=>window.location.reload(),300)
-      }else{
-        toast.error(response.message)
+      } else {
+        toast.error(response.message);
       }
-    }catch(error){
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
   };
   const pageHandler = (count: number) => {
@@ -126,11 +122,15 @@ export default function Course(): ReactElement {
               />
               <div className="flex justify-between w-full">
                 <img
-                  onClick={(e)=>{
-                    e.stopPropagation()
-                    favHandler(course._id)
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    favHandler(course._id);
                   }}
-                  src={` ${favorites?.includes(course._id) ? "/course/favoritefilled.png"  :"/course/favorite.png"  } `}
+                  src={` ${
+                    favorites?.includes(course._id)
+                      ? '/course/favoritefilled.png'
+                      : '/course/favorite.png'
+                  } `}
                   className="h-5 w-5"
                 />
                 <img

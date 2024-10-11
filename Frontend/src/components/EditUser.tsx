@@ -1,15 +1,15 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError } from 'axios';
 import {
   ChangeEvent,
   Dispatch,
   ReactElement,
   SetStateAction,
   useRef,
-} from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { toast, ToastContainer } from "react-toastify";
-import url from "../helper/backendUrl";
-import userProps from "../types/userProps";
+} from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { toast, ToastContainer } from 'react-toastify';
+import url from '../helper/backendUrl';
+import userProps from '../types/userProps';
 interface FormValues {
   email: string;
   password: string;
@@ -47,12 +47,12 @@ export default function EditUser({
       if (e.target.files[0].size > maxSize) {
         // errorSpan.textContent = 'File size exceeds 2MB.';
         // isValid = false;
-        toast("must be less than 2MB");
+        toast('must be less than 2MB');
         return;
       }
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!allowedTypes.includes(e.target.files[0].type)) {
-        toast("invalid file type");
+        toast('invalid file type');
         return;
       }
       const reader = new FileReader();
@@ -70,38 +70,35 @@ export default function EditUser({
     console.log(data.email);
     const formData = new FormData();
     if (user?.email) {
-      formData.append("currentemail", user?.email ?? "");
+      formData.append('currentemail', user?.email ?? '');
     }
-    formData.append("email", data.email);
-    formData.append("phone", data.phone);
-    formData.append("address", data.address);
+    formData.append('email', data.email);
+    formData.append('phone', data.phone);
+    formData.append('address', data.address);
     if (fileRef.current?.files) {
-      formData.append("file", fileRef.current.files[0]);
+      formData.append('file', fileRef.current.files[0]);
     }
-    try{
+    try {
       const response = (
-        await axios.put(url + "/admin/user", formData, {
+        await axios.put(url + '/admin/user', formData, {
           headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
           },
         })
       ).data;
-      console.log(response)
-      if (response.message === "success") {
-        toast("edited successfuly");
+      console.log(response);
+      if (response.message === 'success') {
+        toast('edited successfuly');
         setTimeout(() => window.location.reload(), 1000);
       } else {
         toast(response.message);
         setTimeout(() => window.location.reload(), 1000);
-
       }
-  
-    }catch(error){
-      if(error instanceof AxiosError){
-        console.log(error)
-        toast(error.message)
-  
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.log(error);
+        toast(error.message);
       }
     }
   };
@@ -119,7 +116,7 @@ export default function EditUser({
       <p className="text-xs mt-6">EDIT</p>
       <img
         ref={imageRef}
-        src={user?.profileImage ?? "user.png"}
+        src={user?.profileImage ?? 'user.png'}
         className="rounded-full w-28 h-28 mt-2"
         onClick={() => fileRef.current?.click()}
       />
@@ -132,11 +129,11 @@ export default function EditUser({
           type="email"
           className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
           placeholder="enter the email address"
-          {...register("email", {
-            required: "Email is required",
+          {...register('email', {
+            required: 'Email is required',
             pattern: {
               value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Invalid email address",
+              message: 'Invalid email address',
             },
           })}
         />
@@ -151,11 +148,11 @@ export default function EditUser({
           type="number"
           className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
           placeholder="enter the password"
-          {...register("phone", {
-            required: "Phone Number is required",
+          {...register('phone', {
+            required: 'Phone Number is required',
             minLength: {
               value: 10,
-              message: "Phone number must be 10 characters long ",
+              message: 'Phone number must be 10 characters long ',
             },
           })}
         />
@@ -170,14 +167,14 @@ export default function EditUser({
           type="text"
           className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
           placeholder="enter the password"
-          {...register("address", {
-            required: "Address is required",
+          {...register('address', {
+            required: 'Address is required',
             minLength: {
               value: 10,
-              message: "Address must be alteast 10 characters long ",
+              message: 'Address must be alteast 10 characters long ',
             },
             validate: (address: string) => {
-              if (address.trim() === "") return "address cannot be empty";
+              if (address.trim() === '') return 'address cannot be empty';
               return true;
             },
           })}

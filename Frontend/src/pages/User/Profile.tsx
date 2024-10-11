@@ -21,8 +21,8 @@ export default function Profile(): ReactElement {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
-  const [premiumdialog,setPremiumdialog]=useState<boolean>(false)
-  const premiumDialogRef=useRef<HTMLDialogElement>(null)
+  const [premiumdialog, setPremiumdialog] = useState<boolean>(false);
+  const premiumDialogRef = useRef<HTMLDialogElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
@@ -86,16 +86,16 @@ export default function Profile(): ReactElement {
     navigate('/user/wallet');
   };
 
-  const premiumHandler=()=>{
-    flushSync(()=>{
-      setPremiumdialog(true)
-    })
-    premiumDialogRef.current?.showModal()
-  }
-  const closePremiumHandler=()=>{
-    premiumDialogRef.current?.close()
-    setPremiumdialog(false)
-  }
+  const premiumHandler = () => {
+    flushSync(() => {
+      setPremiumdialog(true);
+    });
+    premiumDialogRef.current?.showModal();
+  };
+  const closePremiumHandler = () => {
+    premiumDialogRef.current?.close();
+    setPremiumdialog(false);
+  };
 
   return (
     <div className="mt-20 flex items-center justify-center">
@@ -127,7 +127,8 @@ export default function Profile(): ReactElement {
               className="h-8 w-8 object-contain"
             />
             <p className="text-2xl font-bold ml-2">
-            {(user.walletId?.balance ?? 0)+(user.walletId?.redeemable ?? 0) || '0'}
+              {(user.walletId?.balance ?? 0) +
+                (user.walletId?.redeemable ?? 0) || '0'}
             </p>
           </div>
         </div>
@@ -185,16 +186,20 @@ export default function Profile(): ReactElement {
             onClick={premiumHandler}
             className={`m-10 flex items-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 
               transition duration-200
-              ${user.premiumMember && "bg-navbar text-gold-400"}
+              ${user.premiumMember && 'bg-navbar text-gold-400'}
               `}
           >
             <img
-              src={ user.premiumMember ? "/premium/premiumgold.png" : "/premium/premium.png"}
+              src={
+                user.premiumMember
+                  ? '/premium/premiumgold.png'
+                  : '/premium/premium.png'
+              }
               alt="Premium Logo"
               className="h-6 w-6 mr-2"
             />
-            <p className={`${user.premiumMember && "text-gold-400"}`} >
-            {user.premiumMember ? 'Premium Member' : 'Become Premium'}
+            <p className={`${user.premiumMember && 'text-gold-400'}`}>
+              {user.premiumMember ? 'Premium Member' : 'Become Premium'}
             </p>
           </button>
         )}

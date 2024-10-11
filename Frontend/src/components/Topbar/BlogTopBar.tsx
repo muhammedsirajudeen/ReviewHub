@@ -3,21 +3,16 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { blogProps } from '../../types/blogProps';
 import axiosInstance from '../../helper/axiosInstance';
 
-
 type Inputs = {
   search: string;
 };
 
 //a generic component for all search functionalities
-function BlogTopBar(
-  {
-    setResults,
-  }
-  :
-  {
-    setResults:Dispatch<SetStateAction<Array<blogProps>>>
-  }
-): ReactElement {
+function BlogTopBar({
+  setResults,
+}: {
+  setResults: Dispatch<SetStateAction<Array<blogProps>>>;
+}): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
   const {
     register,
@@ -25,14 +20,13 @@ function BlogTopBar(
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = async  (data) => {
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
-    const response=
-    (
+    const response = (
       await axiosInstance.get(`/user/blog?search=${data.search}`)
-    ).data
-    if(response.message==="success"){
-      setResults(response.blogs)
+    ).data;
+    if (response.message === 'success') {
+      setResults(response.blogs);
     }
   };
   const notificationHandler = () => {
@@ -97,4 +91,4 @@ function BlogTopBar(
     </div>
   );
 }
-export default memo(BlogTopBar)
+export default memo(BlogTopBar);

@@ -36,9 +36,9 @@ export default function Review(): ReactElement {
   const [review, setReview] = useState<reviewProps>();
   const deleteDialogRef = useRef<HTMLDialogElement>(null);
   const [deletedialog, setDeletedialog] = useState<boolean>(false);
-  const dispatch=useAppDispatch()
+  const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(setPage('review'))
+    dispatch(setPage('review'));
     async function reviewFetching() {
       const response = (await axiosInstance.get('/user/review')).data;
       if (response.message === 'success') {
@@ -67,10 +67,10 @@ export default function Review(): ReactElement {
     setDate(new Date(slotInfo.start));
   };
 
-  const selectRoadmap = (roadmap: roadmapProps,review:reviewProps) => {
+  const selectRoadmap = (roadmap: roadmapProps, review: reviewProps) => {
     setSelect(true);
     setRoadmap(roadmap);
-    setReview(review)
+    setReview(review);
   };
   const reviewScheduler = async () => {
     if (!date) {
@@ -81,23 +81,25 @@ export default function Review(): ReactElement {
       const response = (
         await axiosInstance.put(`/user/review/schedule/${roadmap?._id}`, {
           date: date,
-          reviewId:review?._id
+          reviewId: review?._id,
         })
       ).data;
       if (response.message === 'success') {
-        console.log(response)
+        console.log(response);
         toast.success('scheduled successfully');
-        console.log(review?._id)
-        const newPendingReviews=pendingreviews.filter((d)=>d._id!==review?._id)
+        console.log(review?._id);
+        const newPendingReviews = pendingreviews.filter(
+          (d) => d._id !== review?._id
+        );
         // console.log(newPendingReviews)
-        setPendingreviews(newPendingReviews)
+        setPendingreviews(newPendingReviews);
 
-        setReviews(produce((draft)=>{
-
-                draft.push(response.reviews)
-            
-        }))
-        setSelect(false)
+        setReviews(
+          produce((draft) => {
+            draft.push(response.reviews);
+          })
+        );
+        setSelect(false);
       }
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -105,17 +107,16 @@ export default function Review(): ReactElement {
     }
   };
   const cancelHandler = (review: reviewProps) => {
-    flushSync(()=>{
-        setDeletedialog(true)
-    })
-    deleteDialogRef.current?.showModal()
+    flushSync(() => {
+      setDeletedialog(true);
+    });
+    deleteDialogRef.current?.showModal();
     setReview(review);
-
   };
-  const deleteCloseHandler=()=>{
-    setDeletedialog(false)
-    deleteDialogRef.current?.close()
-  }
+  const deleteCloseHandler = () => {
+    setDeletedialog(false);
+    deleteDialogRef.current?.close();
+  };
 
   return (
     <>
@@ -128,7 +129,6 @@ export default function Review(): ReactElement {
             Scheduled Reviews
           </h2>
           <div className="w-full h-72 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg shadow-sm bg-gray-100">
-
             {reviews.map((review) => {
               return (
                 <div

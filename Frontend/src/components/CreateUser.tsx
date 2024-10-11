@@ -1,14 +1,14 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError } from 'axios';
 import {
   ChangeEvent,
   Dispatch,
   ReactElement,
   SetStateAction,
   useRef,
-} from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { toast, ToastContainer } from "react-toastify";
-import url from "../helper/backendUrl";
+} from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { toast, ToastContainer } from 'react-toastify';
+import url from '../helper/backendUrl';
 
 interface FormValues {
   email: string;
@@ -38,12 +38,12 @@ export default function CreateUser({
       if (e.target.files[0].size > maxSize) {
         // errorSpan.textContent = 'File size exceeds 2MB.';
         // isValid = false;
-        toast("must be less than 2MB");
+        toast('must be less than 2MB');
         return;
       }
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!allowedTypes.includes(e.target.files[0].type)) {
-        toast("invalid file type");
+        toast('invalid file type');
         return;
       }
       const reader = new FileReader();
@@ -60,34 +60,33 @@ export default function CreateUser({
     // const imageFile = imageRef.current?.src;
     console.log(data.email);
     const formData = new FormData();
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    formData.append("phone", data.phone);
-    formData.append("address", data.address);
+    formData.append('email', data.email);
+    formData.append('password', data.password);
+    formData.append('phone', data.phone);
+    formData.append('address', data.address);
     if (fileRef.current?.files) {
-      formData.append("file", fileRef.current.files[0]);
+      formData.append('file', fileRef.current.files[0]);
     }
-    try{
+    try {
       const response = (
-        await axios.post(url + "/auth/credential/signup", formData, {
+        await axios.post(url + '/auth/credential/signup', formData, {
           headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${window.localStorage.getItem('token')}`,
           },
         })
       ).data;
-      if (response.message === "success") {
-        toast("created successfuly");
+      if (response.message === 'success') {
+        toast('created successfuly');
         setTimeout(() => window.location.reload(), 1000);
       } else {
         toast(response.message);
       }
-    }catch(error){
-      if(error instanceof AxiosError){
-        toast(error.message)
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast(error.message);
       }
     }
-
   };
   return (
     <dialog
@@ -103,7 +102,7 @@ export default function CreateUser({
       <p className="text-xs mt-6">CREATE</p>
       <img
         ref={imageRef}
-        src={"user.png"}
+        src={'user.png'}
         className="rounded-full w-10 h-10 mt-2"
         onClick={() => fileRef.current?.click()}
       />
@@ -116,11 +115,11 @@ export default function CreateUser({
           type="email"
           className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
           placeholder="enter the email address"
-          {...register("email", {
-            required: "Email is required",
+          {...register('email', {
+            required: 'Email is required',
             pattern: {
               value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Invalid email address",
+              message: 'Invalid email address',
             },
           })}
         />
@@ -135,11 +134,11 @@ export default function CreateUser({
           type="password"
           className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
           placeholder="enter the password"
-          {...register("password", {
-            required: "Password is required",
+          {...register('password', {
+            required: 'Password is required',
             minLength: {
               value: 8,
-              message: "Password must be atleast 8 characters Long",
+              message: 'Password must be atleast 8 characters Long',
             },
           })}
         />
@@ -154,11 +153,11 @@ export default function CreateUser({
           type="number"
           className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
           placeholder="enter the mobile"
-          {...register("phone", {
-            required: "Phone Number is required",
+          {...register('phone', {
+            required: 'Phone Number is required',
             minLength: {
               value: 10,
-              message: "Phone number must be 10 characters long ",
+              message: 'Phone number must be 10 characters long ',
             },
           })}
         />
@@ -174,14 +173,14 @@ export default function CreateUser({
           type="text"
           className="h-8 w-72 border border-black rounded-sm placeholder:text-xs"
           placeholder="enter the password"
-          {...register("address", {
-            required: "Address is required",
+          {...register('address', {
+            required: 'Address is required',
             minLength: {
               value: 10,
-              message: "Address must be alteast 10 characters long ",
+              message: 'Address must be alteast 10 characters long ',
             },
             validate: (address: string) => {
-              if (address.trim() === "") return "address cannot be empty";
+              if (address.trim() === '') return 'address cannot be empty';
               return true;
             },
           })}

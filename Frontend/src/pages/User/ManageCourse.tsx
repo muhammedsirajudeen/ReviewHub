@@ -13,7 +13,7 @@ export default function ManageCourse(): ReactElement {
   const [pagecount, setPagecount] = useState<number>(0);
   const progressRef = useRef<HTMLDialogElement>(null);
   const [progress, setProgress] = useState<boolean>(false);
-  const [courseid,setCourseid]=useState<string>("")
+  const [courseid, setCourseid] = useState<string>('');
   useEffect(() => {
     async function dataWrapper() {
       try {
@@ -63,7 +63,7 @@ export default function ManageCourse(): ReactElement {
     console.log(id);
     flushSync(() => {
       setProgress(true);
-      setCourseid(id)
+      setCourseid(id);
     });
     progressRef.current?.showModal();
   };
@@ -115,13 +115,13 @@ export default function ManageCourse(): ReactElement {
           borderRadius: '10px',
         }}
       />
-      {
-        progress && 
-        (
-          <ProgressDialog courseId={courseid} dialogRef={progressRef} closeHandler={closeHandler}/>
-
-        )
-      }
+      {progress && (
+        <ProgressDialog
+          courseId={courseid}
+          dialogRef={progressRef}
+          closeHandler={closeHandler}
+        />
+      )}
     </div>
   );
 }

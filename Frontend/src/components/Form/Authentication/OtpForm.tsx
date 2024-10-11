@@ -29,31 +29,31 @@ export default function OtpForm({
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
-  const timerInitializer=()=>{
-    const timer=localStorage.getItem('timer')
-    if(timer){
-      return parseInt(timer) 
-    }else{
-      return 20
+  const timerInitializer = () => {
+    const timer = localStorage.getItem('timer');
+    if (timer) {
+      return parseInt(timer);
+    } else {
+      return 20;
     }
-  }
+  };
   const navigate = useNavigate();
   const [resend, setResend] = useState<boolean>(true);
   const [time, setTime] = useState<number>(timerInitializer);
-  useEffect(()=>{
-    const verifyEmail=window.localStorage.getItem("verifyemail")
-    if(!verifyEmail){
-      window.localStorage.setItem("verifyemail",email)
+  useEffect(() => {
+    const verifyEmail = window.localStorage.getItem('verifyemail');
+    if (!verifyEmail) {
+      window.localStorage.setItem('verifyemail', email);
     }
-  },[email])
+  }, [email]);
   useEffect(() => {
     const timerid = setInterval(() => {
       if (time > 0) {
-        localStorage.setItem('timer',(time-1).toString())
+        localStorage.setItem('timer', (time - 1).toString());
         setTime((time) => time - 1);
       } else {
         setResend(false);
-        window.localStorage.removeItem("timer")
+        window.localStorage.removeItem('timer');
       }
     }, 1000);
     return () => {
@@ -67,13 +67,13 @@ export default function OtpForm({
       const response = (
         await axios.post(`${url}/auth/otp/verify`, {
           otp: data.otp,
-          email:localStorage.getItem('verifyemail'),
+          email: localStorage.getItem('verifyemail'),
         })
       ).data;
       if (response.message === 'success') {
         toast('otp verified');
-        window.localStorage.removeItem("timer")
-        window.localStorage.removeItem("verifyemail")
+        window.localStorage.removeItem('timer');
+        window.localStorage.removeItem('verifyemail');
         console.log(type);
         if (type) {
           setTimeout(() => navigate(AuthPath.forgot), 1000);
@@ -98,13 +98,13 @@ export default function OtpForm({
   const resendHandler = async () => {
     const response = (
       await axiosInstance.post(`/auth/resend`, {
-        email:localStorage.getItem("verifyemail"),
+        email: localStorage.getItem('verifyemail'),
       })
     ).data;
     if (response.message === 'success') {
       toast('success');
       setTime(20);
-      localStorage.setItem('timer',"20")
+      localStorage.setItem('timer', '20');
       setResend(true);
     } else {
       toast(response.message);

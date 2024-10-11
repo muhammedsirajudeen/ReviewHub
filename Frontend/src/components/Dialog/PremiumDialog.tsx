@@ -16,21 +16,19 @@ export default function PremiumDialog({
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
 }): ReactElement {
-    const [loading,setLoading]=useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
   const [Razorpay] = useRazorpay();
   const PREMIUM_AMOUNT = 4868;
   const user = useAppSelector((state) => state.global.user);
 
   const createOrder = async (): Promise<string | null> => {
     try {
-        const response=(
-            await axiosInstance.post('/user/premium')
-        ).data
-        if(response.message==="success"){
-            return response.orderId
-        }else{
-            return null
-        }
+      const response = (await axiosInstance.post('/user/premium')).data;
+      if (response.message === 'success') {
+        return response.orderId;
+      } else {
+        return null;
+      }
 
       return 'success';
     } catch (error) {
@@ -39,17 +37,17 @@ export default function PremiumDialog({
       return null;
     }
   };
-  const paymentHandler =async  () => {
+  const paymentHandler = async () => {
     try {
-        setLoading(true)
+      setLoading(true);
       const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_ID;
-      const orderId=await createOrder()
-      setLoading(false)
+      const orderId = await createOrder();
+      setLoading(false);
       closeHandler();
 
-      if(!orderId){
-        toast.error("try again")
-        return
+      if (!orderId) {
+        toast.error('try again');
+        return;
       }
       const options = {
         key: RAZORPAY_KEY_ID,
@@ -62,20 +60,18 @@ export default function PremiumDialog({
           try {
             //handle success here
             console.log(response);
-            try{
-                const apiResponse=(
-                    await axiosInstance.post('/user/premium/verify',response)
-                ).data
-                if(apiResponse.message==="success"){
-                    window.location.reload();
-                }else{
-                    console.log("error")
-                }
-            }catch(error){
-                console.log(error)
-                
+            try {
+              const apiResponse = (
+                await axiosInstance.post('/user/premium/verify', response)
+              ).data;
+              if (apiResponse.message === 'success') {
+                window.location.reload();
+              } else {
+                console.log('error');
+              }
+            } catch (error) {
+              console.log(error);
             }
-
           } catch (err) {
             toast('Payment failed: ' + err);
           }
@@ -102,13 +98,17 @@ export default function PremiumDialog({
         // alert(response.error.metadata.order_id);
         // alert(response.error.metadata.payment_id);
         if (response.error.metadata.payment_id) {
-            if(response.error.metadata.payment_id){
-                const serverResponse=(
-                    await axiosInstance.put(`/user/payment/order/failure/${response.error.metadata.order_id}`,{premium:true})
-                ).data
-                console.log(serverResponse)      
-                window.location.reload()      
-            }}
+          if (response.error.metadata.payment_id) {
+            const serverResponse = (
+              await axiosInstance.put(
+                `/user/payment/order/failure/${response.error.metadata.order_id}`,
+                { premium: true }
+              )
+            ).data;
+            console.log(serverResponse);
+            window.location.reload();
+          }
+        }
       });
       rzpay.open();
     } catch (err) {
@@ -142,7 +142,7 @@ export default function PremiumDialog({
       <p className="text-lg text-center mb-6 text-gray-700">
         Unlock exclusive features, discounts, and a vibrant community.
       </p>
-      <ClipLoader loading={loading}/>
+      <ClipLoader loading={loading} />
       <button
         onClick={paymentHandler}
         className="bg-gold-500 text-gold-400 bg-navbar font-semibold py-3 px-8 rounded-lg hover:bg-gold-600 transition duration-300 transform hover:scale-105"

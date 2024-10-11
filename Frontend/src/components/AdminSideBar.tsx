@@ -59,32 +59,42 @@ export default function AdminSideBar(): ReactElement {
           </a>
         </div>
         {/* chat interface is the same for all the users */}
-        <div className={`${
+        <div
+          className={`${
             page === 'chat' ? 'bg-blue-400' : ''
-          } flex items-center justify-center mt-10 p-6 rounded-lg`}>          <a href="/admin/chat">
+          } flex items-center justify-center mt-10 p-6 rounded-lg`}
+        >
+          {' '}
+          <a href="/admin/chat">
             <img src="/sidebar/chat.png" />
           </a>
         </div>
 
-        <div className={`${
+        <div
+          className={`${
             page === 'review' ? 'bg-blue-400' : ''
-          } flex items-center justify-center mt-10 p-6 rounded-lg`}>
+          } flex items-center justify-center mt-10 p-6 rounded-lg`}
+        >
           <a href={AdminPath.adminreviewhistory}>
             <img src="/sidebar/review.png" />
           </a>
         </div>
 
-        <div className={`${
+        <div
+          className={`${
             page === 'payments' ? 'bg-blue-400' : ''
-          } flex items-center justify-center mt-10 p-6 rounded-lg`}>
+          } flex items-center justify-center mt-10 p-6 rounded-lg`}
+        >
           <a href="/admin/payments">
             <img src="/sidebar/payments.png" />
           </a>
         </div>
         {/* this interface is also basically same */}
-        <div className={`${
+        <div
+          className={`${
             page === 'blog' ? 'bg-blue-400' : ''
-          } flex items-center justify-center mt-10 p-6 rounded-lg`}>
+          } flex items-center justify-center mt-10 p-6 rounded-lg`}
+        >
           <a href="/admin/blog">
             <img src="/sidebar/resource.png" />
           </a>

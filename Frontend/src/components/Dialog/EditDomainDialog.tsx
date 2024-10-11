@@ -22,13 +22,11 @@ export default function EditDomainDialog({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<FormValues>(
-    {
-        defaultValues:{
-            innerdomainName:domain
-        }
-    }
-  );
+  } = useForm<FormValues>({
+    defaultValues: {
+      innerdomainName: domain,
+    },
+  });
 
   const EditHandler = async (domainData: FormValues) => {
     try {
@@ -47,7 +45,7 @@ export default function EditDomainDialog({
             });
           })
         );
-        toast.success("edited")
+        toast.success('edited');
         reset();
         editRef.current?.close();
         setEdit(false);

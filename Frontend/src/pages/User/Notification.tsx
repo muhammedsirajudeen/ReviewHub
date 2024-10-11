@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router';
 export default function Notification(): ReactElement {
   const dispatch = useAppDispatch();
   const [notifications, setNotifications] = useState<notificationProps[]>([]);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(setPage('notification'));
     async function notificationFetcher() {
@@ -48,13 +48,13 @@ export default function Notification(): ReactElement {
       toast.error('Please try again');
     }
   };
-  const joinHandler=(notification:notificationProps)=>{
-    try{
-      navigate('/user/videochat',{state:notification.reviewId})
-    }catch(error){
-      console.log(error)
+  const joinHandler = (notification: notificationProps) => {
+    try {
+      navigate('/user/videochat', { state: notification.reviewId });
+    } catch (error) {
+      console.log(error);
     }
-  }
+  };
   return (
     <>
       <DashboardTopbar />

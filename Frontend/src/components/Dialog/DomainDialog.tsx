@@ -9,7 +9,7 @@ import EditDomainDialog from './EditDomainDialog';
 
 export interface FormValues {
   domainName: string;
-  innerdomainName:string
+  innerdomainName: string;
 }
 
 export default function DomainDialog({
@@ -23,8 +23,8 @@ export default function DomainDialog({
   const [confirm, setConfirm] = useState<boolean>(false);
   const deleteRef = useRef<HTMLDialogElement>(null);
   const [domain, setDomain] = useState<string>();
-  const [edit,setEdit]=useState<boolean>(false)
-  const editRef=useRef<HTMLDialogElement>(null)
+  const [edit, setEdit] = useState<boolean>(false);
+  const editRef = useRef<HTMLDialogElement>(null);
   // React Hook Form setup
   const {
     register,
@@ -69,13 +69,12 @@ export default function DomainDialog({
   };
   const handleEdit = (domain: string) => {
     console.log(domain);
-    flushSync(()=>{
-        setDomain(domain)
-        setEdit(true)
-    })
-    editRef.current?.showModal()
-
-};
+    flushSync(() => {
+      setDomain(domain);
+      setEdit(true);
+    });
+    editRef.current?.showModal();
+  };
   const handleDelete = async (domain: string) => {
     // console.log(domain)
     flushSync(() => {
@@ -91,15 +90,14 @@ export default function DomainDialog({
       if (response.message === 'success') {
         setDomains((prev) => prev.filter((pr) => pr.domain !== domain));
         toast.success('deleted successfully');
-        setConfirm(false)
-        deleteRef.current?.close()
+        setConfirm(false);
+        deleteRef.current?.close();
       }
     } catch (error) {
       console.log(error);
       toast.error('please try again');
     }
   };
-
 
   return (
     <dialog
@@ -191,35 +189,42 @@ export default function DomainDialog({
         }}
       />
       {confirm && (
-        <dialog ref={deleteRef} className="flex flex-col justify-center items-center p-6 rounded-lg shadow-lg bg-white">
-        <p className="text-lg mb-4 text-center">
-            Are you sure you want to delete <span className="font-semibold">{domain}</span>?
-        </p>
-        <div className="flex space-x-4">
+        <dialog
+          ref={deleteRef}
+          className="flex flex-col justify-center items-center p-6 rounded-lg shadow-lg bg-white"
+        >
+          <p className="text-lg mb-4 text-center">
+            Are you sure you want to delete{' '}
+            <span className="font-semibold">{domain}</span>?
+          </p>
+          <div className="flex space-x-4">
             <button
-                onClick={() => {
-                    deleteRef.current?.close();
-                    setConfirm(false);
-                }}
-                className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded transition duration-200 ease-in-out"
+              onClick={() => {
+                deleteRef.current?.close();
+                setConfirm(false);
+              }}
+              className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded transition duration-200 ease-in-out"
             >
-                Cancel
+              Cancel
             </button>
-            <button 
-                onClick={deleteHandler} 
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center space-x-1 transition duration-200 ease-in-out"
+            <button
+              onClick={deleteHandler}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center space-x-1 transition duration-200 ease-in-out"
             >
-                <FaTrash />
-                <span>Delete</span>
+              <FaTrash />
+              <span>Delete</span>
             </button>
-        </div>
-    </dialog>
+          </div>
+        </dialog>
       )}
-      {
-        edit && 
-        <EditDomainDialog setDomains={setDomains} domain={domain as string} editRef={editRef} setEdit={setEdit}/>
-
-      }
+      {edit && (
+        <EditDomainDialog
+          setDomains={setDomains}
+          domain={domain as string}
+          editRef={editRef}
+          setEdit={setEdit}
+        />
+      )}
     </dialog>
   );
 }

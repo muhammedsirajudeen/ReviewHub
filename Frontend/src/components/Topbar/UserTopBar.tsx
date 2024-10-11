@@ -3,21 +3,16 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import axiosInstance from '../../helper/axiosInstance';
 import userProps from '../../types/userProps';
 
-
 type Inputs = {
   search: string;
 };
 
 //a generic component for all search functionalities
-function UserTopBar(
-  {
-    setResults,
-  }
-  :
-  {
-    setResults:Dispatch<SetStateAction<Array<userProps>>>
-  }
-): ReactElement {
+function UserTopBar({
+  setResults,
+}: {
+  setResults: Dispatch<SetStateAction<Array<userProps>>>;
+}): ReactElement {
   const SpecialCharRegex = /[!#$%^&*()_+\-=[\]{};':"\\|,<>/?`~1-9]/;
   const {
     register,
@@ -25,14 +20,13 @@ function UserTopBar(
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = async  (data) => {
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
-    const response=
-    (
+    const response = (
       await axiosInstance.get(`/admin/users?search=${data.search}`)
-    ).data
-    if(response.message==="success"){
-      setResults(response.users)
+    ).data;
+    if (response.message === 'success') {
+      setResults(response.users);
     }
   };
   const notificationHandler = () => {
@@ -97,4 +91,4 @@ function UserTopBar(
     </div>
   );
 }
-export default memo(UserTopBar)
+export default memo(UserTopBar);

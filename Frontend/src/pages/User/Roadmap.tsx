@@ -18,7 +18,7 @@ export default function Roadmap(): ReactElement {
   const [currentpage, setCurrentpage] = useState<number>(1);
   const [enroll, setEnroll] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
-  const user=useAppSelector((state)=>state.global.user)
+  const user = useAppSelector((state) => state.global.user);
   let lessonCount = 1;
 
   useEffect(() => {
@@ -31,9 +31,7 @@ export default function Roadmap(): ReactElement {
       let urlconstructor = `/user/roadmap/${location.state.courseId}?page=${currentpage}`;
       if (search)
         urlconstructor = `/user/roadmap/${location.state.courseId}?page=${currentpage}&search=${search}`;
-      const response = (
-        await axiosInstance.get(urlconstructor)
-      ).data;
+      const response = (await axiosInstance.get(urlconstructor)).data;
       console.log(response);
       setRoadmaps(response.roadmaps);
       setPagecount(response.pageLength);
@@ -42,9 +40,7 @@ export default function Roadmap(): ReactElement {
 
     async function enrolledWrapper() {
       const urlconstructor = `/user/enroll/${location.state.courseId}`;
-      const response = (
-        await axiosInstance.get(urlconstructor)
-      ).data;
+      const response = (await axiosInstance.get(urlconstructor)).data;
       if (response.message === 'success') {
         setEnroll(true);
       }
@@ -81,7 +77,7 @@ export default function Roadmap(): ReactElement {
   };
 
   const roadmapNavHandler = (roadmap: roadmapProps) => {
-    if(user.authorization==="reviewer"){
+    if (user.authorization === 'reviewer') {
       navigate('/user/resource', { state: { roadmapId: roadmap._id } });
     }
     // console.log(roadmap)
@@ -97,16 +93,13 @@ export default function Roadmap(): ReactElement {
   };
   const enrollHandler = async () => {
     const response = (
-      await axiosInstance.post(
-        `/user/enroll`,
-        {
-          courseId: location.state.courseId,
-        },
-      )
+      await axiosInstance.post(`/user/enroll`, {
+        courseId: location.state.courseId,
+      })
     ).data;
     if (response.message === 'success') {
       toast('enrolled successfully');
-      setEnroll(true)
+      setEnroll(true);
       // setTimeout(() => window.location.reload(), 1000);
     } else {
       toast(response.message);
@@ -118,7 +111,7 @@ export default function Roadmap(): ReactElement {
     ).data;
     if (response.message === 'success') {
       toast('disenrolled successfully');
-      setEnroll(false)
+      setEnroll(false);
       // setTimeout(() => window.location.reload(), 1000);
     } else {
       toast(response.message);
@@ -140,16 +133,18 @@ export default function Roadmap(): ReactElement {
         courseId={location.state ? location.state.courseId : ''}
         setRoadmaps={setRoadmaps}
       />
-      {user.authorization!=="reviewer" 
-      && 
-      (
+      {user.authorization !== 'reviewer' && (
         <div className="flex justify-center mt-10">
           {enroll ? (
             <button
               onClick={disenrollHandler}
               className="bg-red-500 p-2 flex items-center rounded-lg shadow hover:bg-red-600 transition duration-300"
             >
-              <img className="mr-2" src="/dashboard/school.png" alt="Disenroll" />
+              <img
+                className="mr-2"
+                src="/dashboard/school.png"
+                alt="Disenroll"
+              />
               <p className="text-xs text-white font-bold">Disenroll</p>
             </button>
           ) : (
@@ -162,10 +157,7 @@ export default function Roadmap(): ReactElement {
             </button>
           )}
         </div>
-
-      )
-      }
-
+      )}
 
       <div className="mt-10 flex justify-evenly flex-wrap">
         {roadmaps.map((roadmap) => (

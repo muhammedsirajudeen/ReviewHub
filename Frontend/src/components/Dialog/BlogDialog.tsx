@@ -1,6 +1,6 @@
-import { Ref } from "react";
-import { blogProps } from "../../types/blogProps";
-import url from "../../helper/backendUrl";
+import { Ref } from 'react';
+import { blogProps } from '../../types/blogProps';
+import url from '../../helper/backendUrl';
 
 export default function BlogDialog({
   dialogRef,
@@ -14,12 +14,12 @@ export default function BlogDialog({
   return (
     <dialog
       style={{
-        minHeight: "80vh",
-        minWidth: "800px",
-        padding: "1rem",
-        borderRadius: "8px",
-        backgroundColor: "#fff",
-        boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+        minHeight: '80vh',
+        minWidth: '800px',
+        padding: '1rem',
+        borderRadius: '8px',
+        backgroundColor: '#fff',
+        boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.1)',
       }}
       className="fixed inset-0 bg-gray-900 bg-opacity-50 overflow-auto flex items-start justify-center p-2 md:p-8"
       ref={dialogRef}
@@ -62,9 +62,7 @@ export default function BlogDialog({
             <p className="text-gray-500 text-sm mr-2">
               By {blog?.userId.email}
             </p>
-            <p className="text-gray-500 text-sm">
-              - {blog?.postedDate}
-            </p>
+            <p className="text-gray-500 text-sm">- {blog?.postedDate}</p>
           </div>
 
           <p className="text-gray-700 leading-relaxed">{blog?.article}</p>

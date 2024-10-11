@@ -14,13 +14,15 @@ import { produce } from 'immer';
 
 export default function Review(): ReactElement {
   const [reviews, setReviews] = useState<Array<reviewProps>>([]);
-  const [committedreviews,setCommittedreviews]=useState<Array<reviewProps>>([])
+  const [committedreviews, setCommittedreviews] = useState<Array<reviewProps>>(
+    []
+  );
   const dispatch = useAppDispatch();
   const [currentpage, setCurrentpage] = useState<number>(1);
   const [pagecount, setPagecount] = useState<number>(0);
-    const deleteDialogRef=useRef<HTMLDialogElement>(null)
-    const [deletedialog,setDeletedialog]=useState<boolean>(false)
-    const [review,setReview]=useState<reviewProps>()
+  const deleteDialogRef = useRef<HTMLDialogElement>(null);
+  const [deletedialog, setDeletedialog] = useState<boolean>(false);
+  const [review, setReview] = useState<reviewProps>();
   const user = useAppSelector((state) => state.global.user);
   useEffect(() => {
     async function reviewFetcher() {
@@ -37,19 +39,18 @@ export default function Review(): ReactElement {
         console.log(error);
       }
     }
-    async function committedFetcher(){
-        try {
-            const response=(
-                await axiosInstance.get('/reviewer/review/committed')
-            ).data
-            if(response.message==="success"){
-                setCommittedreviews(response.reviews)
-            }
-        } catch (error) {
-            console.log(error)
+    async function committedFetcher() {
+      try {
+        const response = (await axiosInstance.get('/reviewer/review/committed'))
+          .data;
+        if (response.message === 'success') {
+          setCommittedreviews(response.reviews);
         }
+      } catch (error) {
+        console.log(error);
+      }
     }
-    committedFetcher()
+    committedFetcher();
     reviewFetcher();
     dispatch(setPage('review'));
   }, [dispatch, currentpage]);
@@ -65,16 +66,22 @@ export default function Review(): ReactElement {
   const nextpageHandler = () => {
     setCurrentpage((prev) => Math.min(prev + 1, Math.ceil(pagecount / 10)));
   };
-  const commitHandler = async (review:reviewProps) => {
+  const commitHandler = async (review: reviewProps) => {
     try {
-      const response = (await axiosInstance.put(`/reviewer/review/${review._id}`)).data;
+      const response = (
+        await axiosInstance.put(`/reviewer/review/${review._id}`)
+      ).data;
       if (response.message === 'success') {
-        setCommittedreviews(produce((draft)=>{
-            draft.push(review)
-        }))
-        setReviews(produce((draft)=>{
-            return draft.filter((d)=>d._id!==review._id)
-        }))
+        setCommittedreviews(
+          produce((draft) => {
+            draft.push(review);
+          })
+        );
+        setReviews(
+          produce((draft) => {
+            return draft.filter((d) => d._id !== review._id);
+          })
+        );
         toast.success('Committed Successfully');
       }
     } catch (error) {
@@ -82,17 +89,17 @@ export default function Review(): ReactElement {
       console.log(axiosError);
     }
   };
-  const cancelHandler=(review:reviewProps)=>{
-        flushSync(()=>{
-            setDeletedialog(true)
-            setReview(review)
-        })
-        deleteDialogRef.current?.showModal()
-  }
-  const closeHandler=()=>{
-    deleteDialogRef.current?.close()
-    setDeletedialog(false)
-  }
+  const cancelHandler = (review: reviewProps) => {
+    flushSync(() => {
+      setDeletedialog(true);
+      setReview(review);
+    });
+    deleteDialogRef.current?.showModal();
+  };
+  const closeHandler = () => {
+    deleteDialogRef.current?.close();
+    setDeletedialog(false);
+  };
   return (
     <>
       <DashboardTopbar />
@@ -138,7 +145,7 @@ export default function Review(): ReactElement {
                   </div>
                   <button
                     className="bg-red-700 text-white p-1 text-xs mt-4"
-                    onClick={()=>cancelHandler(review)}
+                    onClick={() => cancelHandler(review)}
                   >
                     Cancel
                   </button>
@@ -151,7 +158,6 @@ export default function Review(): ReactElement {
           <div className="text-xl text-gray-500 mt-10">No reviews found</div>
         ) : (
           reviews.map((review) => (
-            
             <div
               key={review._id}
               className="flex items-center justify-between w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden mb-6 p-6 transition transform hover:scale-105 hover:shadow-xl"
@@ -197,12 +203,15 @@ export default function Review(): ReactElement {
           borderRadius: '10px',
         }}
       />
-      {
-        deletedialog && 
-        (
-            <ReviewDelete setPendingReviews={setReviews} setReviews={setCommittedreviews} review={review} closeHandler={closeHandler} dialogRef={deleteDialogRef} />
-        )
-      }
+      {deletedialog && (
+        <ReviewDelete
+          setPendingReviews={setReviews}
+          setReviews={setCommittedreviews}
+          review={review}
+          closeHandler={closeHandler}
+          dialogRef={deleteDialogRef}
+        />
+      )}
     </>
   );
 }

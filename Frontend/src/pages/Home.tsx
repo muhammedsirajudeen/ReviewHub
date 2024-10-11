@@ -1,13 +1,15 @@
-import { ReactElement } from "react";
-import { Link } from "react-router-dom";
-import { AuthPath } from "../types/pathNames";
-
+import { ReactElement } from 'react';
+import { Link } from 'react-router-dom';
+import { AuthPath } from '../types/pathNames';
 
 export default function Home(): ReactElement {
   return (
     <>
       <div className="flex items-center justify-end mt-2">
-        <a href={AuthPath.signin} className=" text-navbar border border-b-navbar mr-10">
+        <a
+          href={AuthPath.signin}
+          className=" text-navbar border border-b-navbar mr-10"
+        >
           Login
         </a>
         <h1 className="text-3xl text-navbar mr-10">ReviewHub.</h1>
@@ -24,7 +26,11 @@ export default function Home(): ReactElement {
           <button className="bg-navbar text-white text-xs p-2 mt-10">
             Signin
           </button>
-          <Link to={AuthPath.signup} state={{role:"reviewer"}} className="text-green-500 mt-4">
+          <Link
+            to={AuthPath.signup}
+            state={{ role: 'reviewer' }}
+            className="text-green-500 mt-4"
+          >
             Become A Reviewer
           </Link>
         </div>

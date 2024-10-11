@@ -23,34 +23,35 @@ export default function Signup(): ReactElement {
   const [submit, setSubmit] = useState<boolean>(false);
   const [otpdialog, setOtpdialog] = useState<boolean>(false);
   const otpDialogRef = useRef<HTMLDialogElement>(null);
-  const location=useLocation()
-  const roleRef=useRef<string | null>(location.state ? location.state.role : null)
-  useEffect(()=>{
-    const timer=localStorage.getItem("timer")
-    console.log(timer)
-    if(timer){
-      queueMicrotask(()=>{
-        flushSync(()=>{
-          setOtpdialog(true)
-        })
-        otpDialogRef.current?.showModal()
-
-      })
+  const location = useLocation();
+  const roleRef = useRef<string | null>(
+    location.state ? location.state.role : null
+  );
+  useEffect(() => {
+    const timer = localStorage.getItem('timer');
+    console.log(timer);
+    if (timer) {
+      queueMicrotask(() => {
+        flushSync(() => {
+          setOtpdialog(true);
+        });
+        otpDialogRef.current?.showModal();
+      });
     }
-  },[])
+  }, []);
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     // Handle form submission
     setSubmit(true);
     const response = await axiosInstance.post('/auth/credential/signup', {
       email: data.email,
       password: data.password,
-      role:roleRef.current
+      role: roleRef.current,
     });
     if (response.data.message === 'success') {
       flushSync(() => {
         toast('user created successfully');
-        localStorage.setItem("verifyemail",data.email)
-        window.localStorage.setItem("timer","20")
+        localStorage.setItem('verifyemail', data.email);
+        window.localStorage.setItem('timer', '20');
         setOtpdialog(true);
       });
       otpDialogRef.current?.showModal();
@@ -76,13 +77,15 @@ export default function Signup(): ReactElement {
       console.log(codeResponse);
       const response = await axiosInstance.post('/auth/google/signup', {
         userToken: codeResponse.access_token,
-        role:roleRef.current
+        role: roleRef.current,
       });
       console.log(response);
       if (response.status === 201 && response.data.message === 'success') {
         toast('success');
-        if(roleRef.current==="reviewer"){
-          setTimeout(()=>navigate(AuthPath.signin,{state:{role:"reviewer"}}))
+        if (roleRef.current === 'reviewer') {
+          setTimeout(() =>
+            navigate(AuthPath.signin, { state: { role: 'reviewer' } })
+          );
         }
         setTimeout(() => navigate(AuthPath.signin), 1000);
       } else {
@@ -91,17 +94,17 @@ export default function Signup(): ReactElement {
     },
     onError: (error) => console.log(error),
   });
-  
+
   return (
     <>
       <div className="flex items-center justify-center">
-      <ToastContainer
-        style={{
-          backgroundColor: 'gray',
-          color: 'white',
-          borderRadius: '10px',
-        }}
-      />
+        <ToastContainer
+          style={{
+            backgroundColor: 'gray',
+            color: 'white',
+            borderRadius: '10px',
+          }}
+        />
         <img src="login/signupperson.png" className="absolute -z-10 right-96" />
 
         <div className="h-auto flex flex-col items-center justify-start w-96 shadow-2xl mt-40 rounded-xl p-10">

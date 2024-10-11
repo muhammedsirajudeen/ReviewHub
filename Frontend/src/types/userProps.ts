@@ -11,11 +11,11 @@ interface walletProps {
   balance?: number;
   history: HistoryProps[];
 }
-export interface paymentMethodprops{
-  bankaccount:string,
-  ifsc:string,
-  holdername:string,
-  _id?:string
+export interface paymentMethodprops {
+  bankaccount: string;
+  ifsc: string;
+  holdername: string;
+  _id?: string;
 }
 export default interface userProps {
   email: string;
@@ -26,11 +26,11 @@ export default interface userProps {
   phone: string;
   walletId: walletProps;
   reviewerApproval: boolean;
-  premiumMember:boolean;
-  favoriteCourses:string[]
-  verified:boolean
-  paymentMethod:paymentMethodprops[]
-  lastSeen?:string
+  premiumMember: boolean;
+  favoriteCourses: string[];
+  verified: boolean;
+  paymentMethod: paymentMethodprops[];
+  lastSeen?: string;
 }
 
 export interface approvalProps {

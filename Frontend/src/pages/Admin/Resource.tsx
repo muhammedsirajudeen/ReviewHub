@@ -22,17 +22,17 @@ export default function Resource(): ReactElement {
   const [quiz, setQuiz] = useState<QuizProps>();
   const [activequiz, setActivequiz] = useState<quizProps>();
   const [resourceEdit, setResourceEdit] = useState<boolean>(false);
-  const [resourceDelete,setResourceDelete]=useState<boolean>(false)
+  const [resourceDelete, setResourceDelete] = useState<boolean>(false);
 
   const [quizedit, setQuizedit] = useState<boolean>(false);
-  const [quizdelete,setQuizdelete]=useState<boolean>(false)
+  const [quizdelete, setQuizdelete] = useState<boolean>(false);
   const [method, setMethod] = useState<string>('');
   //refactor this
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const deleteDialogRef=useRef<HTMLDialogElement>(null);
+  const deleteDialogRef = useRef<HTMLDialogElement>(null);
 
   const quizdialogRef = useRef<HTMLDialogElement>(null);
-  const deleteQuizDialogRef=useRef<HTMLDialogElement>(null)
+  const deleteQuizDialogRef = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     async function dataWrapper() {
       if (!quizStatus) {
@@ -49,9 +49,8 @@ export default function Resource(): ReactElement {
         }
       } else {
         //it is quiz
-        const response = (
-          await axiosInstance.get(`/admin/quiz/${chapterId}`)
-        ).data;
+        const response = (await axiosInstance.get(`/admin/quiz/${chapterId}`))
+          .data;
         if (response.quiz) {
           setQuiz(response.quiz);
         } else {
@@ -103,21 +102,18 @@ export default function Resource(): ReactElement {
   };
 
   const deleteResourceHandler = async (section: sectionProps) => {
-    console.log(section)
-    flushSync(()=>{
-      setResourceDelete(true)
-      setActiveresource(section)
-    })
-    deleteDialogRef.current?.showModal()
+    console.log(section);
+    flushSync(() => {
+      setResourceDelete(true);
+      setActiveresource(section);
+    });
+    deleteDialogRef.current?.showModal();
     //we have access to the curent resource id as well as the section id here
-
-
   };
-  const closeDeleteResourceHandler=()=>{
-    deleteDialogRef.current?.close()
-    setResourceDelete(false)
-  }
-
+  const closeDeleteResourceHandler = () => {
+    deleteDialogRef.current?.close();
+    setResourceDelete(false);
+  };
 
   //rest of the operations on the quiz module
   const addQuizHandler = () => {
@@ -137,13 +133,11 @@ export default function Resource(): ReactElement {
     // setQuizdelete(false)
     // deleteQuizDialogRef.current?.close()
     //we can access the main id here
-
-
   };
-  const closeDeleteQuizHandler=()=>{
-    setQuizdelete(false)
-    deleteQuizDialogRef.current?.close()
-  }
+  const closeDeleteQuizHandler = () => {
+    setQuizdelete(false);
+    deleteQuizDialogRef.current?.close();
+  };
   return (
     <>
       <div className="flex flex-col lg:flex-row ml-36 mt-10">
@@ -225,7 +219,9 @@ export default function Resource(): ReactElement {
                 <h1 className="text-black text-xl font-semibold">
                   {quiz.question}
                 </h1>
-                <p className='text-xs'>{quiz.multiselect && "It is a multiselect question"}</p>
+                <p className="text-xs">
+                  {quiz.multiselect && 'It is a multiselect question'}
+                </p>
                 <div className="flex items-center">
                   <img src="/quiz/reward.png" alt="Reward" className="mr-2" />
                   <p className="text-xs font-bold text-green-500">
@@ -269,7 +265,6 @@ export default function Resource(): ReactElement {
           section={activeresource}
           closeHandler={closeEditHandler}
           dialogRef={dialogRef}
-          
         />
       )}
       {resourceDelete && (

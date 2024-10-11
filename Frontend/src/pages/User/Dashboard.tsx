@@ -20,10 +20,10 @@ function urlB64ToUint8Array(base64String: string) {
 }
 
 interface dashboardProps {
-  courses:courseProps[] ;
+  courses: courseProps[];
   reviews: reviewProps[];
   completedReviews: reviewProps[];
-  points:number;
+  points: number;
 }
 
 export default function Dashboard(): ReactElement {
@@ -59,14 +59,12 @@ export default function Dashboard(): ReactElement {
         const response = (await axiosInstance.get('/user/dashboard')).data;
         if (response.message === 'success') {
           console.log(response);
-          setAggregate(
-            {
-              reviews:response.reviews ?? [],
-              completedReviews:response.completedreviews ?? [],
-              courses:response.courses ?? [],
-              points:response.points ?? 0
-            }
-          )
+          setAggregate({
+            reviews: response.reviews ?? [],
+            completedReviews: response.completedreviews ?? [],
+            courses: response.courses ?? [],
+            points: response.points ?? 0,
+          });
         }
       } catch (error) {
         console.log(error);
@@ -87,44 +85,42 @@ export default function Dashboard(): ReactElement {
           <h1 className="text-2xl font-bold text-gray-500 w-full">OVERVIEW</h1>
           {/* Overview Container */}
           <div className="flex justify-evenly w-full items-center">
-          <div
-                className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white"
-              >
-                <div className="text-xs font-bold  flex justify-evenly w-full">
-                  <img
-                    className="bg-blue-500 p-1 rounded-lg"
-                    src="/dashboard/school.png"
-                  />
-                  <p>COMPLETED REVIEWS</p>
-                </div>
-                <p className="font-bold text-4xl mt-4">{aggregate.completedReviews.length}</p>
+            <div className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white">
+              <div className="text-xs font-bold  flex justify-evenly w-full">
+                <img
+                  className="bg-blue-500 p-1 rounded-lg"
+                  src="/dashboard/school.png"
+                />
+                <p>COMPLETED REVIEWS</p>
               </div>
-              <div
-                className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white"
-              >
-                <div className="text-xs font-bold  flex justify-evenly w-full">
-                  <img
-                    className="bg-blue-500 p-1 rounded-lg"
-                    src="/dashboard/school.png"
-                  />
-                  <p>PENDING REVIEWS</p>
-                </div>
-                <p className="font-bold text-4xl mt-4">{aggregate.reviews.length}</p>
+              <p className="font-bold text-4xl mt-4">
+                {aggregate.completedReviews.length}
+              </p>
+            </div>
+            <div className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white">
+              <div className="text-xs font-bold  flex justify-evenly w-full">
+                <img
+                  className="bg-blue-500 p-1 rounded-lg"
+                  src="/dashboard/school.png"
+                />
+                <p>PENDING REVIEWS</p>
               </div>
-              <div
-                className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white"
-              >
-                <div className="text-xs font-bold  flex justify-evenly w-full">
-                  <img
-                    className="bg-blue-500 p-1 rounded-lg"
-                    src="/dashboard/school.png"
-                  />
-                  <p>WALLET BALANCE</p>
-                </div>
-                <p className="font-bold text-4xl mt-4">{aggregate.points}</p>
+              <p className="font-bold text-4xl mt-4">
+                {aggregate.reviews.length}
+              </p>
+            </div>
+            <div className="h-40 flex flex-col items-center justify-center w-52 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white">
+              <div className="text-xs font-bold  flex justify-evenly w-full">
+                <img
+                  className="bg-blue-500 p-1 rounded-lg"
+                  src="/dashboard/school.png"
+                />
+                <p>WALLET BALANCE</p>
               </div>
+              <p className="font-bold text-4xl mt-4">{aggregate.points}</p>
+            </div>
           </div>
-          
+
           {/* Study Statistics */}
           <h1 className="font-bold text-gray-500 text-2xl w-full mt-10">
             STUDY STATISTICS
@@ -169,18 +165,26 @@ export default function Dashboard(): ReactElement {
             MY COURSES
           </h1>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-4 mt-4">
-              {
-                aggregate.courses.map((course)=>{
-                  return(
-                    <div key={course._id} className='flex flex-col items-center justify-start'>
-                      <img className='h-32 w-32 rounded-xl' src={`${url}/course/${course.courseImage}`}/>
-                      <p className='text-xs' >{format(new Date(course.postedDate),"PPp")}</p>
-                      <p className='text-lg mt-4' >{course.courseName}</p>
-                      <p className='text-xs font-semibold' >{course.courseDescription}</p>
-                    </div>
-                  )
-                })
-              }
+            {aggregate.courses.map((course) => {
+              return (
+                <div
+                  key={course._id}
+                  className="flex flex-col items-center justify-start"
+                >
+                  <img
+                    className="h-32 w-32 rounded-xl"
+                    src={`${url}/course/${course.courseImage}`}
+                  />
+                  <p className="text-xs">
+                    {format(new Date(course.postedDate), 'PPp')}
+                  </p>
+                  <p className="text-lg mt-4">{course.courseName}</p>
+                  <p className="text-xs font-semibold">
+                    {course.courseDescription}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
         {/* Right Container for Additional Analytics */}

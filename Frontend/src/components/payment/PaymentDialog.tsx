@@ -23,17 +23,17 @@ export interface RazorpayResponse {
 }
 
 export interface RazorpayPaymentError {
-    error:{
-        code: string;                 // The error code
-        description: string;          // A human-readable description of the error
-        source: string;               // The source of the error (e.g., Razorpay)
-        step: string;                 // The step at which the error occurred
-        reason: string;               // The reason for the failure
-        metadata: {
-            order_id: string;         // The ID of the order associated with the payment
-            payment_id: string;       // The ID of the payment attempt
-        };
-    }
+  error: {
+    code: string; // The error code
+    description: string; // A human-readable description of the error
+    source: string; // The source of the error (e.g., Razorpay)
+    step: string; // The step at which the error occurred
+    reason: string; // The reason for the failure
+    metadata: {
+      order_id: string; // The ID of the order associated with the payment
+      payment_id: string; // The ID of the payment attempt
+    };
+  };
 }
 
 export default function PaymentDialog({
@@ -51,10 +51,10 @@ export default function PaymentDialog({
   const [loading, setLoading] = useState<boolean>(false);
   const [Razorpay] = useRazorpay();
   const user = useAppSelector((state) => state.global.user);
-  const dispatch=useAppDispatch()
-  const toastHandler=()=>{
-    toast("added successfully")
-  }
+  const dispatch = useAppDispatch();
+  const toastHandler = () => {
+    toast('added successfully');
+  };
   const handlePayment = async (order: orderProps) => {
     try {
       const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_ID;
@@ -67,17 +67,14 @@ export default function PaymentDialog({
         order_id: order.id,
         handler: async (response: RazorpayResponse) => {
           try {
-            await axiosInstance.post(
-              '/user/payment/order/verify',
-              {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              },
-            );
-            toastHandler()
+            await axiosInstance.post('/user/payment/order/verify', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            toastHandler();
             //here implement the state update
-            dispatch(setUpdatedWallet(parseInt(order.amount)/100))     
+            dispatch(setUpdatedWallet(parseInt(order.amount) / 100));
             // window.location.reload();
           } catch (err) {
             toast('Payment failed: ' + err);
@@ -96,7 +93,7 @@ export default function PaymentDialog({
         },
       };
       const rzpay = new Razorpay(options);
-      rzpay.on('payment.failed',async (response:RazorpayPaymentError)=>{
+      rzpay.on('payment.failed', async (response: RazorpayPaymentError) => {
         // alert(response.error.code);
         // alert(response.error.description);
         // alert(response.error.source);
@@ -104,17 +101,19 @@ export default function PaymentDialog({
         // alert(response.error.reason);
         // alert(response.error.metadata.order_id);
         // alert(response.error.metadata.payment_id);
-        if(response.error.metadata.payment_id){
-            const serverResponse=(
-                await axiosInstance.put(`/user/payment/order/failure/${response.error.metadata.order_id}`,{})
-            ).data
-            console.log(serverResponse) 
-            dispatch(setFailedPayment(parseInt(order.amount)/100))
-            // window.location.reload()      
+        if (response.error.metadata.payment_id) {
+          const serverResponse = (
+            await axiosInstance.put(
+              `/user/payment/order/failure/${response.error.metadata.order_id}`,
+              {}
+            )
+          ).data;
+          console.log(serverResponse);
+          dispatch(setFailedPayment(parseInt(order.amount) / 100));
+          // window.location.reload()
         }
-      })
+      });
       rzpay.open();
-
     } catch (err) {
       toast('Error creating order: ' + err);
     }
@@ -123,10 +122,9 @@ export default function PaymentDialog({
   const createOrder = async (amount: string): Promise<orderProps | null> => {
     try {
       const response = (
-        await axiosInstance.post(
-          `/user/payment/order`,
-          { amount: (parseInt(amount) * 100).toString() },
-        )
+        await axiosInstance.post(`/user/payment/order`, {
+          amount: (parseInt(amount) * 100).toString(),
+        })
       ).data;
       return response.message === 'success' ? response.order : null;
     } catch (error) {

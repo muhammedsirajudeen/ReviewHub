@@ -8,12 +8,12 @@ export default function BlogDelete({
   dialogRef,
   closeHandler,
   blog,
-  setBlogs
+  setBlogs,
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   blog?: blogProps;
-  setBlogs:Dispatch<SetStateAction<blogProps[]>>
+  setBlogs: Dispatch<SetStateAction<blogProps[]>>;
 }): ReactElement {
   const deleteHandler = async () => {
     try {
@@ -21,13 +21,12 @@ export default function BlogDelete({
         .data;
       if (response.message === 'success') {
         toast.success('deleted successfully');
-        setBlogs(produce((draft)=>{
-          return(
-
-            draft.filter((d)=>d._id!==blog?._id)
-          )
-        }))
-        closeHandler()
+        setBlogs(
+          produce((draft) => {
+            return draft.filter((d) => d._id !== blog?._id);
+          })
+        );
+        closeHandler();
         // setTimeout(() => {
         //   window.location.reload();
         // }, 1000);

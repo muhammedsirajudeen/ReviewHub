@@ -37,10 +37,9 @@ export default function Login(): ReactElement {
   const [type, setType] = useState<string>('');
   const location = useLocation();
   const roleRef = useRef<string | null>(null);
-  useEffect(()=>{
-
-    roleRef.current=location.state ? location.state.role : null
-  },[location.state, roleRef])
+  useEffect(() => {
+    roleRef.current = location.state ? location.state.role : null;
+  }, [location.state, roleRef]);
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setSubmit(true);
@@ -53,7 +52,7 @@ export default function Login(): ReactElement {
       dispatch(setAuthenticated());
 
       window.localStorage.setItem('token', response.data.token);
-      window.localStorage.setItem('refresh_token',response.data.refresh_token)
+      window.localStorage.setItem('refresh_token', response.data.refresh_token);
       const user = await tokenVerifier();
       console.log('the user is', user);
       if (user) dispatch(setUser(user));
@@ -76,7 +75,10 @@ export default function Login(): ReactElement {
       console.log(response);
       if (response.status === 200 && response.data.message === 'success') {
         window.localStorage.setItem('token', response.data.token);
-        window.localStorage.setItem('refresh_token',response.data.refresh_token)
+        window.localStorage.setItem(
+          'refresh_token',
+          response.data.refresh_token
+        );
 
         dispatch(setAuthenticated());
         const user = await tokenVerifier();

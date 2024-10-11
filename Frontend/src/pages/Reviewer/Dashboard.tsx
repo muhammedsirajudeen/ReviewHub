@@ -19,14 +19,13 @@ function urlB64ToUint8Array(base64String: string) {
   return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0))); // Convert to Uint8Array
 }
 
-interface ExtendedReviewProps extends Omit<reviewProps,'revieweeId'>{
-  revieweeId:userProps
+interface ExtendedReviewProps extends Omit<reviewProps, 'revieweeId'> {
+  revieweeId: userProps;
 }
 interface dashboardProps {
   reviews: reviewProps[];
   reviewsuccess: ExtendedReviewProps[];
-  points:number;
-  
+  points: number;
 }
 
 export default function Dashboard(): ReactElement {
@@ -61,13 +60,11 @@ export default function Dashboard(): ReactElement {
         const response = (await axiosInstance.get('/reviewer/dashboard')).data;
         if (response.message === 'success') {
           console.log(response);
-          setAggregate(
-            {
-              reviews:response.reviews ?? [],
-              reviewsuccess:response.reviewsuccess ?? [],
-              points:response.points ?? 0
-            }
-          )
+          setAggregate({
+            reviews: response.reviews ?? [],
+            reviewsuccess: response.reviewsuccess ?? [],
+            points: response.points ?? 0,
+          });
         }
       } catch (error) {
         console.log(error);
@@ -168,39 +165,41 @@ export default function Dashboard(): ReactElement {
             MY FEEDBACKS
           </h1>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-4 mt-4">
-          {aggregate.reviewsuccess.map((reviewsuccess) => {
-  return (
-    <div className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg p-6 m-4 w-full max-w-xs">
-      <img
-        src={
-          reviewsuccess.revieweeId.profileImage?.includes('http')
-            ? reviewsuccess.revieweeId.profileImage
-            : reviewsuccess.revieweeId.profileImage
-            ? `${url}/profile/${reviewsuccess.revieweeId.profileImage}`
-            : '/user.png'
-        }
-        className="h-16 w-16 rounded-full border-4 border-gray-300 mt-4 cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
-        alt="Profile"
-      />
-      <p className="text-gray-700 font-semibold mt-4">
-        {reviewsuccess.revieweeId.email}
-      </p>
+            {aggregate.reviewsuccess.map((reviewsuccess) => {
+              return (
+                <div className="flex flex-col items-center justify-center bg-white shadow-md rounded-lg p-6 m-4 w-full max-w-xs">
+                  <img
+                    src={
+                      reviewsuccess.revieweeId.profileImage?.includes('http')
+                        ? reviewsuccess.revieweeId.profileImage
+                        : reviewsuccess.revieweeId.profileImage
+                        ? `${url}/profile/${reviewsuccess.revieweeId.profileImage}`
+                        : '/user.png'
+                    }
+                    className="h-16 w-16 rounded-full border-4 border-gray-300 mt-4 cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
+                    alt="Profile"
+                  />
+                  <p className="text-gray-700 font-semibold mt-4">
+                    {reviewsuccess.revieweeId.email}
+                  </p>
 
-      <div className="mt-2">
-        <StarRating
-          starCount={5}
-          disabled={true}
-          initialCount={reviewsuccess.feedback?.revieweeFeedback.star ?? 0}
-        />
-      </div>
+                  <div className="mt-2">
+                    <StarRating
+                      starCount={5}
+                      disabled={true}
+                      initialCount={
+                        reviewsuccess.feedback?.revieweeFeedback.star ?? 0
+                      }
+                    />
+                  </div>
 
-      <p className="text-sm text-gray-600 mt-2 text-center px-4">
-        {reviewsuccess.feedback?.revieweeFeedback.comment || 'No feedback provided'}
-      </p>
-    </div>
-  );
-})}
-
+                  <p className="text-sm text-gray-600 mt-2 text-center px-4">
+                    {reviewsuccess.feedback?.revieweeFeedback.comment ||
+                      'No feedback provided'}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
         {/* Right Container for Additional Analytics */}

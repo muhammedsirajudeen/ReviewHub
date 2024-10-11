@@ -41,7 +41,9 @@ export default function Recording(): ReactElement {
                 }
                 alt="Reviewee Profile"
               />
-              <p className="text-sm text-gray-700">{review?.revieweeId?.email}</p>
+              <p className="text-sm text-gray-700">
+                {review?.revieweeId?.email}
+              </p>
               <video
                 src={`${url}/reviewrecording/user-${review?._id}.webm`}
                 autoPlay
@@ -64,7 +66,9 @@ export default function Recording(): ReactElement {
                 }
                 alt="Reviewer Profile"
               />
-              <p className="text-sm text-gray-700">{review?.reviewerId?.email}</p>
+              <p className="text-sm text-gray-700">
+                {review?.reviewerId?.email}
+              </p>
               <video
                 src={`${url}/reviewrecording/reviewer-${review?._id}.webm`}
                 autoPlay

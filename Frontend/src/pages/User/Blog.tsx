@@ -94,16 +94,16 @@ export default function Blog(): ReactElement {
   return (
     <>
       <BlogTopBar setResults={setBlogs} />
-        <div className="flex w-full justify-between items-center">
-          <h1 className="text-4xl ml-36  text-start my-6 w-full">BLOG</h1>
-          <a
-            className="text-nowrap mr-2 text-black border-b-black border-t-white border-l-white border-r-white border hover:underline"
-            href="/user/blog/manage"
-          >
-            Your Blogs
-          </a>
-        </div>
-      <BlogFilterBar setResult={setBlogs} currentpage={currentpage}  />
+      <div className="flex w-full justify-between items-center">
+        <h1 className="text-4xl ml-36  text-start my-6 w-full">BLOG</h1>
+        <a
+          className="text-nowrap mr-2 text-black border-b-black border-t-white border-l-white border-r-white border hover:underline"
+          href="/user/blog/manage"
+        >
+          Your Blogs
+        </a>
+      </div>
+      <BlogFilterBar setResult={setBlogs} currentpage={currentpage} />
       <div className="container mx-auto p-4 -z-10">
         <button
           className="bg-black text-white p-2 rounded-lg font-normal mb-2 hover:bg-gray-800 transition duration-200"

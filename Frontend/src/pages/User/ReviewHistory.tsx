@@ -22,7 +22,9 @@ export default function ReviewHistory(): ReactElement {
   useEffect(() => {
     async function historyFetcher() {
       try {
-        const response = (await axiosInstance.get(`/user/review/history?page=${currentpage}`)).data;
+        const response = (
+          await axiosInstance.get(`/user/review/history?page=${currentpage}`)
+        ).data;
         if (response.message === 'success') {
           setReviews(response.reviews);
           setPagecount(response.pageLength);

@@ -25,18 +25,21 @@ export default function Approvals(): ReactElement {
     dispatch(setPage('users'));
     async function dataWrapper() {
       try {
-        const response = (await axiosInstance.get(`/admin/reviewer/approvals?page=${currentpage}`))
-          .data;
+        const response = (
+          await axiosInstance.get(
+            `/admin/reviewer/approvals?page=${currentpage}`
+          )
+        ).data;
         if (response.message === 'success') {
           setApprovals(response.approvals);
-          setPagecount(response.pageLength)
+          setPagecount(response.pageLength);
         }
       } catch (error) {
         console.log(error);
       }
     }
     dataWrapper();
-  }, [dispatch,currentpage]);
+  }, [dispatch, currentpage]);
   const resumeHandler = (approval: ExtendedApprovalProps) => {
     setApproval(approval);
     flushSync(() => {

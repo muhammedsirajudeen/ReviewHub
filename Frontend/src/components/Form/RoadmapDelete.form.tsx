@@ -8,29 +8,30 @@ export default function RoadmapDeleteForm({
   deletedialogRef,
   closeDeleteHandler,
   roadmap,
-  setRoadmaps
+  setRoadmaps,
 }: {
   deletedialogRef: Ref<HTMLDialogElement>;
   closeDeleteHandler: VoidFunction;
   roadmap: roadmapProps | undefined;
-  setRoadmaps:Dispatch<SetStateAction<roadmapProps[]>>
+  setRoadmaps: Dispatch<SetStateAction<roadmapProps[]>>;
 }): ReactElement {
-
   const deleteHandler = async () => {
     const response = (
       await axiosInstance.delete(`/admin/roadmap/${roadmap?._id}`)
     ).data;
     if (response.message === 'success') {
       toast.success('Deleted successfully');
-      setRoadmaps(produce((draft)=>{
-        draft.forEach((d)=>{
-          if(d._id===roadmap?._id){
-            d.unlistStatus=true
-          }
+      setRoadmaps(
+        produce((draft) => {
+          draft.forEach((d) => {
+            if (d._id === roadmap?._id) {
+              d.unlistStatus = true;
+            }
+          });
         })
-      }))
-      closeDeleteHandler()
-      
+      );
+      closeDeleteHandler();
+
       // setTimeout(() => window.location.reload(), 1000);
     } else {
       toast(response.message);
@@ -49,8 +50,12 @@ export default function RoadmapDeleteForm({
         >
           <i className="fas fa-times text-lg"></i>
         </button>
-        <p className="text-gray-700 font-medium text-sm mb-2">Are you sure you want to delete this roadmap?</p>
-        <p className="text-gray-900 font-semibold text-md mb-4">{roadmap?.roadmapName}</p>
+        <p className="text-gray-700 font-medium text-sm mb-2">
+          Are you sure you want to delete this roadmap?
+        </p>
+        <p className="text-gray-900 font-semibold text-md mb-4">
+          {roadmap?.roadmapName}
+        </p>
         <div className="flex items-center space-x-4">
           <button
             onClick={deleteHandler}

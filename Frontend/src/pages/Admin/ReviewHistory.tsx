@@ -27,14 +27,16 @@ export default function ReviewHistory(): ReactElement {
   const [pagecount, setPagecount] = useState<number>(0);
   const [review, setReview] = useState<ExtendedReviewProps>();
   const [feedback, setFeedback] = useState<boolean>(false);
-  const feedbackRef=useRef<HTMLDialogElement>(null)
-  const dispatch=useAppDispatch()
-  const navigate=useNavigate()
+  const feedbackRef = useRef<HTMLDialogElement>(null);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(setPage('review'))
+    dispatch(setPage('review'));
     async function getReviews() {
-      const response = (await axiosInstance.get(`/admin/review?page=${currentpage}`)).data;
+      const response = (
+        await axiosInstance.get(`/admin/review?page=${currentpage}`)
+      ).data;
       if (response.message === 'success') {
         console.log(response);
         setReviews(response.reviews ?? []);
@@ -42,7 +44,7 @@ export default function ReviewHistory(): ReactElement {
       }
     }
     getReviews();
-  }, [dispatch,currentpage]);
+  }, [dispatch, currentpage]);
   const pageHandler = (count: number) => {
     const page = Math.ceil(count / 10) + 1;
     const array = [];
@@ -67,17 +69,16 @@ export default function ReviewHistory(): ReactElement {
     }
     setCurrentpage(next);
   };
-  const openHandler=(review:ExtendedReviewProps)=>{
-      flushSync(()=>{
-        setReview(review)
-        setFeedback(true)
-    })
-    feedbackRef.current?.showModal()
-
-  }
-  const videoHandler=(review:ExtendedReviewProps)=>{
-    navigate(AdminPath.adminreviewrecording,{state:review})
-  }
+  const openHandler = (review: ExtendedReviewProps) => {
+    flushSync(() => {
+      setReview(review);
+      setFeedback(true);
+    });
+    feedbackRef.current?.showModal();
+  };
+  const videoHandler = (review: ExtendedReviewProps) => {
+    navigate(AdminPath.adminreviewrecording, { state: review });
+  };
   return (
     <>
       <DashboardTopbar />

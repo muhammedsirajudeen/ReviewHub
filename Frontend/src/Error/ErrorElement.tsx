@@ -4,7 +4,7 @@ import SideBar from '../components/SideBar';
 
 export default function ErrorElement(): ReactElement {
   const error = useRouteError() as ErrorResponse;
-  
+
   return (
     <>
       <SideBar />
@@ -19,8 +19,12 @@ export default function ErrorElement(): ReactElement {
           alt="Error illustration"
         />
         <div className="mt-6 bg-white shadow-lg rounded-lg p-6 text-center w-full max-w-md">
-          <p className="text-5xl font-extrabold text-gray-800">{error.status}</p>
-          <p className="text-lg font-semibold text-gray-600 mt-2">{error.statusText}</p>
+          <p className="text-5xl font-extrabold text-gray-800">
+            {error.status}
+          </p>
+          <p className="text-lg font-semibold text-gray-600 mt-2">
+            {error.statusText}
+          </p>
           {error.data && (
             <p className="text-sm text-gray-500 mt-4">{error.data}</p>
           )}

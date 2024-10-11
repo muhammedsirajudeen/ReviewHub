@@ -1,4 +1,12 @@
-import { ChangeEvent, Dispatch, ReactElement, SetStateAction, useEffect, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
@@ -20,24 +28,23 @@ interface Inputs {
 //   { value: 'Django', label: 'Django' },
 //   { value: 'Golang', label: 'Golang' },
 // ];
-interface domainProps{
-  _id:string,
-  domain:string
+interface domainProps {
+  _id: string;
+  domain: string;
 }
-export interface optionProps{
-  value:string,
-  label:string
+export interface optionProps {
+  value: string;
+  label: string;
 }
-
 
 export default function CourseForm({
   closeForm,
   course,
-  setCourses
+  setCourses,
 }: {
   closeForm: VoidFunction;
   course: courseProps | undefined;
-  setCourses:Dispatch<SetStateAction<courseProps[]>>
+  setCourses: Dispatch<SetStateAction<courseProps[]>>;
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
   const {
@@ -52,35 +59,30 @@ export default function CourseForm({
     },
   });
 
-
   const [domain, setDomain] = useState<string>('');
   const [list, setList] = useState<boolean>(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const [options,setOptions]=useState<Array<optionProps>>([])
-  useEffect(()=>{
-    async function dataFetcher(){
-      try{
-        const response=(
-          await axiosInstance.get('/user/domain')
-        ).data
-        if(response.message==="success"){
-          console.log(response)
-          const options:optionProps[]=[]
-          response.domains.map((domain:domainProps)=>{
-            console.log(domain)
-            options.push({value:domain.domain,label:domain.domain})  
-          })
-          setOptions(options)
+  const [options, setOptions] = useState<Array<optionProps>>([]);
+  useEffect(() => {
+    async function dataFetcher() {
+      try {
+        const response = (await axiosInstance.get('/user/domain')).data;
+        if (response.message === 'success') {
+          console.log(response);
+          const options: optionProps[] = [];
+          response.domains.map((domain: domainProps) => {
+            console.log(domain);
+            options.push({ value: domain.domain, label: domain.domain });
+          });
+          setOptions(options);
         }
-         
-      }catch(error){
-        console.log(error)
-        
+      } catch (error) {
+        console.log(error);
       }
     }
-    dataFetcher()
-    },[])
+    dataFetcher();
+  }, []);
   const fileHandler = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const maxSize = 2 * 1024 * 1024; // 2MB
@@ -140,26 +142,28 @@ export default function CourseForm({
               'Content-Type': 'multipart/form-data',
             },
           });
-      
+
       if (response.data.message === 'success') {
         toast.success('Course saved successfully');
-        setCourses(produce((draft)=>{
-          if(!course){
-            draft.push(response.data.course)
-          }else{
-            draft.forEach((d)=>{
-              if(d._id===course._id){
-                Object.assign(d,response.data.course)
-              }
-            })
-          }
-        }))
-        closeForm()
+        setCourses(
+          produce((draft) => {
+            if (!course) {
+              draft.push(response.data.course);
+            } else {
+              draft.forEach((d) => {
+                if (d._id === course._id) {
+                  Object.assign(d, response.data.course);
+                }
+              });
+            }
+          })
+        );
+        closeForm();
       } else {
         toast(response.data.message);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast('An error occurred, please try again.');
     }
   };
@@ -179,10 +183,15 @@ export default function CourseForm({
         {...register('courseName', {
           required: 'Please enter the Course Name',
           minLength: { value: 5, message: 'At least 5 characters required' },
-          validate: (value) => !SpecialCharRegex.test(value) || 'Invalid characters',
+          validate: (value) =>
+            !SpecialCharRegex.test(value) || 'Invalid characters',
         })}
       />
-      {errors.courseName && <span className="text-xs text-red-500">{errors.courseName.message}</span>}
+      {errors.courseName && (
+        <span className="text-xs text-red-500">
+          {errors.courseName.message}
+        </span>
+      )}
 
       {/* Course Description */}
       <label className="text-sm font-light w-full mt-4">Description</label>
@@ -192,10 +201,15 @@ export default function CourseForm({
         {...register('courseDescription', {
           required: 'Please enter the Course Description',
           minLength: { value: 5, message: 'At least 5 characters required' },
-          validate: (value) => !SpecialCharRegex.test(value) || 'Invalid characters',
+          validate: (value) =>
+            !SpecialCharRegex.test(value) || 'Invalid characters',
         })}
       />
-      {errors.courseDescription && <span className="text-xs text-red-500">{errors.courseDescription.message}</span>}
+      {errors.courseDescription && (
+        <span className="text-xs text-red-500">
+          {errors.courseDescription.message}
+        </span>
+      )}
 
       {/* Tagline */}
       <label className="text-sm font-light w-full mt-4">Tagline</label>
@@ -205,16 +219,19 @@ export default function CourseForm({
         {...register('tagline', {
           required: 'Please enter a Tagline',
           minLength: { value: 5, message: 'At least 5 characters required' },
-          validate: (value) => !SpecialCharRegex.test(value) || 'Invalid characters',
+          validate: (value) =>
+            !SpecialCharRegex.test(value) || 'Invalid characters',
         })}
       />
-      {errors.tagline && <span className="text-xs text-red-500">{errors.tagline.message}</span>}
+      {errors.tagline && (
+        <span className="text-xs text-red-500">{errors.tagline.message}</span>
+      )}
 
       {/* Domain Selection */}
       <label className="text-sm font-light w-full mt-4">Domain</label>
       <Select
-      // defaultValue={'MERN STACK'}
-      defaultInputValue={course?.domain}
+        // defaultValue={'MERN STACK'}
+        defaultInputValue={course?.domain}
         options={options}
         className="w-full mb-2"
         onChange={(value) => setDomain(value?.value ?? '')}
@@ -233,7 +250,11 @@ export default function CourseForm({
           <div className="h-32 w-32 border border-gray-300 rounded-lg flex items-center justify-center">
             <img
               ref={imageRef}
-              src={course?.courseImage ? `${url}/course/${course.courseImage}` : '/form/add.png'}
+              src={
+                course?.courseImage
+                  ? `${url}/course/${course.courseImage}`
+                  : '/form/add.png'
+              }
               className="h-full w-full rounded-lg cursor-pointer"
               onClick={() => fileRef.current?.click()}
               alt="Course Preview"

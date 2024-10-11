@@ -8,14 +8,13 @@ export default function ChapterDelete({
   dialogRef,
   closeForm,
   chapter,
-  setChapters
+  setChapters,
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeForm: VoidFunction;
   chapter: chapterProps | undefined;
   setChapters: Dispatch<SetStateAction<chapterProps[]>>;
 }): ReactElement {
-
   const deleteHandler = async () => {
     try {
       const response = (

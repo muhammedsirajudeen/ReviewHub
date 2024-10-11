@@ -11,25 +11,29 @@ import PaymentDetailsDialog from '../../components/Dialog/PaymentDetailsDialog';
 
 export default function Payments(): ReactElement {
   const [payments, setPayments] = useState<paymentProps[]>([]);
-  const [payment,setPayment]=useState<paymentProps>()
+  const [payment, setPayment] = useState<paymentProps>();
   const [currentpage, setCurrentpage] = useState<number>(1);
   const [pagecount, setPagecount] = useState<number>(0);
-  const paymentDetailsRef=useRef<HTMLDialogElement>(null)
-  const [paymentdetails,setPaymentdetails]=useState<boolean>(false)
+  const paymentDetailsRef = useRef<HTMLDialogElement>(null);
+  const [paymentdetails, setPaymentdetails] = useState<boolean>(false);
 
-  const date=useAppSelector((state)=>state.global.filterProps.date)
-  const status=useAppSelector((state)=>state.global.filterProps.status)
-  const dispatch=useAppDispatch()
+  const date = useAppSelector((state) => state.global.filterProps.date);
+  const status = useAppSelector((state) => state.global.filterProps.status);
+  const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(setPage('payments'))
+    dispatch(setPage('payments'));
     async function dataWrapper() {
       try {
-        let statusValue:string | null=null
-        if(status!=null){
-          statusValue=status ? "success" : "failed"
-        } 
+        let statusValue: string | null = null;
+        if (status != null) {
+          statusValue = status ? 'success' : 'failed';
+        }
         const response = (
-          await axiosInstance.get(`/admin/payments?page=${currentpage}&date=${date ?? undefined}&status=${statusValue ??  undefined}`)
+          await axiosInstance.get(
+            `/admin/payments?page=${currentpage}&date=${
+              date ?? undefined
+            }&status=${statusValue ?? undefined}`
+          )
         ).data;
         if (response.message === 'success') {
           setPayments(response.payments);
@@ -44,19 +48,19 @@ export default function Payments(): ReactElement {
     dataWrapper();
   }, [currentpage, date, dispatch, status]);
 
-  const paymentDetailsHandler=(payment:paymentProps)=>{
-    flushSync(()=>{
-      setPaymentdetails(true)
-      setPayment(payment)
-    })
-    paymentDetailsRef.current?.showModal()
-  }
-  const closePaymentDetailsHandler=()=>{
-    flushSync(()=>{
-      setPaymentdetails(false)
-    })
-    paymentDetailsRef.current?.close()
-  }
+  const paymentDetailsHandler = (payment: paymentProps) => {
+    flushSync(() => {
+      setPaymentdetails(true);
+      setPayment(payment);
+    });
+    paymentDetailsRef.current?.showModal();
+  };
+  const closePaymentDetailsHandler = () => {
+    flushSync(() => {
+      setPaymentdetails(false);
+    });
+    paymentDetailsRef.current?.close();
+  };
 
   const pageHandler = (count: number) => {
     const page = Math.ceil(count / 10);
@@ -75,8 +79,13 @@ export default function Payments(): ReactElement {
     <>
       <PaymentTopBar setResults={setPayments} />
       <h1 className="text-4xl ml-36 mt-4 mb-6">Payments</h1>
-      <a href='/admin/withdrawals' className='ml-36  mt-4 mb-4 text-xl border border-b-black border-t-white border-l-white border-r-white' >Withdrawals</a>
-      <PaymentFilterBar currentpage={currentpage}/>
+      <a
+        href="/admin/withdrawals"
+        className="ml-36  mt-4 mb-4 text-xl border border-b-black border-t-white border-l-white border-r-white"
+      >
+        Withdrawals
+      </a>
+      <PaymentFilterBar currentpage={currentpage} />
       <div className="ml-36 mb-6 border rounded-lg shadow-lg p-4 bg-white">
         <table className="min-w-full divide-y divide-gray-200">
           <thead>
@@ -122,7 +131,12 @@ export default function Payments(): ReactElement {
                   </span>
                 </td>
                 <td className="px-4 py-2 text-sm">
-                      <button onClick={()=>paymentDetailsHandler(payment)} className='bg-blue-950 text-white p-1 rounded-lg' >Details</button>
+                  <button
+                    onClick={() => paymentDetailsHandler(payment)}
+                    className="bg-blue-950 text-white p-1 rounded-lg"
+                  >
+                    Details
+                  </button>
                 </td>
               </tr>
             ))}
@@ -136,12 +150,13 @@ export default function Payments(): ReactElement {
         pagecount={pagecount}
         currentpage={currentpage}
       />
-      {
-        paymentdetails && 
-        (
-          <PaymentDetailsDialog payment={payment} closeHandler={closePaymentDetailsHandler} dialogRef={paymentDetailsRef} />
-        )
-      }
+      {paymentdetails && (
+        <PaymentDetailsDialog
+          payment={payment}
+          closeHandler={closePaymentDetailsHandler}
+          dialogRef={paymentDetailsRef}
+        />
+      )}
     </>
   );
 }

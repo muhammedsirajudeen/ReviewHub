@@ -1,4 +1,11 @@
-import { ChangeEvent, Dispatch, ReactElement, Ref, SetStateAction, useRef } from 'react';
+import {
+  ChangeEvent,
+  Dispatch,
+  ReactElement,
+  Ref,
+  SetStateAction,
+  useRef,
+} from 'react';
 import { useForm } from 'react-hook-form';
 import { blogProps } from '../../../types/blogProps';
 import { toast } from 'react-toastify';
@@ -10,8 +17,8 @@ interface BlogFormProps {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   blog?: blogProps; // Optional for editing an existing blog
-  method?:string
-  setBlogs:Dispatch<SetStateAction<blogProps[]>>
+  method?: string;
+  setBlogs: Dispatch<SetStateAction<blogProps[]>>;
 }
 
 export default function BlogForm({
@@ -19,7 +26,7 @@ export default function BlogForm({
   closeHandler,
   blog,
   method,
-  setBlogs
+  setBlogs,
 }: BlogFormProps): ReactElement {
   const {
     register,
@@ -28,22 +35,20 @@ export default function BlogForm({
   } = useForm<{
     heading: string;
     article: string;
-  }>(
-    {
-      defaultValues:{
-        heading:blog?.heading,
-        article:blog?.article
-      }
-    }
-  );
+  }>({
+    defaultValues: {
+      heading: blog?.heading,
+      article: blog?.article,
+    },
+  });
 
   const fileRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
   const onSubmit = async (data: { heading: string; article: string }) => {
-    if (fileRef.current?.files?.length === 0  && !method) {
+    if (fileRef.current?.files?.length === 0 && !method) {
       toast.error('please select a file');
-      
+
       return;
     } else {
       console.log(data);
@@ -52,40 +57,38 @@ export default function BlogForm({
       formData.append('heading', data.heading);
       if (fileRef.current?.files)
         formData.append('file', fileRef.current.files[0]);
-      if(method){
-        try{
-          const response=(
-            await axiosInstance.put(`/user/blog/${blog?._id}`,
-              formData,
-              {
-                headers:{
-                  "Content-Type":"multipart/form-data"
-                }
-              }
-            )
-          ).data
-          if(response.message==="success"){
-            toast.success("updated successfully")
+      if (method) {
+        try {
+          const response = (
+            await axiosInstance.put(`/user/blog/${blog?._id}`, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            })
+          ).data;
+          if (response.message === 'success') {
+            toast.success('updated successfully');
             //include image update here
-            setBlogs(produce((draft)=>{
-              draft.forEach((d)=>{
-                if(d._id===blog?._id){
-                  Object.assign(d,response.blog)
-                }
+            setBlogs(
+              produce((draft) => {
+                draft.forEach((d) => {
+                  if (d._id === blog?._id) {
+                    Object.assign(d, response.blog);
+                  }
+                });
               })
-            }))
-            closeHandler()            
+            );
+            closeHandler();
             // setTimeout(()=>window.location.reload(),1000)
-            return
-          }else{
-            toast.error(response.message)
-            return
+            return;
+          } else {
+            toast.error(response.message);
+            return;
           }
-  
-        }catch(error){
-          console.log(error)
-          toast.error("error updating")
-          return
+        } catch (error) {
+          console.log(error);
+          toast.error('error updating');
+          return;
         }
       }
       const response = (
@@ -97,10 +100,12 @@ export default function BlogForm({
       ).data;
       if (response.message === 'success') {
         toast.success('blog posted');
-        setBlogs(produce((draft)=>{
-          draft.push(response.blog)
-        }))
-        closeHandler()
+        setBlogs(
+          produce((draft) => {
+            draft.push(response.blog);
+          })
+        );
+        closeHandler();
       } else {
         toast(response.message);
       }
@@ -162,7 +167,11 @@ export default function BlogForm({
           <img
             ref={imageRef}
             className="h-full w-full object-cover rounded-lg"
-            src={`${blog?.articleImage ? `${url}/blog/${blog.articleImage}` :  "/form/add.png"}`}
+            src={`${
+              blog?.articleImage
+                ? `${url}/blog/${blog.articleImage}`
+                : '/form/add.png'
+            }`}
             alt="Add"
           />
           <input

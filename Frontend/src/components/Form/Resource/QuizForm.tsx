@@ -9,7 +9,6 @@ import { v4 as uuidv4 } from 'uuid';
 import Toggle from 'react-toggle';
 import axiosInstance from '../../../helper/axiosInstance';
 
-
 export default function QuizForm({
   dialogRef,
   closeHandler,
@@ -37,7 +36,7 @@ export default function QuizForm({
       answer: quiz?.answer,
       reward: quiz?.reward,
       options: options,
-      multiselect:quiz?.multiselect
+      multiselect: quiz?.multiselect,
     },
   });
   const addHandler = () => {
@@ -54,7 +53,7 @@ export default function QuizForm({
 
     if (method === 'post') {
       data._id = uuidv4();
-      data.multiselect=multiplestatus
+      data.multiselect = multiplestatus;
 
       const response = (
         await axios.post(`${url}/admin/quiz/${quizId}`, data, {
@@ -71,10 +70,9 @@ export default function QuizForm({
       }
       return;
     }
-    data.multiselect=multiplestatus
+    data.multiselect = multiplestatus;
     const response = (
-      await axiosInstance.put(`/admin/quiz/${quizId}/${quiz?._id}`, data, {
-      })
+      await axiosInstance.put(`/admin/quiz/${quizId}/${quiz?._id}`, data, {})
     ).data;
     if (response.message === 'success') {
       toast('edited successfully');
@@ -135,12 +133,11 @@ export default function QuizForm({
           </div>
 
           <div>
-          {
-              multiplestatus &&
-              <p className='text-xs font-light '>Please enter all the answers as , seperated values</p>
-              
-              
-            }
+            {multiplestatus && (
+              <p className="text-xs font-light ">
+                Please enter all the answers as , seperated values
+              </p>
+            )}
             <label
               htmlFor="answer"
               className="block text-sm font-medium text-gray-700"

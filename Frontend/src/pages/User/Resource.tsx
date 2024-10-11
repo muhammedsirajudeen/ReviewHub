@@ -1,6 +1,17 @@
-import { FormEvent, Fragment, ReactElement, useEffect, useRef, useState } from 'react';
+import {
+  FormEvent,
+  Fragment,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { QuizProps, resourceProps, responseProps } from '../../types/courseProps';
+import {
+  QuizProps,
+  resourceProps,
+  responseProps,
+} from '../../types/courseProps';
 import { toast, ToastContainer } from 'react-toastify';
 import QuizCheck from '../../components/Form/Resource/user/QuizCheck';
 import { flushSync } from 'react-dom';
@@ -16,12 +27,12 @@ export default function Resource(): ReactElement {
   const [activequiz, setActivequiz] = useState<QuizProps>();
   const [quizes, setQuizes] = useState<Array<QuizProps>>([]);
   const [active, setActive] = useState<string>('');
-  const [responseData,setResponseData]=useState<responseProps[]>([])
-  const [finalReward,setFinalReward]=useState<number>(0)
+  const [responseData, setResponseData] = useState<responseProps[]>([]);
+  const [finalReward, setFinalReward] = useState<number>(0);
   const [type, setType] = useState<string>('');
-  const [result,setResult]=useState<boolean>(false)
-  const resultdialogRef=useRef<HTMLDialogElement>(null)
-  
+  const [result, setResult] = useState<boolean>(false);
+  const resultdialogRef = useRef<HTMLDialogElement>(null);
+
   useEffect(() => {
     if (!location.state) {
       navigate('/user/courses');
@@ -59,76 +70,79 @@ export default function Resource(): ReactElement {
     e.preventDefault();
     let flag = true;
     const formData = new FormData(e.currentTarget as HTMLFormElement);
-    console.log(formData)
+    console.log(formData);
     const formValues: Record<string, string> = {};
     formData.forEach((value, key) => {
       flag = false;
-      if(formValues[key]){
-        formValues[key]=formValues[key]+','+value     
-        return   
+      if (formValues[key]) {
+        formValues[key] = formValues[key] + ',' + value;
+        return;
       }
       formValues[key] = value as string;
     });
-    console.log(formValues)
+    console.log(formValues);
     if (flag) {
       toast('please answer all questions before submitting');
-    }else{
-      try{
-        const response=(
-          await axiosInstance.post(`/user/quiz/check/${activequiz?._id}`,
-            formValues,
+    } else {
+      try {
+        const response = (
+          await axiosInstance.post(
+            `/user/quiz/check/${activequiz?._id}`,
+            formValues
           )
-        ).data
-        if(response.message==="success"){
-          toast("success")
+        ).data;
+        if (response.message === 'success') {
+          toast('success');
 
-          setResponseData(response.result)
-          setFinalReward(response.finalReward)
-          flushSync(()=>{
-            setResult(true)
-          })
-          resultdialogRef.current?.showModal()
+          setResponseData(response.result);
+          setFinalReward(response.finalReward);
+          flushSync(() => {
+            setResult(true);
+          });
+          resultdialogRef.current?.showModal();
           //set quiz success modal here
-        }else{
-          toast(response.message)
+        } else {
+          toast(response.message);
         }
-      }catch(error){
-        console.log(error)
-        toast("error occured")
+      } catch (error) {
+        console.log(error);
+        toast('error occured');
       }
     }
   };
 
-  const resultCloseHandler=()=>{
-    resultdialogRef.current?.close()
-    setResult(false)
-  }
-  const reviewRequestHandler=async ()=>{
-    try{
-      const response=(await axiosInstance.post(`/user/review/request/${location.state.roadmapId}`)).data
-      if(response.message==="success"){
-        toast.success("requested successfully")
-        setTimeout(()=>{
-
-          navigate('/user/review')
-        },1000)
+  const resultCloseHandler = () => {
+    resultdialogRef.current?.close();
+    setResult(false);
+  };
+  const reviewRequestHandler = async () => {
+    try {
+      const response = (
+        await axiosInstance.post(
+          `/user/review/request/${location.state.roadmapId}`
+        )
+      ).data;
+      if (response.message === 'success') {
+        toast.success('requested successfully');
+        setTimeout(() => {
+          navigate('/user/review');
+        }, 1000);
       }
-    }catch(error){
-      const axiosError=error as AxiosError
-      
-      console.log(axiosError)
-      if(axiosError.status===409){
+    } catch (error) {
+      const axiosError = error as AxiosError;
 
-        toast.error("Review Requested already")
-      }else if(axiosError.status===429){
-        toast.error("Too many review requests")
-      }else if(axiosError.status===402){
-        toast.error("Insufficient funds")
-      }else{
-        toast.error("Please try again")
+      console.log(axiosError);
+      if (axiosError.status === 409) {
+        toast.error('Review Requested already');
+      } else if (axiosError.status === 429) {
+        toast.error('Too many review requests');
+      } else if (axiosError.status === 402) {
+        toast.error('Insufficient funds');
+      } else {
+        toast.error('Please try again');
       }
     }
-  }
+  };
   return (
     <div className="ml-36 flex items-start justify-start">
       <div className="w-1/4 h-screen flex flex-col mt-10">
@@ -216,31 +230,26 @@ export default function Resource(): ReactElement {
                   {quiz.multiselect && 'It is a multiple select question'}
                 </p>
 
-              {
-                  quiz.options.map((option,index) => (
-                    
-                      <div
-                        key={option}
-                        className="flex items-center justify-start mt-2 transition-transform transform hover:scale-105"
-                      >
-                        <input
-                          className="mr-4 h-5 w-5 border-2 border-gray-300 rounded-full checked:bg-blue-600 focus:ring-2 focus:ring-blue-500"
-                          name={`${quiz.question}`}
-                          type={quiz.multiselect ? "checkbox" : "radio"}
-                          value={option}
-                          id={`option-${quiz.question}-${index}`}
-                          />
-                        <label
-                          htmlFor={`option-${option}`}
-                          className="text-lg text-gray-800 hover:text-blue-600 transition duration-200"
-                        >
-                          {option}
-                        </label>
-                      </div>
-                    
-                  ))
-                
-                }
+                {quiz.options.map((option, index) => (
+                  <div
+                    key={option}
+                    className="flex items-center justify-start mt-2 transition-transform transform hover:scale-105"
+                  >
+                    <input
+                      className="mr-4 h-5 w-5 border-2 border-gray-300 rounded-full checked:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+                      name={`${quiz.question}`}
+                      type={quiz.multiselect ? 'checkbox' : 'radio'}
+                      value={option}
+                      id={`option-${quiz.question}-${index}`}
+                    />
+                    <label
+                      htmlFor={`option-${option}`}
+                      className="text-lg text-gray-800 hover:text-blue-600 transition duration-200"
+                    >
+                      {option}
+                    </label>
+                  </div>
+                ))}
               </div>
             ))}
             <button

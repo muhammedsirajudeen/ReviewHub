@@ -8,7 +8,7 @@ import BlogForm from '../../components/Form/Blog/BlogForm';
 import { flushSync } from 'react-dom';
 import { ToastContainer } from 'react-toastify';
 import BlogDelete from '../../components/Form/Blog/BlogDelete';
-import { FaRegSadCry } from "react-icons/fa"; // Importing a sad icon from react-icons
+import { FaRegSadCry } from 'react-icons/fa'; // Importing a sad icon from react-icons
 import PaginationComponent from '../../components/pagination/PaginationComponent';
 
 export default function ManageBlog(): ReactElement {
@@ -25,10 +25,12 @@ export default function ManageBlog(): ReactElement {
     dispatch(setPage('blog'));
     async function dataWrapper() {
       try {
-        const response = (await axiosInstance.get(`/user/blog/manage?page=${currentpage}`)).data;
+        const response = (
+          await axiosInstance.get(`/user/blog/manage?page=${currentpage}`)
+        ).data;
         if (response.message === 'success') {
           setBlogs(response.blogs);
-          setPagecount(response.pageLength)
+          setPagecount(response.pageLength);
         } else {
           console.log(response.message);
         }
@@ -37,7 +39,7 @@ export default function ManageBlog(): ReactElement {
       }
     }
     dataWrapper();
-  }, [dispatch,currentpage]);
+  }, [dispatch, currentpage]);
   const editHandler = (blog: blogProps) => {
     flushSync(() => {
       setBlog(blog);
@@ -45,21 +47,21 @@ export default function ManageBlog(): ReactElement {
     });
     editDialogRef.current?.showModal();
   };
-  const deleteHandler=(blog:blogProps)=>{
-      flushSync(()=>{
-        setBlog(blog)
-        setDeletedialog(true)
-    })
-    deleteDialogRef.current?.showModal()
-  }
+  const deleteHandler = (blog: blogProps) => {
+    flushSync(() => {
+      setBlog(blog);
+      setDeletedialog(true);
+    });
+    deleteDialogRef.current?.showModal();
+  };
   const editCloseHandler = () => {
     setEditdialog(false);
     editDialogRef.current?.close();
   };
-  const deleteCloseHandler=()=>{
-    setDeletedialog(false)
-    deleteDialogRef.current?.close()
-  }
+  const deleteCloseHandler = () => {
+    setDeletedialog(false);
+    deleteDialogRef.current?.close();
+  };
   const pageHandler = (count: number) => {
     const page = Math.ceil(count / 10) + 1;
     const array = [];

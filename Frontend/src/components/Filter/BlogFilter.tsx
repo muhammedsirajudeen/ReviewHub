@@ -1,8 +1,14 @@
-import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from "react";
-import Calendar from "react-calendar";
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
+import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import axiosInstance from "../../helper/axiosInstance";
-import { blogProps } from "../../types/blogProps";
+import axiosInstance from '../../helper/axiosInstance';
+import { blogProps } from '../../types/blogProps';
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -19,9 +25,7 @@ export default function BlogFilterBar({
   const [selectdate, setSelectdate] = useState<boolean>(false);
   useEffect(() => {
     const fetchData = async (endpoint: string) => {
-      const response = (
-        await axiosInstance.get(endpoint)
-      ).data;
+      const response = (await axiosInstance.get(endpoint)).data;
       setResult(response.blogs);
     };
 
@@ -31,9 +35,8 @@ export default function BlogFilterBar({
   }, [selectdate, date, currentpage, setResult]);
 
   const toggleActive = (selection: string) => {
-    setActive(prev => (prev === selection ? '' : selection));
+    setActive((prev) => (prev === selection ? '' : selection));
   };
-
 
   const dateSelectHandler = (value: Value) => {
     setActive('');
@@ -49,12 +52,16 @@ export default function BlogFilterBar({
         {/* Date Filter */}
         <div className="relative flex flex-col items-center">
           <button
-            className={`border border-gray-300 text-gray-700 p-2 rounded-lg flex items-center justify-center transition-colors duration-300 hover:bg-gray-100 ${active === 'date' ? 'bg-gray-800 text-white' : ''}`}
+            className={`border border-gray-300 text-gray-700 p-2 rounded-lg flex items-center justify-center transition-colors duration-300 hover:bg-gray-100 ${
+              active === 'date' ? 'bg-gray-800 text-white' : ''
+            }`}
             onClick={() => toggleActive('date')}
           >
             <span className="text-xs font-light">Date</span>
             <img
-              src={active === 'date' ? '/filterbar/up.png' : '/filterbar/down.png'}
+              src={
+                active === 'date' ? '/filterbar/up.png' : '/filterbar/down.png'
+              }
               className="h-3 w-3 ml-2"
               alt="toggle"
             />
@@ -68,12 +75,18 @@ export default function BlogFilterBar({
 
         {/* Category Filter */}
         <button
-          className={`border border-gray-300 text-gray-700 p-2 rounded-lg flex items-center justify-center transition-colors duration-300 hover:bg-gray-100 ${active === 'category' ? 'bg-gray-800 text-white' : ''}`}
+          className={`border border-gray-300 text-gray-700 p-2 rounded-lg flex items-center justify-center transition-colors duration-300 hover:bg-gray-100 ${
+            active === 'category' ? 'bg-gray-800 text-white' : ''
+          }`}
           onClick={() => toggleActive('category')}
         >
           <span className="text-xs font-light">Category</span>
           <img
-            src={active === 'category' ? '/filterbar/up.png' : '/filterbar/down.png'}
+            src={
+              active === 'category'
+                ? '/filterbar/up.png'
+                : '/filterbar/down.png'
+            }
             className="h-3 w-3 ml-2"
             alt="toggle"
           />

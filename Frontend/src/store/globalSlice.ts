@@ -53,9 +53,16 @@ export interface GlobalState {
 const initialState: GlobalState = {
   authenticated: false,
   page: '',
-  user: { paymentMethod: [],favoriteCourses:[],walletId:{
-    history:[],userId:"",balance:0,redeemable:0
-  } },
+  user: {
+    paymentMethod: [],
+    favoriteCourses: [],
+    walletId: {
+      history: [],
+      userId: '',
+      balance: 0,
+      redeemable: 0,
+    },
+  },
   filterProps: {
     date: null,
     status: null,
@@ -71,7 +78,11 @@ export const globalSlice = createSlice({
     },
     clearAuthenticated: (state) => {
       state.authenticated = false;
-      state.user = { paymentMethod: [],favoriteCourses:[],walletId:{history:[],balance:0,redeemable:0} };
+      state.user = {
+        paymentMethod: [],
+        favoriteCourses: [],
+        walletId: { history: [], balance: 0, redeemable: 0 },
+      };
     },
     setUser: (state, action: PayloadAction<userProps>) => {
       state.user = action.payload;
@@ -92,39 +103,39 @@ export const globalSlice = createSlice({
       state.user.paymentMethod.push(action.payload);
     },
     setFavorite: (state, action: PayloadAction<string>) => {
-      const flag=state.user.favoriteCourses.some((id)=>id===action.payload)
-      if(flag){
-        state.user.favoriteCourses.splice(state.user.favoriteCourses.indexOf(action.payload),1)
-        return
+      const flag = state.user.favoriteCourses.some(
+        (id) => id === action.payload
+      );
+      if (flag) {
+        state.user.favoriteCourses.splice(
+          state.user.favoriteCourses.indexOf(action.payload),
+          1
+        );
+        return;
       }
-      state.user.favoriteCourses.push(action.payload)
+      state.user.favoriteCourses.push(action.payload);
     },
-    setUpdatedWallet:(state,action:PayloadAction<number>)=>{
-      if(state.user.walletId){
-        if(state.user.walletId.redeemable){
-          state.user.walletId.redeemable+=action.payload
-          state.user.walletId.history.push(
-            {
-              type:'payment',
-              status:true,
-              amount:action.payload,
-              paymentDate:new Date().toISOString()
-            }
-          )
-          
+    setUpdatedWallet: (state, action: PayloadAction<number>) => {
+      if (state.user.walletId) {
+        if (state.user.walletId.redeemable) {
+          state.user.walletId.redeemable += action.payload;
+          state.user.walletId.history.push({
+            type: 'payment',
+            status: true,
+            amount: action.payload,
+            paymentDate: new Date().toISOString(),
+          });
         }
       }
     },
-    setFailedPayment:(state,action:PayloadAction<number>)=>{
-      state.user.walletId.history.push(
-        {
-          type:'payment',
-          status:false,
-          amount:action.payload,
-          paymentDate:new Date().toISOString()
-        }
-      )
-    }
+    setFailedPayment: (state, action: PayloadAction<number>) => {
+      state.user.walletId.history.push({
+        type: 'payment',
+        status: false,
+        amount: action.payload,
+        paymentDate: new Date().toISOString(),
+      });
+    },
   },
 });
 
@@ -140,7 +151,7 @@ export const {
   setPaymentMethod,
   setFavorite,
   setUpdatedWallet,
-  setFailedPayment
+  setFailedPayment,
 } = globalSlice.actions;
 
 export default globalSlice.reducer;

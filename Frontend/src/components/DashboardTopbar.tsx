@@ -1,7 +1,6 @@
 import { memo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-
 type Inputs = {
   search: string;
 };
@@ -80,4 +79,4 @@ function DashboardTopBar(): ReactElement {
     </div>
   );
 }
-export default memo(DashboardTopBar)
+export default memo(DashboardTopBar);

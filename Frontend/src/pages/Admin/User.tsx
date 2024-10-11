@@ -44,13 +44,15 @@ export default function User(): ReactElement {
       ).data;
       if (response.message === 'success') {
         toast.success('success');
-        setUsers(produce((draft)=>{
-          draft.forEach((d)=>{
-            if(d._id===userId){
-              d.verified=!d.verified
-            }
+        setUsers(
+          produce((draft) => {
+            draft.forEach((d) => {
+              if (d._id === userId) {
+                d.verified = !d.verified;
+              }
+            });
           })
-        }))
+        );
         // setTimeout(()=>{
         //   window.location.reload()
         // },1000)

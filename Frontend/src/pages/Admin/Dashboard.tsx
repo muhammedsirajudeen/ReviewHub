@@ -24,23 +24,21 @@ interface dashboardProps {
   paymentsuccess: number;
   reviews: number;
   users: number;
-  message:string;
-  totalamount:number
+  message: string;
+  totalamount: number;
 }
 
 export default function AdminDashboard(): ReactElement {
-  const [aggregate,setAggregate]=useState<dashboardProps>(
-    {
-      completedreviews:0,
-      courses:0,
-      paymentfailure:0,
-      paymentsuccess:0,
-      users:0,
-      reviews:0,
-      message:"",
-      totalamount:0
-    }
-  )
+  const [aggregate, setAggregate] = useState<dashboardProps>({
+    completedreviews: 0,
+    courses: 0,
+    paymentfailure: 0,
+    paymentsuccess: 0,
+    users: 0,
+    reviews: 0,
+    message: '',
+    totalamount: 0,
+  });
   const dispatch = useAppDispatch();
   const renderCount = useRef<number>(0);
   useEffect(() => {
@@ -63,22 +61,20 @@ export default function AdminDashboard(): ReactElement {
     }
     async function getDashboardDetails() {
       try {
-        const response = (await axiosInstance.get('/admin/dashboard')).data as dashboardProps ;
+        const response = (await axiosInstance.get('/admin/dashboard'))
+          .data as dashboardProps;
         if (response.message === 'success') {
           console.log(response);
-          setAggregate(
-            {
-              paymentfailure:response.paymentfailure,
-              paymentsuccess:response.paymentsuccess,
-              users:response.users,
-              courses:response.courses,
-              reviews:response.reviews,
-              completedreviews:response.completedreviews,
-              message:"",
-              totalamount:response.totalamount
-            }
-          )
-
+          setAggregate({
+            paymentfailure: response.paymentfailure,
+            paymentsuccess: response.paymentsuccess,
+            users: response.users,
+            courses: response.courses,
+            reviews: response.reviews,
+            completedreviews: response.completedreviews,
+            message: '',
+            totalamount: response.totalamount,
+          });
         }
       } catch (error) {
         console.log(error);
@@ -119,9 +115,7 @@ export default function AdminDashboard(): ReactElement {
                 />
                 <p>PENDING REVIEWS</p>
               </div>
-              <p className="font-bold text-4xl mt-4">
-                {aggregate.reviews}
-              </p>
+              <p className="font-bold text-4xl mt-4">{aggregate.reviews}</p>
             </div>
             <div className="h-52 flex flex-col items-center justify-center w-72 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white">
               <div className="text-xs font-bold  flex justify-evenly w-full">
@@ -131,7 +125,9 @@ export default function AdminDashboard(): ReactElement {
                 />
                 <p>FAILED PAYMENTS COUNT</p>
               </div>
-              <p className="font-bold text-4xl mt-4 text-red-600">{aggregate.paymentfailure}</p>
+              <p className="font-bold text-4xl mt-4 text-red-600">
+                {aggregate.paymentfailure}
+              </p>
             </div>
             <div className="h-52 flex mt-10 flex-col items-center justify-center w-72 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white">
               <div className="text-xs font-bold  flex justify-evenly w-full">
@@ -141,7 +137,9 @@ export default function AdminDashboard(): ReactElement {
                 />
                 <p>SUCCESS PAYMENTS COUNT</p>
               </div>
-              <p className="font-bold text-4xl mt-4  text-green-800">{aggregate.paymentsuccess}</p>
+              <p className="font-bold text-4xl mt-4  text-green-800">
+                {aggregate.paymentsuccess}
+              </p>
             </div>
             <div className="h-52 mt-10 flex flex-col items-center justify-center w-72 shadow-xl rounded-lg hover:shadow-2xl transition-shadow duration-300 bg-white">
               <div className="text-xs font-bold  flex justify-evenly w-full">
@@ -151,7 +149,9 @@ export default function AdminDashboard(): ReactElement {
                 />
                 <p>CUMULATIVE TUROVER</p>
               </div>
-              <p className="font-bold text-4xl mt-4  text-green-800">{aggregate.totalamount}</p>
+              <p className="font-bold text-4xl mt-4  text-green-800">
+                {aggregate.totalamount}
+              </p>
             </div>
           </div>
 
@@ -178,32 +178,31 @@ export default function AdminDashboard(): ReactElement {
               direction={{ xs: 'column', md: 'row' }}
               spacing={{ xs: 1, md: 3 }}
             >
-                  <div className='flex items-center justify-center text-xs'  >
-                    <h2 className="text-sm font-semibold mb-2">COURSE COMPLETION</h2>
-                    <Gauge
-                      width={100}
-                      height={100}
-                      value={aggregate.users}
-                      // startAngle={ ? -90 : 0}
-                      // endAngle={index === 1 ? 90 : 360}
-                    />
-                  </div>
-                  <div className='flex items-center justify-center text-xs' >
-                    <h2 className="text-sm font-semibold mb-2">USER COUNT</h2>
-                    <Gauge
-                      width={100}
-                      height={100}
-                      value={aggregate.users}
-                      // startAngle={ ? -90 : 0}
-                      // endAngle={index === 1 ? 90 : 360}
-                    />
-                  </div>
-
+              <div className="flex items-center justify-center text-xs">
+                <h2 className="text-sm font-semibold mb-2">
+                  COURSE COMPLETION
+                </h2>
+                <Gauge
+                  width={100}
+                  height={100}
+                  value={aggregate.users}
+                  // startAngle={ ? -90 : 0}
+                  // endAngle={index === 1 ? 90 : 360}
+                />
+              </div>
+              <div className="flex items-center justify-center text-xs">
+                <h2 className="text-sm font-semibold mb-2">USER COUNT</h2>
+                <Gauge
+                  width={100}
+                  height={100}
+                  value={aggregate.users}
+                  // startAngle={ ? -90 : 0}
+                  // endAngle={index === 1 ? 90 : 360}
+                />
+              </div>
             </Stack>
           </div>
           {/* My Courses Section */}
-
-
         </div>
         {/* Right Container for Additional Analytics */}
         <div className="w-1/2 flex items-center justify-start flex-col h-screen mt-4">

@@ -47,7 +47,9 @@ export default function PaymentFilterBar({
           >
             <span className="text-xs font-light">Date</span>
             <img
-              src={active === 'date' ? '/filterbar/up.png' : '/filterbar/down.png'}
+              src={
+                active === 'date' ? '/filterbar/up.png' : '/filterbar/down.png'
+              }
               className="h-3 w-3 ml-2"
               alt="toggle"
             />
@@ -69,7 +71,11 @@ export default function PaymentFilterBar({
           >
             <span className="text-xs font-light">Category</span>
             <img
-              src={active === 'category' ? '/filterbar/up.png' : '/filterbar/down.png'}
+              src={
+                active === 'category'
+                  ? '/filterbar/up.png'
+                  : '/filterbar/down.png'
+              }
               className="h-3 w-3 ml-2"
               alt="toggle"
             />

@@ -31,26 +31,24 @@ export default function ReviewHistoryForm({
   } = useForm<FeedbackFormData>();
   const user = useAppSelector((state) => state.global.user);
 
-  const [starcount, setStarcount] = useState<number>(
-    ()=>{
-      if(user.authorization==='reviewer'){
-        if(review?.feedback){
-          if(review.feedback.reviewerFeedback){
-            return review.feedback.reviewerFeedback.star ?? 0
-          }
-          return 0
+  const [starcount, setStarcount] = useState<number>(() => {
+    if (user.authorization === 'reviewer') {
+      if (review?.feedback) {
+        if (review.feedback.reviewerFeedback) {
+          return review.feedback.reviewerFeedback.star ?? 0;
         }
-      }else{
-        if(review?.feedback){
-          if(review.feedback.revieweeFeedback){
-            return review.feedback.revieweeFeedback.star ?? 0
-          }
-        }
-        return 0
+        return 0;
       }
-      return 0
+    } else {
+      if (review?.feedback) {
+        if (review.feedback.revieweeFeedback) {
+          return review.feedback.revieweeFeedback.star ?? 0;
+        }
+      }
+      return 0;
     }
-  );
+    return 0;
+  });
   // Handle form submission
   const onSubmit: SubmitHandler<FeedbackFormData> = async (data) => {
     try {
@@ -63,7 +61,7 @@ export default function ReviewHistoryForm({
       if (response.message === 'success') {
         toast.success('Feedback Submitted');
         console.log(response);
-        
+
         setReviews(
           produce((draft) => {
             draft.forEach((d) => {
@@ -107,9 +105,7 @@ export default function ReviewHistoryForm({
         </p>
 
         <StarRating
-          initialCount={
-            starcount
-          }
+          initialCount={starcount}
           setStarcount={setStarcount}
           starCount={5}
         />
@@ -118,8 +114,8 @@ export default function ReviewHistoryForm({
         <textarea
           defaultValue={
             user.authorization === 'reviewer'
-              ? review?.feedback?.reviewerFeedback?.comment ?? ""
-              : review?.feedback?.revieweeFeedback?.comment ?? ""
+              ? review?.feedback?.reviewerFeedback?.comment ?? ''
+              : review?.feedback?.revieweeFeedback?.comment ?? ''
           }
           {...register('feedback', {
             required: 'Feedback is required',

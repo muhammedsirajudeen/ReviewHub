@@ -1,4 +1,11 @@
-import { ChangeEvent, Dispatch, ReactElement, SetStateAction, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useRef,
+  useState,
+} from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import url from '../../helper/backendUrl';
@@ -17,22 +24,26 @@ export default function RoadmapForm({
   id,
   roadmap,
   method,
-  setRoadmaps
+  setRoadmaps,
 }: {
   closeForm: VoidFunction;
   id: string;
   roadmap: roadmapProps | undefined;
   method: string;
-  setRoadmaps:Dispatch<SetStateAction<roadmapProps[]>>
+  setRoadmaps: Dispatch<SetStateAction<roadmapProps[]>>;
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
-  const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>({
     defaultValues: {
       roadmapName: roadmap?.roadmapName,
       roadmapDescription: roadmap?.roadmapDescription,
     },
   });
-  
+
   const [list, setList] = useState<boolean>(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -68,10 +79,10 @@ export default function RoadmapForm({
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const formData = new FormData();
-    formData.append("roadmapName", data.roadmapName);
-    formData.append("roadmapDescription", data.roadmapDescription);
-    formData.append("courseId", id);
-    formData.append("unlistStatus", JSON.stringify(list));
+    formData.append('roadmapName', data.roadmapName);
+    formData.append('roadmapDescription', data.roadmapDescription);
+    formData.append('courseId', id);
+    formData.append('unlistStatus', JSON.stringify(list));
 
     if (!fileRef.current?.files) {
       toast('Please select a file');
@@ -79,42 +90,51 @@ export default function RoadmapForm({
     } else {
       formData.append('file', fileRef.current.files[0]);
     }
-    try {      
-      const response = method === 'put'
-        ? await axiosInstance.put(`/admin/roadmap/${roadmap?._id}`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          })
-        : await axiosInstance.post(`/admin/roadmap`, formData, {
-            headers: {
-              "Content-Type": 'multipart/form-data'
-            },
-          });
-  
-      if (response.data.message === 'success') {
-        if(method==='put'){
-          setRoadmaps(produce((draft)=>{
-            draft.forEach((d)=>{
-              if(d._id===roadmap?._id){
-                Object.assign(d,response.data.roadmap)
+    try {
+      const response =
+        method === 'put'
+          ? await axiosInstance.put(
+              `/admin/roadmap/${roadmap?._id}`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
               }
+            )
+          : await axiosInstance.post(`/admin/roadmap`, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            });
+
+      if (response.data.message === 'success') {
+        if (method === 'put') {
+          setRoadmaps(
+            produce((draft) => {
+              draft.forEach((d) => {
+                if (d._id === roadmap?._id) {
+                  Object.assign(d, response.data.roadmap);
+                }
+              });
             })
-          }))
-          toast.success("Roadmap updated")
-          closeForm()
-        }else{
-          setRoadmaps(produce((draft)=>{
-            draft.push(response.data.roadmap)
-          }))
-          toast.success("Roadmap added")
-          closeForm()
+          );
+          toast.success('Roadmap updated');
+          closeForm();
+        } else {
+          setRoadmaps(
+            produce((draft) => {
+              draft.push(response.data.roadmap);
+            })
+          );
+          toast.success('Roadmap added');
+          closeForm();
         }
         // setTimeout(() => window.location.reload(), 1000);
-      } 
+      }
     } catch (error) {
-      console.log(error)
-      toast.error("please try again")
+      console.log(error);
+      toast.error('please try again');
     }
   };
 
@@ -123,7 +143,9 @@ export default function RoadmapForm({
       className="flex flex-col items-center justify-start w-full max-w-md p-6 bg-white rounded-lg shadow-lg"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <h2 className="text-2xl font-semibold text-center mb-4">Manage Roadmap</h2>
+      <h2 className="text-2xl font-semibold text-center mb-4">
+        Manage Roadmap
+      </h2>
 
       <label className="text-sm font-light w-full text-left">Name</label>
       <input
@@ -136,16 +158,21 @@ export default function RoadmapForm({
             message: 'Please enter at least 5 characters',
           },
           validate: (roadmapName: string) => {
-            if (SpecialCharRegex.test(roadmapName)) return 'Please enter valid characters';
+            if (SpecialCharRegex.test(roadmapName))
+              return 'Please enter valid characters';
             return true;
           },
         })}
       />
       {errors.roadmapName && (
-        <span className="text-xs text-red-500">{errors.roadmapName.message}</span>
+        <span className="text-xs text-red-500">
+          {errors.roadmapName.message}
+        </span>
       )}
 
-      <label className="text-sm font-light w-full text-left mt-4">Description</label>
+      <label className="text-sm font-light w-full text-left mt-4">
+        Description
+      </label>
       <input
         placeholder="Enter the Roadmap Description"
         className="h-10 w-full border border-gray-300 rounded-md px-2 focus:outline-none focus:ring focus:ring-blue-500"
@@ -156,16 +183,24 @@ export default function RoadmapForm({
             message: 'Please enter at least 5 characters',
           },
           validate: (roadmapDescription: string) => {
-            if (SpecialCharRegex.test(roadmapDescription)) return 'Please enter valid characters';
+            if (SpecialCharRegex.test(roadmapDescription))
+              return 'Please enter valid characters';
             return true;
           },
         })}
       />
       {errors.roadmapDescription && (
-        <span className="text-xs text-red-500">{errors.roadmapDescription.message}</span>
+        <span className="text-xs text-red-500">
+          {errors.roadmapDescription.message}
+        </span>
       )}
 
-      <input ref={fileRef} onChange={fileHandler} type="file" className="hidden" />
+      <input
+        ref={fileRef}
+        onChange={fileHandler}
+        type="file"
+        className="hidden"
+      />
       <button
         type="button"
         onClick={imageCloseHandler}
@@ -178,13 +213,19 @@ export default function RoadmapForm({
         <img
           onClick={() => fileRef.current?.click()}
           ref={imageRef}
-          src={roadmap?.roadmapImage ? `${url}/roadmap/${roadmap.roadmapImage}` : '/form/add.png'}
-          className={`${fileRef.current } h-10 w-10`}
+          src={
+            roadmap?.roadmapImage
+              ? `${url}/roadmap/${roadmap.roadmapImage}`
+              : '/form/add.png'
+          }
+          className={`${fileRef.current} h-10 w-10`}
           alt="Preview"
         />
       </div>
 
-      <label htmlFor='toggle' className='text-sm font-light mt-4'>List Status</label>
+      <label htmlFor="toggle" className="text-sm font-light mt-4">
+        List Status
+      </label>
       <Toggle
         defaultChecked={roadmap?.unlistStatus}
         onChange={(e) => setList(e.target.checked)}
@@ -206,7 +247,6 @@ export default function RoadmapForm({
           Cancel
         </button>
       </div>
-
     </form>
   );
 }

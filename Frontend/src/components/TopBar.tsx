@@ -1,4 +1,11 @@
-import { Dispatch, memo, ReactElement, SetStateAction, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  memo,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { chapterProps, courseProps, roadmapProps } from '../types/courseProps';
 import axiosInstance from '../helper/axiosInstance';
@@ -16,18 +23,17 @@ function TopBar({
   setRoadmaps,
   setChapters,
   courseId,
-  roadmapId
-
+  roadmapId,
 }: {
   search: string;
   setSearch: Dispatch<SetStateAction<string>>;
   //iam using this component as a generic
   setCourses?: Dispatch<SetStateAction<Array<courseProps>>>;
   setRoadmaps?: Dispatch<SetStateAction<Array<roadmapProps>>>;
-  setChapters?:Dispatch<SetStateAction<Array<chapterProps>>>;
-  roadmapId?:string;
+  setChapters?: Dispatch<SetStateAction<Array<chapterProps>>>;
+  roadmapId?: string;
   currentpage: number;
-  courseId?:string
+  courseId?: string;
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
   const {
@@ -40,31 +46,43 @@ function TopBar({
   useEffect(() => {
     if (active) {
       async function dataWrapper() {
-        if(setCourses){
+        if (setCourses) {
           const response = (
             await axiosInstance.get(
-              `/user/course?page=${currentpage}&search=${search}`)
+              `/user/course?page=${currentpage}&search=${search}`
+            )
           ).data;
           setCourses(response.courses);
-        }else if(setRoadmaps){
+        } else if (setRoadmaps) {
           const response = (
             await axiosInstance.get(
-                    `/user/roadmap/${courseId}?page=${currentpage}&search=${search}`)
-        ).data;
-        console.log(response)
-        setRoadmaps(response.roadmaps);
-        }else if(setChapters){
-          const response = (
-            await axiosInstance.get(
-                `/admin/chapter/${roadmapId}?page=${currentpage}&search=${search}`)
+              `/user/roadmap/${courseId}?page=${currentpage}&search=${search}`
+            )
           ).data;
-        console.log(response)
-        setChapters(response.chapters);
+          console.log(response);
+          setRoadmaps(response.roadmaps);
+        } else if (setChapters) {
+          const response = (
+            await axiosInstance.get(
+              `/admin/chapter/${roadmapId}?page=${currentpage}&search=${search}`
+            )
+          ).data;
+          console.log(response);
+          setChapters(response.chapters);
         }
       }
       dataWrapper();
     }
-  }, [search, active, courseId, currentpage, setCourses, setRoadmaps, setChapters, roadmapId]);
+  }, [
+    search,
+    active,
+    courseId,
+    currentpage,
+    setCourses,
+    setRoadmaps,
+    setChapters,
+    roadmapId,
+  ]);
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data);
     setActive(true);
@@ -87,7 +105,7 @@ function TopBar({
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="flex items-center justify-center border border-gray-400 rounded-lg">
-        <input
+          <input
             id="chapterName"
             className="h-10 px-4 placeholder:text-xs rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter search term"
@@ -102,7 +120,8 @@ function TopBar({
               },
               validate: (tag: string) => {
                 if (tag.trim() === '') return 'Please enter a search term';
-                if (SpecialCharRegex.test(tag)) return 'Please enter valid characters';
+                if (SpecialCharRegex.test(tag))
+                  return 'Please enter valid characters';
                 return true;
               },
             })}
@@ -134,4 +153,4 @@ function TopBar({
     </div>
   );
 }
-export default memo(TopBar)
+export default memo(TopBar);

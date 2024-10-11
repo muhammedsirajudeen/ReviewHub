@@ -1,7 +1,7 @@
 import { roadmapProps } from './courseProps';
 interface IDetails {
-  comment:string,
-  star:number
+  comment: string;
+  star: number;
 }
 interface feedbackProps {
   reviewerFeedback: IDetails;
@@ -16,5 +16,5 @@ export interface reviewProps {
   feedback?: feedbackProps;
   roadmapId: roadmapProps;
   _id: string;
-  reviewStatus:boolean
+  reviewStatus: boolean;
 }
