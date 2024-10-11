@@ -123,6 +123,15 @@ const CommitReview = async (req: Request, res: Response) => {
     if (!updateReview) {
       return res.status(404).json({ message: 'Requested resource not found' });
     }
+    //check if the reviewer has reviews at this date
+    const findReview = await Review.findOne({
+      reviewerId: user.id,
+      scheduledDate: new Date(updateReview.scheduledDate),
+    });
+    console.log(findReview);
+    if (findReview) {
+      return res.status(409).json({ message: 'Collission in review dates' });
+    }
     updateReview.reviewerId = user.id;
     await updateReview.save();
     //schedule the job here at the scheduled date

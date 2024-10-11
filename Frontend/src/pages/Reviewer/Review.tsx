@@ -87,6 +87,9 @@ export default function Review(): ReactElement {
     } catch (error) {
       const axiosError = error as AxiosError;
       console.log(axiosError);
+      if(axiosError.status===409){
+        toast.error('Review Already Scheduled at that time');
+      }
     }
   };
   const cancelHandler = (review: reviewProps) => {
