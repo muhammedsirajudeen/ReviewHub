@@ -10,7 +10,7 @@ interface walletProps {
   userId?: string;
   redeemable?: number;
   balance?: number;
-  history?: HistoryProps[];
+  history: HistoryProps[];
 }
 interface paymentMethodprops {
   bankaccount: string;
@@ -27,7 +27,7 @@ interface userProps {
   authorization?: string;
   address?: string;
   phone?: string;
-  walletId?: walletProps;
+  walletId: walletProps;
   reviewerApproval?: boolean;
   premiumMember?: boolean;
   favoriteCourses: string[];
@@ -53,7 +53,9 @@ export interface GlobalState {
 const initialState: GlobalState = {
   authenticated: false,
   page: '',
-  user: { paymentMethod: [],favoriteCourses:[] },
+  user: { paymentMethod: [],favoriteCourses:[],walletId:{
+    history:[],userId:"",balance:0,redeemable:0
+  } },
   filterProps: {
     date: null,
     status: null,
@@ -69,7 +71,7 @@ export const globalSlice = createSlice({
     },
     clearAuthenticated: (state) => {
       state.authenticated = false;
-      state.user = { paymentMethod: [],favoriteCourses:[] };
+      state.user = { paymentMethod: [],favoriteCourses:[],walletId:{history:[],balance:0,redeemable:0} };
     },
     setUser: (state, action: PayloadAction<userProps>) => {
       state.user = action.payload;
@@ -97,6 +99,32 @@ export const globalSlice = createSlice({
       }
       state.user.favoriteCourses.push(action.payload)
     },
+    setUpdatedWallet:(state,action:PayloadAction<number>)=>{
+      if(state.user.walletId){
+        if(state.user.walletId.redeemable){
+          state.user.walletId.redeemable+=action.payload
+          state.user.walletId.history.push(
+            {
+              type:'payment',
+              status:true,
+              amount:action.payload,
+              paymentDate:new Date().toISOString()
+            }
+          )
+          
+        }
+      }
+    },
+    setFailedPayment:(state,action:PayloadAction<number>)=>{
+      state.user.walletId.history.push(
+        {
+          type:'payment',
+          status:false,
+          amount:action.payload,
+          paymentDate:new Date().toISOString()
+        }
+      )
+    }
   },
 });
 
@@ -110,7 +138,9 @@ export const {
   setStatus,
   addWithdrawal,
   setPaymentMethod,
-  setFavorite
+  setFavorite,
+  setUpdatedWallet,
+  setFailedPayment
 } = globalSlice.actions;
 
 export default globalSlice.reducer;

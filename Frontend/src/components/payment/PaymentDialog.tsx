@@ -3,8 +3,9 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { ClipLoader } from 'react-spinners';
 import useRazorpay from 'react-razorpay';
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import axiosInstance from '../../helper/axiosInstance';
+import { setFailedPayment, setUpdatedWallet } from '../../store/globalSlice';
 
 type Inputs = {
   amount: string;
@@ -50,6 +51,7 @@ export default function PaymentDialog({
   const [loading, setLoading] = useState<boolean>(false);
   const [Razorpay] = useRazorpay();
   const user = useAppSelector((state) => state.global.user);
+  const dispatch=useAppDispatch()
   const toastHandler=()=>{
     toast("added successfully")
   }
@@ -74,8 +76,9 @@ export default function PaymentDialog({
               },
             );
             toastHandler()
-            
-            window.location.reload();
+            //here implement the state update
+            dispatch(setUpdatedWallet(parseInt(order.amount)/100))     
+            // window.location.reload();
           } catch (err) {
             toast('Payment failed: ' + err);
           }
@@ -105,8 +108,9 @@ export default function PaymentDialog({
             const serverResponse=(
                 await axiosInstance.put(`/user/payment/order/failure/${response.error.metadata.order_id}`,{})
             ).data
-            console.log(serverResponse)      
-            window.location.reload()      
+            console.log(serverResponse) 
+            dispatch(setFailedPayment(parseInt(order.amount)/100))
+            // window.location.reload()      
         }
       })
       rzpay.open();
