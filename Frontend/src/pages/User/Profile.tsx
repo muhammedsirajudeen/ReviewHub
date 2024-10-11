@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router';
 import { flushSync } from 'react-dom';
 import PremiumDialog from '../../components/Dialog/PremiumDialog';
 import axiosInstance from '../../helper/axiosInstance';
-import { Path } from '../../types/pathNames';
+import { UserPath } from '../../types/pathNames';
 
 interface FormValues {
   phone: string;
@@ -142,7 +142,7 @@ export default function Profile(): ReactElement {
           </a>
           <a
             className="text-blue-600 font-bold text-lg hover:text-blue-800 transition-colors"
-            href={`${Path.reviewhistory}`}
+            href={`${UserPath.userreviewhistory}`}
           >
             Reviews
           </a>

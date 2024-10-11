@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import { Outlet, useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { clearAuthenticated, setUser } from '../store/globalSlice';
-import { Path } from '../types/pathNames';
+import { AdminPath } from '../types/pathNames';
 export default function AdminSideBar(): ReactElement {
   // const authenticated = useAppSelector((state) => state.global.authenticated);
   const user = useAppSelector((state) => state.global.user);
@@ -13,7 +13,18 @@ export default function AdminSideBar(): ReactElement {
   const signoutHandler = () => {
     window.localStorage.clear();
     dispatch(clearAuthenticated());
-    dispatch(setUser({}));
+    dispatch(
+      setUser({
+        paymentMethod: [],
+        favoriteCourses: [],
+        walletId: {
+          history: [],
+          userId: '',
+          balance: 0,
+          redeemable: 0,
+        },
+      })
+    );
     navigate('/');
   };
   return (
@@ -58,7 +69,7 @@ export default function AdminSideBar(): ReactElement {
         <div className={`${
             page === 'review' ? 'bg-blue-400' : ''
           } flex items-center justify-center mt-10 p-6 rounded-lg`}>
-          <a href={Path.adminreviewhistory}>
+          <a href={AdminPath.adminreviewhistory}>
             <img src="/sidebar/review.png" />
           </a>
         </div>

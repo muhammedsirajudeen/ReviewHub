@@ -11,7 +11,7 @@ import PaginationComponent from '../../components/pagination/PaginationComponent
 import AdminFeedbackDialog from '../../components/Dialog/AdminFeedbackDialog';
 import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router';
-import { Path } from '../../types/pathNames';
+import { AdminPath } from '../../types/pathNames';
 import { useAppDispatch } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
 
@@ -76,7 +76,7 @@ export default function ReviewHistory(): ReactElement {
 
   }
   const videoHandler=(review:ExtendedReviewProps)=>{
-    navigate(Path.adminreviewrecording,{state:review})
+    navigate(AdminPath.adminreviewrecording,{state:review})
   }
   return (
     <>
