@@ -1,7 +1,7 @@
 import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
-import { courseProps } from "../types/courseProps";
+import { courseProps, domainProps } from "../types/courseProps";
 import axiosInstance from "../helper/axiosInstance";
 
 type ValuePiece = Date | null;
@@ -16,9 +16,21 @@ export default function FilterBar({
 }): ReactElement {
   const [active, setActive] = useState<string>('');
   const [domain, setDomain] = useState<string>('');
+  const [domains,setDomains]=useState<domainProps[]>([])
   const [date, setDate] = useState<Value>(new Date());
   const [selectdate, setSelectdate] = useState<boolean>(false);
   const [favorite,setFavorite]=useState<boolean>(false)
+  useEffect(()=>{
+    const fetchDomains=async ()=>{
+      const response=(
+        await axiosInstance.get('/user/domain')
+      ).data
+      if(response.message==="success"){
+        setDomains(response.domains)
+      }
+    }
+    fetchDomains()
+  },[])
   useEffect(() => {
 
     const fetchData = async (endpoint: string) => {
@@ -75,12 +87,21 @@ export default function FilterBar({
           </button>
           {active === 'domain' && (
             <div className="absolute mt-8 bg-white border border-gray-400 rounded shadow-lg">
-              <button
-                onClick={() => domainSelector('Mern')}
-                className="flex border-b border-gray-200 w-full items-center justify-center p-2 hover:bg-gray-100"
-              >
-                <p className="text-xs font-bold">Mern</p>
-              </button>
+              {
+                //get all domains and display here
+                domains.map((domain)=>{
+              return (
+                <button
+                key={domain._id}
+                  onClick={() => domainSelector(domain.domain)}
+                  className="flex border-b border-gray-200 w-full items-center justify-center p-2 hover:bg-gray-100"
+                >
+                  
+                  <p className="text-xs font-bold">{domain.domain}</p>
+                </button>
+              )                  
+                })
+              }
             </div>
           )}
         </div>

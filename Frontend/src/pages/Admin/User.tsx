@@ -7,6 +7,7 @@ import { setPage } from '../../store/globalSlice';
 import PaginationComponent from '../../components/pagination/PaginationComponent';
 import { toast, ToastContainer } from 'react-toastify';
 import UserTopBar from '../../components/Topbar/UserTopBar';
+import { produce } from 'immer';
 
 export default function User(): ReactElement {
   const [users, setUsers] = useState<Array<userProps>>([]);
@@ -43,9 +44,16 @@ export default function User(): ReactElement {
       ).data;
       if (response.message === 'success') {
         toast.success('success');
-        setTimeout(()=>{
-          window.location.reload()
-        },1000)
+        setUsers(produce((draft)=>{
+          draft.forEach((d)=>{
+            if(d._id===userId){
+              d.verified=!d.verified
+            }
+          })
+        }))
+        // setTimeout(()=>{
+        //   window.location.reload()
+        // },1000)
       } else {
         toast.error('error');
       }
