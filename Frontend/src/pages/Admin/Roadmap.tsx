@@ -45,6 +45,7 @@ export default function Roadmap(): ReactElement {
     }, [currentpage, location.state.id,search]);
 
     const formHandler = () => {
+      setRoadmap(undefined)
         flushSync(() => {
             setOpen(true);
         });
@@ -239,6 +240,7 @@ export default function Roadmap(): ReactElement {
           )}
           {deleteopen && (
             <RoadmapDeleteForm
+            setRoadmaps={setRoadmaps}
               deletedialogRef={deletedialogRef}
               closeDeleteHandler={closeDeleteHandler}
               roadmap={roadmap}

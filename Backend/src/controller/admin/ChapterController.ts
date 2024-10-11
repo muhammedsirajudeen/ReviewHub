@@ -42,10 +42,11 @@ const AddChapter=async (req:Request,res:Response)=>{
             }
         )
         const savedChapter=await newChapter.save()
+        const sendChapter=await Chapter.findById(newChapter.id)
         //when the new chapter is created we are publishing it to the queue
         addMessageToQueue("chapter",JSON.stringify({chapterId:savedChapter.id,roadmapId:savedChapter.roadmapId}))
 
-        res.status(200).json({message:"success"})        
+        res.status(200).json({message:"success",chapter:sendChapter})        
     }catch(error){
         console.log(error)
         res.status(500).json({message:"server error occured"})
@@ -106,10 +107,10 @@ const UpdateChapter=async (req:Request,res:Response)=>{
                 UpdateChapter.chapterName=chapterName ?? UpdateChapter.chapterName
                 UpdateChapter.quizStatus=quizStatus ?? UpdateChapter.quizStatus
                 UpdateChapter.additionalPrompt=additionalPrompt ?? UpdateChapter.additionalPrompt
-                const savedChapter=await UpdateChapter.save()
+                await UpdateChapter.save()
+                const sendChapter=await Chapter.findById(UpdateChapter.id)
                 // addMessageToQueue("chapter",JSON.stringify({chapterId:savedChapter.id,roadmapId:savedChapter.roadmapId}))
-
-                res.status(200).json({message:"success"})
+                res.status(200).json({message:"success",chapter:sendChapter})
             }else{
                 res.status(404).json({message:"chapter not found"})
             }

@@ -1,4 +1,4 @@
-import { ReactElement, Ref, useState } from 'react';
+import { Dispatch, ReactElement, Ref, SetStateAction, useState } from 'react';
 import { chapterProps } from '../../types/courseProps';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -6,6 +6,7 @@ import "react-toggle/style.css";
 import Toggle from "react-toggle";
 import { Link } from 'react-router-dom';
 import axiosInstance from '../../helper/axiosInstance';
+import { produce } from 'immer';
 
 type Inputs = {
   chapterName: string;
@@ -18,7 +19,8 @@ export default function ChapterForm({
   chapter,
   method,
   chapterName,
-  roadmapId
+  roadmapId,
+  setChapters
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeForm: VoidFunction;
@@ -26,6 +28,7 @@ export default function ChapterForm({
   method: string;
   chapterName: string | undefined;
   roadmapId: string | undefined;
+  setChapters:Dispatch<SetStateAction<chapterProps[]>>
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
   const [quiz, setQuiz] = useState<boolean>(false);
@@ -56,8 +59,21 @@ export default function ChapterForm({
       }
 
       if (response.data.message === "success") {
-        toast(`${method === 'post' ? 'Created' : 'Edited'} successfully`);
-        setTimeout(() => window.location.reload(), 1000);
+        toast.success(`${method === 'post' ? 'Created' : 'Edited'} successfully`);
+        if(method==='post'){
+          setChapters(produce((draft)=>{
+            draft.push(response.data.chapter)
+          }))
+        }else{
+          setChapters(produce((draft)=>{
+            draft.forEach((draft)=>{
+              if(draft._id===chapter?._id){
+                Object.assign(draft,response.data.chapter)
+              }
+            })
+          }))
+        }
+        closeForm()
       } else {
         toast(response.data.message);
       }

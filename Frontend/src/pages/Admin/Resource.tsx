@@ -269,6 +269,7 @@ export default function Resource(): ReactElement {
           section={activeresource}
           closeHandler={closeEditHandler}
           dialogRef={dialogRef}
+          
         />
       )}
       {resourceDelete && (

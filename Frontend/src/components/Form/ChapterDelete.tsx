@@ -1,27 +1,43 @@
-import { ReactElement, Ref } from 'react';
+import { Dispatch, ReactElement, Ref, SetStateAction } from 'react';
 import { chapterProps } from '../../types/courseProps';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../helper/axiosInstance';
+import { produce } from 'immer';
 
 export default function ChapterDelete({
   dialogRef,
   closeForm,
   chapter,
+  setChapters
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeForm: VoidFunction;
   chapter: chapterProps | undefined;
+  setChapters:Dispatch<SetStateAction<chapterProps[]>>
 }): ReactElement {
     const deleteHandler=async ()=>{
+      try {        
         const response=(
             await axiosInstance.delete(`/admin/chapter/${chapter?._id}`)
         ).data
         if(response.message==="success"){
-            toast("deleted successfully")
-            setTimeout(()=>window.location.reload(),1000)
+            toast.success("deleted successfully")
+            setChapters(produce((draft)=>{
+              draft.forEach((d,index)=>{
+                if(d._id===chapter?._id){
+                  draft.splice(index,1)
+                }
+              })
+            }))
+            closeForm()
+            // setTimeout(()=>window.location.reload(),1000)
         }else{
             toast(response.message)
         }
+      } catch (error) {
+        console.log(error)
+        toast.error("Please try again")
+      }
     }
   return (
     <dialog

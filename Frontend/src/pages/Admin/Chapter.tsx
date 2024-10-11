@@ -228,10 +228,10 @@ export default function Chapter(): ReactElement {
 
             {/* Modals */}
             {open && (
-                <ChapterForm roadmapId={roadmap._id} method={method} chapterName={chaptername} chapter={chapter} dialogRef={dialogRef} closeForm={closeForm} />
+                <ChapterForm  setChapters={setChapters} roadmapId={roadmap._id} method={method} chapterName={chaptername} chapter={chapter} dialogRef={dialogRef} closeForm={closeForm} />
             )}
             {deleteopen && (
-                <ChapterDelete chapter={chapter} dialogRef={deletedialogRef} closeForm={closedeleteForm} />
+                <ChapterDelete setChapters={setChapters} chapter={chapter} dialogRef={deletedialogRef} closeForm={closedeleteForm} />
             )}
             <ToastContainer />
         </>
