@@ -13,7 +13,7 @@ dotenv.config();
 const options = {
   jwtFromRequest:
     ExtractJwt.fromAuthHeaderAsBearerToken() as JwtFromRequestFunction,
-  secretOrKey: secret_key,
+  secretOrKey: secret_key as string,
 };
 
 // Create JWT strategy
