@@ -13,7 +13,16 @@ export default function SideBar(): ReactElement {
   const signoutHandler = () => {
     window.localStorage.clear();
     dispatch(clearAuthenticated());
-    dispatch(setUser({}));
+    dispatch(      setUser({
+      paymentMethod: [],
+      favoriteCourses: [],
+      walletId: {
+        history: [],
+        userId: '',
+        balance: 0,
+        redeemable: 0,
+      },
+    }));
     navigate('/');
   };
   return (

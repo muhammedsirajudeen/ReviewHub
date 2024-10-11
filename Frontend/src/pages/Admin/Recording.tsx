@@ -56,9 +56,9 @@ export default function Recording(): ReactElement {
               <img
                 className="h-16 w-16 rounded-full object-cover border border-gray-300 shadow hover:shadow-xl transition-shadow"
                 src={
-                  review?.reviewerId.profileImage?.includes('http')
+                  review?.reviewerId?.profileImage?.includes('http')
                     ? review?.reviewerId.profileImage
-                    : review?.reviewerId.profileImage
+                    : review?.reviewerId?.profileImage
                     ? `${url}/profile/${review?.reviewerId.profileImage}`
                     : '/user.png'
                 }
