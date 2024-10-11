@@ -65,7 +65,7 @@ const AddRoadmap = async (req: Request, res: Response) => {
         roadmapImage: req.file?.filename,
       });
       await newRoadmap.save();
-      res.status(201).json({ message: 'success' });
+      res.status(201).json({ message: 'success' , roadmap: newRoadmap });
     }
   } catch (error) {
     console.log(error);
@@ -109,7 +109,8 @@ const EditRoadmap = async (req: Request, res: Response) => {
           req.file?.filename ?? updateRoadmap.roadmapImage;
         updateRoadmap.unlistStatus = unlistStatus ?? updateRoadmap.unlistStatus;
         await updateRoadmap.save();
-        res.status(200).json({ message: 'success' });
+        const sendRoadmap=await Roadmap.findById(updateRoadmap.id)
+        res.status(200).json({ message: 'success' , roadmap: sendRoadmap });
       } else {
         res.status(404).json({ message: 'roadmap not found' });
       }

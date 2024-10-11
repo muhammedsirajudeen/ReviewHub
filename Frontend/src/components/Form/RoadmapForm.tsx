@@ -1,10 +1,11 @@
-import { ChangeEvent, ReactElement, useRef, useState } from 'react';
+import { ChangeEvent, Dispatch, ReactElement, SetStateAction, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import url from '../../helper/backendUrl';
 import { roadmapProps } from '../../types/courseProps';
 import Toggle from 'react-toggle';
 import axiosInstance from '../../helper/axiosInstance';
+import { produce } from 'immer';
 
 interface Inputs {
   roadmapName: string;
@@ -16,11 +17,13 @@ export default function RoadmapForm({
   id,
   roadmap,
   method,
+  setRoadmaps
 }: {
   closeForm: VoidFunction;
   id: string;
   roadmap: roadmapProps | undefined;
   method: string;
+  setRoadmaps:Dispatch<SetStateAction<roadmapProps[]>>
 }): ReactElement {
   const SpecialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~1-9]/;
   const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
@@ -90,11 +93,25 @@ export default function RoadmapForm({
           });
   
       if (response.data.message === 'success') {
-        toast(`Roadmap ${method === 'put' ? 'updated' : 'added'} successfully`);
-        setTimeout(() => window.location.reload(), 1000);
-      } else {
-        toast(response.data.message);
-      }
+        if(method==='put'){
+          setRoadmaps(produce((draft)=>{
+            draft.forEach((d)=>{
+              if(d._id===roadmap?._id){
+                Object.assign(d,response.data.roadmap)
+              }
+            })
+          }))
+          toast.success("Roadmap updated")
+          closeForm()
+        }else{
+          setRoadmaps(produce((draft)=>{
+            draft.push(response.data.roadmap)
+          }))
+          toast.success("Roadmap added")
+          closeForm()
+        }
+        // setTimeout(() => window.location.reload(), 1000);
+      } 
     } catch (error) {
       console.log(error)
       toast.error("please try again")
@@ -190,7 +207,6 @@ export default function RoadmapForm({
         </button>
       </div>
 
-      <ToastContainer />
     </form>
   );
 }

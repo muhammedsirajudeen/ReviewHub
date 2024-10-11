@@ -8,6 +8,7 @@ import FilterBarRoadmap from '../../components/FilterBarRoadmap';
 import TopBar from '../../components/TopBar';
 import { roadmapProps } from '../../types/courseProps';
 import axiosInstance from '../../helper/axiosInstance';
+import { ToastContainer } from 'react-toastify';
 
 
 
@@ -214,6 +215,7 @@ export default function Roadmap(): ReactElement {
               className="flex items-center justify-center flex-col w-96  p-2"
             >
               <RoadmapForm
+              setRoadmaps={setRoadmaps}
                 roadmap={roadmap}
                 method="post"
                 id={location.state.id}
@@ -227,6 +229,7 @@ export default function Roadmap(): ReactElement {
               className="flex items-center justify-center flex-col w-96  p-2"
             >
               <RoadmapForm
+              setRoadmaps={setRoadmaps}
                 roadmap={roadmap}
                 method="put"
                 id={location.state.id}
@@ -241,6 +244,13 @@ export default function Roadmap(): ReactElement {
               roadmap={roadmap}
             />
           )}
+        <ToastContainer
+        style={{
+          backgroundColor: 'gray',
+          color: 'white',
+          borderRadius: '10px',
+        }}
+      />
         </div>
       </>
     );
