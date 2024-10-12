@@ -33,3 +33,4 @@ dist-ssr
 /public/**/*.svg
 /public/**/*.webp
 **/*.webm
+**/*.pdf
