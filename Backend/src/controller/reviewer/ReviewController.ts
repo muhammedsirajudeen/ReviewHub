@@ -127,6 +127,7 @@ const CommitReview = async (req: Request, res: Response) => {
     const findReview = await Review.findOne({
       reviewerId: user.id,
       scheduledDate: new Date(updateReview.scheduledDate),
+      reviewStatus:false
     });
     console.log(findReview);
     if (findReview) {
