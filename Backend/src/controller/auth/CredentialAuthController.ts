@@ -56,7 +56,8 @@ const CredentialSignup = async (req: Request, res: Response) => {
     }
 
     if (checkUser) {
-      return HttpResponse(HttpStatus.COLLISSION,HttpMessage.success,res)
+      //the only refactored piece of common response structure
+      return HttpResponse(HttpStatus.OK,HttpMessage.user_collission,res)
       // res.status(200).json({ message: 'user already exists' });
     } else {
       let hashedPassword = await hashPassword(password);

@@ -13,6 +13,7 @@ export enum HttpMessage{
     success="success",
     not_found="resource not found",
     unauthorized="Unauthorized",
+    user_collission="user already exists"
 }
 //kinda started refactoring have to implement this everwhere
 export default function HttpResponse(status:HttpStatus,message:HttpMessage,res:Response){
