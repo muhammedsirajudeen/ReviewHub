@@ -9,6 +9,7 @@ import transporter from '../../config/nodemailerConfig';
 import Wallet from '../../model/Wallet';
 import { addValueToCache, getValueFromCache } from '../../helper/redisHelper';
 import { spaceValidator } from '../../helper/validationHelper';
+import HttpResponse, { HttpMessage, HttpStatus } from '../../helper/resConstants';
 
 //storing it in dict
 let UuidMapping: Map<string, string> = new Map();
@@ -55,7 +56,8 @@ const CredentialSignup = async (req: Request, res: Response) => {
     }
 
     if (checkUser) {
-      res.status(200).json({ message: 'user already exists' });
+      return HttpResponse(HttpStatus.COLLISSION,HttpMessage.success,res)
+      // res.status(200).json({ message: 'user already exists' });
     } else {
       let hashedPassword = await hashPassword(password);
 
