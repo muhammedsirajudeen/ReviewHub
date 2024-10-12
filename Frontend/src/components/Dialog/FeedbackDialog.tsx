@@ -72,7 +72,7 @@ export default function FeedbackDialog({
         value={
           user.authorization === 'reviewer'
             ? review?.feedback?.revieweeFeedback?.comment
-            : review?.feedback?.reviewerFeedback.comment
+            : review?.feedback?.reviewerFeedback?.comment
         }
       />
     </dialog>
