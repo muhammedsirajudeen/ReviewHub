@@ -1,11 +1,12 @@
 import { Dispatch, ReactElement, Ref, SetStateAction, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { reviewProps } from '../../../types/reviewProps';
 import StarRating from '../../CustomComponents/StarRating';
 import axiosInstance from '../../../helper/axiosInstance';
 import { toast } from 'react-toastify';
 import { useAppSelector } from '../../../store/hooks';
 import { produce } from 'immer';
+import { ExtendedReviewProps } from '../../../pages/Admin/ReviewHistory';
+import url from '../../../helper/backendUrl';
 
 // Define the form data interface
 interface FeedbackFormData {
@@ -20,8 +21,8 @@ export default function ReviewHistoryForm({
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
-  review: reviewProps | undefined;
-  setReviews: Dispatch<SetStateAction<reviewProps[]>>;
+  review: ExtendedReviewProps | undefined;
+  setReviews: Dispatch<SetStateAction<ExtendedReviewProps[]>>;
 }): ReactElement {
   const {
     register,
@@ -103,7 +104,38 @@ export default function ReviewHistoryForm({
             {review?.roadmapId.roadmapName}
           </span>
         </p>
+        {user.authorization === 'reviewer' ? (
+        <>
+          <img
+            src={
+              review?.revieweeId?.profileImage?.includes('http')
+                ? review.revieweeId.profileImage
+                : review?.revieweeId.profileImage
+                ? `${url}/profile/${review.revieweeId.profileImage}`
+                : '/user.png'
+            }
+            className="h-48 w-48 rounded-full mt-4 border-4 border-gray-300 cursor-pointer transition-transform hover:scale-105"
+            alt="Profile"
+          />
+          <p>{review?.revieweeId.email}</p>
+        </>
+      ) : (
+        <>
+          <img
+            src={
+              review?.reviewerId?.profileImage?.includes('http')
+                ? review.reviewerId.profileImage
+                : review?.reviewerId?.profileImage
+                ? `${url}/profile/${review.reviewerId.profileImage}`
+                : '/user.png'
+            }
+            className="h-12 w-12 rounded-full mt-4 border-4 border-gray-300 cursor-pointer transition-transform hover:scale-105"
+            alt="Profile"
+          />
 
+          <p>{review?.reviewerId?.email}</p>
+        </>
+      )}
         <StarRating
           initialCount={starcount}
           setStarcount={setStarcount}

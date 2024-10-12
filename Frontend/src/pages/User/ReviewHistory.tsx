@@ -1,6 +1,5 @@
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import axiosInstance from '../../helper/axiosInstance';
-import { reviewProps } from '../../types/reviewProps';
 import url from '../../helper/backendUrl';
 import { flushSync } from 'react-dom';
 import { ToastContainer } from 'react-toastify';
@@ -8,12 +7,13 @@ import ReviewHistoryForm from '../../components/Form/Review/ReviewHistoryForm';
 import PaginationComponent from '../../components/pagination/PaginationComponent';
 import FeedbackDialog from '../../components/Dialog/FeedbackDialog';
 import { FaSadCry } from 'react-icons/fa';
+import { ExtendedReviewProps } from '../Admin/ReviewHistory';
 
 export default function ReviewHistory(): ReactElement {
   const [currentpage, setCurrentpage] = useState<number>(1);
   const [pagecount, setPagecount] = useState<number>(0);
-  const [reviews, setReviews] = useState<reviewProps[]>([]);
-  const [review, setReview] = useState<reviewProps>();
+  const [reviews, setReviews] = useState<ExtendedReviewProps[]>([]);
+  const [review, setReview] = useState<ExtendedReviewProps>();
   const feedbackRef = useRef<HTMLDialogElement>(null);
   const [feedback, setFeedback] = useState<boolean>(false);
   const viewfeedbackRef = useRef<HTMLDialogElement>(null);
@@ -36,7 +36,7 @@ export default function ReviewHistory(): ReactElement {
     historyFetcher();
   }, [currentpage]);
 
-  const feedbackHandler = (review: reviewProps) => {
+  const feedbackHandler = (review: ExtendedReviewProps) => {
     flushSync(() => {
       setFeedback(true);
       setReview(review);
@@ -61,7 +61,7 @@ export default function ReviewHistory(): ReactElement {
   const nextpageHandler = () => {
     setCurrentpage((prev) => Math.min(prev + 1, Math.ceil(pagecount / 10)));
   };
-  const viewFeedbackHandler = (review: reviewProps) => {
+  const viewFeedbackHandler = (review: ExtendedReviewProps) => {
     flushSync(() => {
       setViewfeedback(true);
       setReview(review);

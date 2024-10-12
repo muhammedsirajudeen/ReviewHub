@@ -19,7 +19,8 @@ const GetHistory = async (req: Request, res: Response) => {
         reviewerId: user.id,
         reviewStatus: true,
       })
-        .populate(['roadmapId', 'revieweeId'])
+        .populate('roadmapId')
+        .populate('revieweeId',['email','profileImage'])
         .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
         .limit(PAGE_LIMIT);
       res.status(200).json({
@@ -33,7 +34,7 @@ const GetHistory = async (req: Request, res: Response) => {
         reviewStatus: true,
       })
         .populate('roadmapId')
-        .populate('reviewerId')
+        .populate('reviewerId',['email','profileImage'])
         .skip((parseInt(page as string) - 1) * PAGE_LIMIT)
         .limit(PAGE_LIMIT);
 
