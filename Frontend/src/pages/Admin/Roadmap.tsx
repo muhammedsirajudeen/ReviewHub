@@ -129,7 +129,7 @@ export default function Roadmap(): ReactElement {
               key={roadmap._id}
               onClick={() => roadmapNavHandler(roadmap)}
               className={`${
-                roadmap.unlistStatus ? 'bg-gray-200' : ''
+                roadmap?.unlistStatus ? 'bg-gray-200' : ''
               } hover:bg-gray-200 flex h-64 w-72 shadow-xl m-0 items-center justify-center flex-col p-4`}
             >
               <img

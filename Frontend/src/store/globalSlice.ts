@@ -117,14 +117,28 @@ export const globalSlice = createSlice({
     },
     setUpdatedWallet: (state, action: PayloadAction<number>) => {
       if (state.user.walletId) {
-        if (state.user.walletId.redeemable) {
-          state.user.walletId.redeemable += action.payload;
+        if (state.user.walletId.redeemable===0) {
+          state.user.walletId.redeemable +=action.payload;
+
+          
           state.user.walletId.history.push({
             type: 'payment',
             status: true,
             amount: action.payload,
             paymentDate: new Date().toISOString(),
           });
+        }
+      }else{
+        state.user['walletId']={
+          redeemable:action.payload,
+          history:[
+            {
+              type:'payment',
+              status:true,
+              amount:action.payload,
+              paymentDate:new Date().toISOString()
+            }
+          ]
         }
       }
     },
@@ -135,6 +149,9 @@ export const globalSlice = createSlice({
         amount: action.payload,
         paymentDate: new Date().toISOString(),
       });
+    },
+    setPremium: (state, action: PayloadAction<boolean>) => {
+      state.user.premiumMember = action.payload;
     },
   },
 });
@@ -152,6 +169,7 @@ export const {
   setFavorite,
   setUpdatedWallet,
   setFailedPayment,
+  setPremium,
 } = globalSlice.actions;
 
 export default globalSlice.reducer;

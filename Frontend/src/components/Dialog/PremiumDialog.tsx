@@ -5,9 +5,10 @@ import {
   RazorpayResponse,
 } from '../payment/PaymentDialog';
 import { toast } from 'react-toastify';
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import axiosInstance from '../../helper/axiosInstance';
 import { ClipLoader } from 'react-spinners';
+import { setPremium } from '../../store/globalSlice';
 
 export default function PremiumDialog({
   dialogRef,
@@ -20,7 +21,7 @@ export default function PremiumDialog({
   const [Razorpay] = useRazorpay();
   const PREMIUM_AMOUNT = 4868;
   const user = useAppSelector((state) => state.global.user);
-
+  const dispatch=useAppDispatch()
   const createOrder = async (): Promise<string | null> => {
     try {
       const response = (await axiosInstance.post('/user/premium')).data;
@@ -65,7 +66,8 @@ export default function PremiumDialog({
                 await axiosInstance.post('/user/premium/verify', response)
               ).data;
               if (apiResponse.message === 'success') {
-                window.location.reload();
+                dispatch(setPremium(true))
+                // window.location.reload();
               } else {
                 console.log('error');
               }
