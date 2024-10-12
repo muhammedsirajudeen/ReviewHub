@@ -153,6 +153,9 @@ export const globalSlice = createSlice({
     setPremium: (state, action: PayloadAction<boolean>) => {
       state.user.premiumMember = action.payload;
     },
+    setReviewerApproval:(state,action:PayloadAction<boolean>)=>{
+      state.user.reviewerApproval=action.payload
+    }
   },
 });
 
@@ -170,6 +173,7 @@ export const {
   setUpdatedWallet,
   setFailedPayment,
   setPremium,
+  setReviewerApproval
 } = globalSlice.actions;
 
 export default globalSlice.reducer;

@@ -7,6 +7,7 @@ import { useAppDispatch } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
 import { toast, ToastContainer } from 'react-toastify';
 import PaginationComponent from '../../components/pagination/PaginationComponent';
+import { produce } from 'immer';
 
 export interface ExtendedApprovalProps extends Omit<approvalProps, 'userId'> {
   userId: userProps;
@@ -56,11 +57,19 @@ export default function Approvals(): ReactElement {
     try {
       const response = (
         await axiosInstance.put(`/admin/reviewer/approve/${approvalId}`)
+
       ).data;
       console.log(response);
       if (response.message === 'success') {
-        toast('success');
-        setTimeout(() => window.location.reload(), 1000);
+        toast.success('success');
+        setApprovals(produce((draft)=>{
+          draft.forEach((d)=>{
+            if(d._id===approvalId){
+              d.approvalStatus=!d.approvalStatus
+            }
+          })
+        }))
+        // setTimeout(() => window.location.reload(), 1000);
       } else {
         toast(response.message);
       }

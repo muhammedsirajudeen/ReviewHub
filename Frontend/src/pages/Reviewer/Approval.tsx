@@ -3,6 +3,8 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import axiosInstance from '../../helper/axiosInstance';
 import { domainProps } from '../../types/courseProps';
+import { useAppDispatch } from '../../store/hooks';
+import { setReviewerApproval } from '../../store/globalSlice';
 interface ReviewerApprovalFormData {
   name: string;
   experience: string;
@@ -22,6 +24,7 @@ export default function Approval(): ReactElement {
   const [fileName, setFileName] = useState('');
   const [requested, setRequested] = useState<boolean>(false);
   const [domain, setDomain] = useState<Array<domainProps>>([]);
+  const dispatch=useAppDispatch()
   useEffect(() => {
     try {
       async function dataWrapper() {
@@ -69,8 +72,10 @@ export default function Approval(): ReactElement {
       ).data;
       console.log(response);
       if (response.message === 'success') {
-        toast('approval requested');
-        setTimeout(() => window.location.reload(), 1000);
+        toast.success('approval requested');
+        dispatch(setReviewerApproval(true))
+        setRequested(true)
+        // setTimeout(() => navigate('/reviewer/dashboard'), 1000);
       } else {
         toast('please try again');
       }

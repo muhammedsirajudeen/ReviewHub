@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useRef, useState } from 'react';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
 import DashboardTopbar from '../../components/DashboardTopbar';
 import { BarChart, Gauge } from '@mui/x-charts';
@@ -37,6 +37,7 @@ export default function Dashboard(): ReactElement {
   });
   const dispatch = useAppDispatch();
   const renderCount = useRef<number>(0);
+  const user=useAppSelector((state)=>state.global.user)
   useEffect(() => {
     async function registerServiceWorker() {
       if (renderCount.current === 0) {
@@ -77,6 +78,14 @@ export default function Dashboard(): ReactElement {
   return (
     <>
       <DashboardTopbar />
+      {!user.reviewerApproval && (
+        <div className="flex items-center ml-36 mt-4">
+          <div className="bg-yellow-100 text-yellow-800 border border-yellow-400 p-3 rounded-lg flex items-center space-x-2">
+            <i className="fas fa-exclamation-circle text-yellow-500"></i>
+            <p className="font-semibold text-2xl">Approval Pending</p>
+          </div>
+        </div>
+      )}
       <p className="flex ml-36 text-3xl  w-full items-center justify-start">
         REVIEWER DASHBOARD
       </p>
