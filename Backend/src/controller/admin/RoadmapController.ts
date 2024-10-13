@@ -50,7 +50,8 @@ const AddRoadmap = async (req: Request, res: Response) => {
         unlistStatus: unlistStatus,
       });
       await newRoadmap.save();
-      res.status(201).json({ message: 'success' });
+
+      res.status(201).json({ message: 'success', roadmap: newRoadmap });
     } else {
       //we found that the lesson count is not one
       const maxLesson = Math.max(
