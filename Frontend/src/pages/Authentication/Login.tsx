@@ -17,6 +17,7 @@ import { flushSync } from 'react-dom';
 import OtpForm from '../../components/Form/Authentication/OtpForm';
 import axiosInstance from '../../helper/axiosInstance';
 import { AuthPath } from '../../types/pathNames';
+import { AxiosError } from 'axios';
 interface FormValues {
   email: string;
   password: string;
@@ -69,29 +70,38 @@ export default function Login(): ReactElement {
   const googleHandler = useGoogleLogin({
     onSuccess: async (codeResponse: TokenResponse) => {
       console.log(codeResponse);
-      const response = await axiosInstance.post('/auth/google/login', {
-        userToken: codeResponse.access_token,
-      });
-      console.log(response);
-      if (response.status === 200 && response.data.message === 'success') {
-        window.localStorage.setItem('token', response.data.token);
-        window.localStorage.setItem(
-          'refresh_token',
-          response.data.refresh_token
-        );
-
-        dispatch(setAuthenticated());
-        const user = await tokenVerifier();
-        if (user) dispatch(setUser(user));
-
-        if (response.data.admin) {
-          navigate('/admin/dashboard');
-          return;
+      try {
+        const response = await axiosInstance.post('/auth/google/login', {
+          userToken: codeResponse.access_token,
+        });
+        console.log(response);
+        if (response.status === 200 && response.data.message === 'success') {
+          window.localStorage.setItem('token', response.data.token);
+          window.localStorage.setItem(
+            'refresh_token',
+            response.data.refresh_token
+          );
+  
+          dispatch(setAuthenticated());
+          const user = await tokenVerifier();
+          if (user) dispatch(setUser(user));
+  
+          if (response.data.admin) {
+            navigate('/admin/dashboard');
+            return;
+          }
+          navigate('/user/dashboard');
+        } else {
+          toast(response.data.message);
         }
-        navigate('/user/dashboard');
-      } else {
-        toast(response.data.message);
+      } catch (error) {
+        console.log(error)
+        const axiosError=error as AxiosError
+        if(axiosError.status===404){
+          toast.error("Please signup first")
+        }
       }
+
     },
     onError: (error) => console.log(error),
     // ux_mode:'redirect',
