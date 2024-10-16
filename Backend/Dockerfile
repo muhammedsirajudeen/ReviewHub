@@ -20,11 +20,11 @@ RUN apt-get update && apt-get install -y ffmpeg
 
 # Expose the port your app runs on
 EXPOSE 3000
-# CMD ["npm","run","dev"]
+CMD ["npm","run","dev"]
 
 
-WORKDIR /usr/src/app/dist
+# WORKDIR /usr/src/app/dist
 
 
 # Set the command to run the application
-CMD ["node", "index.js"]
+# CMD ["node", "index.js"]
