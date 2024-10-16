@@ -1,7 +1,8 @@
 import { createClient } from 'redis';
 export async function addMessageToQueue(queueName: string, message: string) {
-  const client = createClient();
-
+  const client = createClient({
+    url: process.env.REDIS_URL,
+  });
   try {
     //connecting to localhost here
     await client.connect();
@@ -19,8 +20,9 @@ export async function addValueToCache(
   value: string | number,
   time: number
 ) {
-  const client = createClient();
-  try {
+  const client = createClient({
+    url: process.env.REDIS_URL,
+  });  try {
     await client.connect();
     await client.set(email, value);
     await client.expire(email, time);
@@ -35,8 +37,9 @@ export async function addValueToCache(
 }
 
 export async function getValueFromCache(value: string): Promise<string> {
-  const client = createClient();
-  try {
+  const client = createClient({
+    url: process.env.REDIS_URL,
+  });  try {
     await client.connect();
     const cacheValue = await client.get(value);
     if (cacheValue) return cacheValue;
@@ -50,8 +53,9 @@ export async function getValueFromCache(value: string): Promise<string> {
 }
 
 export async function removeValueFromCache(key: string) {
-  const client = createClient();
-  try {
+  const client = createClient({
+    url: process.env.REDIS_URL,
+  });  try {
     await client.connect();
     await client.del(key);
   } catch (error) {
