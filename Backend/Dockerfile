@@ -1,17 +1,25 @@
 FROM node:20.12.2
+
+# Set the working directory
 WORKDIR /usr/src/app
 
+# Copy the entire application code
 COPY . .
+
+# Navigate to the Backend directory
 WORKDIR /usr/src/app/Backend
+
+# Install dependencies
 RUN npm install
 
-EXPOSE 3000
+# Build the application
+RUN npm run build
+
+# Install ffmpeg
 RUN apt-get update && apt-get install -y ffmpeg
 
-CMD ["npm","run","build"]
-WORKDIR /usr/src/app/Backend/dist
-RUN ls
-CMD ["node","index.js"]
+# Expose the port your app runs on
+EXPOSE 3000
 
-
-
+# Set the command to run the application
+CMD ["node", "dist/index.js"]
