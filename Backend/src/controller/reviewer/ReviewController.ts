@@ -19,6 +19,7 @@ interface ExtendedRoadmapProps extends Omit<IRoadmap, 'courseId'> {
   courseId: ICourse;
 }
 
+
 interface ExtendedReviewProps extends Omit<IReview, 'roadmapId'> {
   roadmapId: ExtendedRoadmapProps;
 }
