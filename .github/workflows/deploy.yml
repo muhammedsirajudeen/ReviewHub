@@ -1,0 +1,25 @@
+name: Deploy to Remote Server
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key
+          chmod 600 private_key
+
+      - name: Deploy to EC2 Instance
+        run: |
+          ssh -i private_key ubuntu@ec2-65-2-5-74.ap-south-1.compute.amazonaws.com 'bash -s' < ./deploy.sh  # Replace with your deploy script
