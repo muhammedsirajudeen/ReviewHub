@@ -20,6 +20,6 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > private_key
           chmod 600 private_key
 
-      - name: Deploy to EC2 Instance
+      - name: Create Directory on EC2 Instance
         run: |
-          ssh -i private_key ubuntu@ec2-65-2-5-74.ap-south-1.compute.amazonaws.com 'bash -s' < ./deploy.sh  # Replace with your deploy script
+          ssh -i private_key ubuntu@ec2-65-2-5-74.ap-south-1.compute.amazonaws.com 'mkdir -p ~/hello'
