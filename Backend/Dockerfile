@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 # Navigate to the Backend directory
-WORKDIR /usr/src/app/Backend
+# WORKDIR /usr/src/app/Backend
 
 # Install dependencies
 RUN npm install
