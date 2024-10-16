@@ -23,7 +23,7 @@ jobs:
       - name: Add EC2 Host Key
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ec2-65-2-5-74.ap-south-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+          ssh-keyscan -H ec2-43-204-103-61.ap-south-1.compute.amazonaws.com >> ~/.ssh/known_hosts
 
       - name: Test SSH Connection
         run: |
