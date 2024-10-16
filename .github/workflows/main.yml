@@ -20,6 +20,11 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > private_key
           chmod 600 private_key
 
+      - name: Add EC2 Host Key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ec2-65-2-5-74.ap-south-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+
       - name: Create Directory on EC2 Instance
         run: |
           ssh -i private_key ubuntu@ec2-65-2-5-74.ap-south-1.compute.amazonaws.com 'mkdir -p ~/hello'
