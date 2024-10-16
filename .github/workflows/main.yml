@@ -31,4 +31,4 @@ jobs:
 
       - name: Create Directory on EC2 Instance
         run: |
-          ssh -i private_key ubuntu@ec2-65-2-5-74.ap-south-1.compute.amazonaws.com 'mkdir -p ~/hello'
+          ssh -i private_key ubuntu@ec2-65-2-5-74.ap-south-1.compute.amazonaws.com 'sudo bash ~/deploy.sh'
