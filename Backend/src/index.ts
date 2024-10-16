@@ -57,7 +57,7 @@ const client = createClient({
 client.connect().then(() => console.log('Connected to Redis'));
 
 const connection: ConnectionOptions = {
-  host:  process.env.REDIS_URL,
+  host:  process.env.REDIS_HOST,
   port: 6379,
 };
 
