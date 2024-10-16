@@ -6,8 +6,8 @@ WORKDIR /usr/src/app/Backend
 RUN npm install
 
 EXPOSE 3000
-RUN sudo apt update
-RUN sudo apt install ffmpeg -y
+RUN apt-get update && apt-get install -y ffmpeg
+
 CMD ["npm","run","build"]
 WORKDIR /usr/src/app/Backend/dist
 CMD ["node","index.js"]
