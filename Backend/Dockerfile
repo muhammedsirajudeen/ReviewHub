@@ -21,5 +21,8 @@ RUN apt-get update && apt-get install -y ffmpeg
 # Expose the port your app runs on
 EXPOSE 3000
 
+WORKDIR /usr/src/app/Backend/dist
+
+
 # Set the command to run the application
-CMD ["node", "dist/index.js"]
+CMD ["node", "index.js"]
