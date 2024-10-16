@@ -3,7 +3,7 @@ name: Deploy to Remote Server
 on:
   push:
     branches:
-      - master  # Trigger on push to the main branch
+      - main  # Trigger on push to the main branch
 
 jobs:
   deploy:
@@ -24,6 +24,10 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ec2-65-2-5-74.ap-south-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+
+      - name: Test SSH Connection
+        run: |
+          ssh -i private_key -o StrictHostKeyChecking=no ubuntu@ec2-65-2-5-74.ap-south-1.compute.amazonaws.com 'echo "SSH Connection Successful"'
 
       - name: Create Directory on EC2 Instance
         run: |
