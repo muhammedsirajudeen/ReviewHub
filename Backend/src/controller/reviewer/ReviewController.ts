@@ -7,7 +7,6 @@ import { IRoadmap } from '../../model/Roadmap';
 import { ICourse } from '../../model/Course';
 import { addDelayedTask } from '../../helper/bullmqIntegration';
 import ffmpeg from 'fluent-ffmpeg';
-
 import path from 'path';
 import { existsSync } from 'fs';
 // import Notification from '../../model/Notification';
