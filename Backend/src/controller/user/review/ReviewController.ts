@@ -6,7 +6,7 @@ import Course from '../../../model/Course';
 import Wallet from '../../../model/Wallet';
 import mongoose from 'mongoose';
 import path from 'path';
-import { appendFile } from 'fs';
+import { appendFile, existsSync, mkdirSync } from 'fs';
 
 export const REVIEW_POINT=70
 
@@ -202,28 +202,36 @@ const CallerFetcher=async (req:Request,res:Response)=>{
 }
 
 
-const ReviewRecord=(req:Request,res:Response)=>{
-  try{
-    //try to add more security in the future , slight security bug on here
-    const buffer=req.file?.buffer
-    const originalname=req.file?.originalname
-    const savePath=path.join(__dirname,"../../../public","reviewrecording")
-    if(buffer){
-      appendFile(savePath+"/"+originalname, buffer, (err) => {
+const ReviewRecord = (req:Request, res:Response) => {
+  try {
+    const buffer = req.file?.buffer;
+    const originalname = req.file?.originalname;
+    const savePath = path.join(__dirname, "../../../public", "reviewrecording");
+
+    // Check if the directory exists; if not, create it
+    if (!existsSync(savePath)) {
+      mkdirSync(savePath, { recursive: true });
+    }
+
+    if (buffer) {
+      const filePath = path.join(savePath, originalname as string);
+        appendFile(filePath, buffer, (err) => {
         if (err) {
           console.error('Error appending video chunk:', err);
           return res.status(500).send('Error appending video chunk');
         }
-    
+
         return res.send({ message: 'success' });
       });
+    } else {
+      return res.status(400).send('No file provided');
     }
-    // res.status(200).json({message:"success"})
-  }catch(error){
-    console.log(error)
-    res.status(500).json({message:"server error occured"})
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error occurred" });
   }
-}
+};
+
 
 
 
