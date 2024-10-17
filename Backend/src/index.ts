@@ -25,7 +25,7 @@ import { ExpressPeerServer, IClient } from 'peer';
 import socketInitializer from './socketio-server/socket';
 
 const app = express();
-app.use(cors(corsOptions));
+
 const server = http.createServer(app);
 
 //TODO: Implement secret key based system inorder for the reviewer and reviewee to be connected right now its not that secure go with the first implementation
@@ -113,7 +113,7 @@ const worker = new Worker(
 worker.on('failed', (job, err) => {
   console.error(`Job failed`, err);
 });
-
+app.use(cors(corsOptions));
 // Configure CORS options
 app.use(passport.initialize());
 // Middleware
