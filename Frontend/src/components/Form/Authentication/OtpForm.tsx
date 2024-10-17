@@ -65,7 +65,7 @@ export default function OtpForm({
     console.log('OTP submitted:', data.otp);
     try {
       const response = (
-        await axios.post(`${url}/auth/otp/verify`, {
+        await axiosInstance.post(`/auth/otp/verify`, {
           otp: data.otp,
           email: localStorage.getItem('verifyemail'),
         })
