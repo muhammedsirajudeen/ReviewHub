@@ -83,6 +83,7 @@ const userSchema: Schema<IUser> = new Schema({
     required: false,
     unique: false,
     ref: 'courses',
+    default:[]
   },
   rewardPoints: {
     type: Number,

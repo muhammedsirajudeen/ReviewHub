@@ -1,14 +1,18 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router';
 import { ExtendedReviewProps } from './ReviewHistory';
 import url from '../../helper/backendUrl';
+import { FaTrash } from 'react-icons/fa';
+import axiosInstance from '../../helper/axiosInstance';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function Recording(): ReactElement {
   const location = useLocation();
   const [data, setData] = useState<boolean>(false);
   const [review, setReview] = useState<ExtendedReviewProps>();
   const [loading, setLoading] = useState<boolean>(true);
-
+  const userVideoRef = useRef<HTMLVideoElement>(null)
+  const reviewerVideoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     if (location.state) {
       setData(true);
@@ -17,6 +21,34 @@ export default function Recording(): ReactElement {
     setLoading(false);
   }, [location.state]);
 
+  const deleteHandler = async (videoname: string) => {
+    console.log(videoname)
+    try {
+      const response = (
+        await axiosInstance.delete(`/admin/review/${videoname}`)
+      ).data
+      if (response.message === "success") {
+        toast.success("Deleted Successfully")
+        if(videoname.split('-')[0]==='user'){
+          if(userVideoRef.current){
+            userVideoRef.current.pause()
+            userVideoRef.current.src=""
+            userVideoRef.current.load()
+          }
+        
+      }else{
+          if(reviewerVideoRef.current){
+            reviewerVideoRef.current.pause()
+            reviewerVideoRef.current.src=""
+            reviewerVideoRef.current.load()
+          }
+
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 p-4">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xl">
@@ -36,8 +68,8 @@ export default function Recording(): ReactElement {
                   review?.revieweeId.profileImage?.includes('http')
                     ? review?.revieweeId.profileImage
                     : review?.revieweeId.profileImage
-                    ? `${url}/profile/${review?.revieweeId.profileImage}`
-                    : '/user.png'
+                      ? `${url}/profile/${review?.revieweeId.profileImage}`
+                      : '/user.png'
                 }
                 alt="Reviewee Profile"
               />
@@ -45,11 +77,16 @@ export default function Recording(): ReactElement {
                 {review?.revieweeId?.email}
               </p>
               <video
+                ref={userVideoRef}
                 src={`${url}/reviewrecording/user-${review?._id}.webm`}
                 autoPlay
                 controls
                 className="h-96 w-96 mt-2 rounded-lg border border-gray-300 shadow-md"
               />
+              <button className='bg-red-500 text-white p-2' onClick={() => deleteHandler(`user-${review?._id}.webm`)} >
+                <FaTrash />
+              </button>
+
             </div>
 
             {/* Reviewer Recording */}
@@ -61,8 +98,8 @@ export default function Recording(): ReactElement {
                   review?.reviewerId?.profileImage?.includes('http')
                     ? review?.reviewerId.profileImage
                     : review?.reviewerId?.profileImage
-                    ? `${url}/profile/${review?.reviewerId.profileImage}`
-                    : '/user.png'
+                      ? `${url}/profile/${review?.reviewerId.profileImage}`
+                      : '/user.png'
                 }
                 alt="Reviewer Profile"
               />
@@ -70,11 +107,15 @@ export default function Recording(): ReactElement {
                 {review?.reviewerId?.email}
               </p>
               <video
+                ref={reviewerVideoRef}
                 src={`${url}/reviewrecording/reviewer-${review?._id}.webm`}
                 autoPlay
                 controls
                 className="h-96 w-96 mt-2 rounded-lg border border-gray-300 shadow-md"
               />
+              <button className='bg-red-500 p-2 text-white' onClick={() => deleteHandler(`reviewer-${review?._id}.webm`)} >
+                <FaTrash />
+              </button>
             </div>
           </div>
         )}
@@ -87,6 +128,13 @@ export default function Recording(): ReactElement {
           </button>
         </div>
       </div>
+      <ToastContainer
+        style={{
+          backgroundColor: 'gray',
+          color: 'white',
+          borderRadius: '10px',
+        }}
+      />
     </div>
   );
 }

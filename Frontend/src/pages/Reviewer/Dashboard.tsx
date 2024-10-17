@@ -197,13 +197,13 @@ export default function Dashboard(): ReactElement {
                       starCount={5}
                       disabled={true}
                       initialCount={
-                        reviewsuccess.feedback?.revieweeFeedback.star ?? 0
+                        reviewsuccess.feedback?.revieweeFeedback?.star ?? 0
                       }
                     />
                   </div>
 
                   <p className="text-sm text-gray-600 mt-2 text-center px-4">
-                    {reviewsuccess.feedback?.revieweeFeedback.comment ||
+                    {reviewsuccess.feedback?.revieweeFeedback?.comment ||
                       'No feedback provided'}
                   </p>
                 </div>

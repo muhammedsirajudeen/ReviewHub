@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import Review from '../../model/Review';
+import HttpResponse,{HttpMessage,HttpStatus} from '../../helper/resConstants';
+import { unlink } from 'fs/promises';
+import path from 'path';
 
 const PAGE_LIMIT = 5;
 
@@ -22,6 +25,19 @@ const ReviewController = async (req: Request, res: Response) => {
   }
 };
 
+const DeleteRecording=async (req:Request, res: Response)=>{
+  try {
+    const {videoName}=req.params
+    const savePath = path.join(__dirname, "../../public", "reviewrecording",videoName as string);
+    await unlink(savePath)
+    return HttpResponse(HttpStatus.OK,HttpMessage.success,res)
+  } catch (error) {
+    console.log(error)
+    return HttpResponse(HttpStatus.SERVER_ERROR,HttpMessage.server_error,res)
+  }
+}
+
 export default {
   ReviewController,
+  DeleteRecording
 };

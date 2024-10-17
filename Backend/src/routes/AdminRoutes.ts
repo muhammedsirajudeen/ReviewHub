@@ -266,7 +266,12 @@ router.get(
   AdminMiddleware,
   ReviewController.ReviewController
 );
-
+router.delete(
+  '/review/:videoName',
+  passport.authenticate('jwt',{session:false}),
+  AdminMiddleware,
+  ReviewController.DeleteRecording
+)
 //dashboard details
 router.get(
   '/dashboard',
