@@ -5,7 +5,7 @@ import connectDB from './model/dbConnect';
 import cors from 'cors';
 import http from 'http';
 //routes
-import AuthRoute from '../src/routes/AuthRoutes';
+import AuthRoute from './routes/AuthRoutes';
 import UserRoutes from './routes/UserRoutes';
 import AdminRoutes from './routes/AdminRoutes';
 import ReviewerRoutes from './routes/ReviewerRoutes';
