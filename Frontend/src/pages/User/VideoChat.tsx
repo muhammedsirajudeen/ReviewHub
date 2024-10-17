@@ -88,9 +88,9 @@ export default function VideoChat(): ReactElement {
     // reviewDetailsFetcher(location);
     const peer = new Peer(user._id, {
       host: import.meta.env.VITE_WEBSOCKET,
-      port: 3000,
+      port: 443,
       path: '/peerjs/myapp', // The path you defined in the server
-      secure: false,
+      secure: true,
       debug: 3,
     });
     peer.on('connection', (conn) => {
