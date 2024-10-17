@@ -35,6 +35,7 @@ export default function VideoChat(): ReactElement {
   const [loading, setLoading] = useState<boolean>(true);
   const [chat, setChat] = useState<boolean>(false);
   const [nudge, setNudge] = useState<boolean>(false);
+  const [screenshare,setScreenshare]=useState<boolean>(false)
   const dispatch = useAppDispatch();
   const location = useLocation().state;
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -49,7 +50,7 @@ export default function VideoChat(): ReactElement {
   const connectionRef = useRef<DataConnection>();
   const chatContainer = useRef<HTMLDivElement>(null);
   const renderCount = useRef<number>(0);
-
+  
   useEffect(() => {
     dispatch(setPage('review'));
     async function mediaStreamFetcher(): Promise<MediaStream> {
@@ -91,7 +92,7 @@ export default function VideoChat(): ReactElement {
       port: import.meta.env.VITE_WEBSOCKET==='localhost' ? 3000 : 443,
       path: '/peerjs/myapp', // The path you defined in the server
       secure: import.meta.env.VITE_WEBSOCKET==='localhost' ? false : true ,
-      debug: 3,
+      // debug: 3,
     });
     peer.on('connection', (conn) => {
       connectionRef.current = conn;
@@ -160,9 +161,14 @@ export default function VideoChat(): ReactElement {
             if (videoTracks.length === 2) {
               remoteStream.getTracks().forEach((track) => {
                 if (count === 1) {
+                  flushSync(()=>{
+                    setScreenshare(true)
+                  })
+                  console.log(screenshare)
                   if (screenVideoRef.current) {
                     screenVideoRef.current.srcObject = new MediaStream([track]);
                     screenVideoRef.current.play();
+
                   }
                 }
                 console.log(track.label);
@@ -205,6 +211,9 @@ export default function VideoChat(): ReactElement {
           if (videoTracks.length === 2) {
             remoteStream.getTracks().forEach((track) => {
               if (count === 1) {
+                flushSync(()=>{
+                  setScreenshare(true)
+                })
                 if (screenVideoRef.current) {
                   screenVideoRef.current.srcObject = new MediaStream([track]);
                   screenVideoRef.current.play();
@@ -256,6 +265,9 @@ export default function VideoChat(): ReactElement {
     return combinedStream;
   }
   const screenShareHandler = async () => {
+    flushSync((()=>{
+      setScreenshare(true)
+    }))
     const screenStream = await navigator.mediaDevices.getDisplayMedia({
       video: true, // Only video for screen sharing
     });
@@ -360,15 +372,20 @@ export default function VideoChat(): ReactElement {
           ></video>
         </div>
       </div>
-      <div className="flex items-center min-w-full justify-center mt-20 -z-1">
-        <div className="w-1/2 mt-10 flex items-center justify-center ">
-          <video
-            controls
-            ref={screenVideoRef}
-            className="w-1/2 h-1/2 bg-black rounded-xl"
-          ></video>
+      {
+        screenshare && 
+        (
+        <div className="flex items-center min-w-full justify-center mt-20 -z-1">
+          <div className="w-1/2 mt-10 flex items-center justify-center ">
+            <video
+              controls
+              ref={screenVideoRef}
+              className="w-1/2 h-1/2 bg-black rounded-xl"
+            ></video>
+          </div>
         </div>
-      </div>
+        )
+      }
       <div className="absolute flex p-2 rounded-lg h-12 bg-black items-center justify-center bottom-10 left-1/2 z-20">
         <button className=" rounded-lg p-2 items-center justify-center  bg-red-600 flex ">
           <FaPhone onClick={() => backHandler()} color="white" />
