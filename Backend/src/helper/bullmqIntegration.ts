@@ -25,7 +25,7 @@ export async function addDelayedTask(
     client.connect().then(() => console.log('Connected to Redis'));
 
     const connection: ConnectionOptions = {
-      host: 'localhost',
+      host: process.env.REDIS_HOST,
       port: 6379,
     };
     const myQueue = new Queue('reviewScheduler', { connection });
