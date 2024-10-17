@@ -87,7 +87,7 @@ export default function VideoChat(): ReactElement {
     requestPermission();
     // reviewDetailsFetcher(location);
     const peer = new Peer(user._id, {
-      host: 'localhost',
+      host: import.meta.env.VITE_WEBSOCKET,
       port: 3000,
       path: '/peerjs/myapp', // The path you defined in the server
       secure: false,
