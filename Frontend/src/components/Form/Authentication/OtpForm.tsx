@@ -1,7 +1,5 @@
-import axios from 'axios';
 import { ReactElement, Ref, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import url from '../../../helper/backendUrl';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import axiosInstance from '../../../helper/axiosInstance';

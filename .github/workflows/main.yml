@@ -27,8 +27,8 @@ jobs:
 
       - name: Test SSH Connection
         run: |
-          ssh -i private_key -o StrictHostKeyChecking=no ssh -i "reviewhub.pem" ubuntu@ec2-13-201-224-148.ap-south-1.compute.amazonaws.com 'echo "SSH Connection Successful"'
+          ssh -i private_key -o StrictHostKeyChecking=no  ubuntu@ec2-13-201-224-148.ap-south-1.compute.amazonaws.com 'echo "SSH Connection Successful"'
 
       - name: Create Directory on EC2 Instance
         run: |
-          ssh -i private_key ssh -i "reviewhub.pem" ubuntu@ec2-13-201-224-148.ap-south-1.compute.amazonaws.com 'sudo bash ~/deploy.sh'
+          ssh -i private_key  ubuntu@ec2-13-201-224-148.ap-south-1.compute.amazonaws.com 'sudo bash ~/deploy.sh'
