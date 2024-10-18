@@ -3,7 +3,7 @@ import { useAppDispatch } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
 import { useLoaderData, useLocation, useNavigate } from 'react-router';
 import { ClipLoader } from 'react-spinners';
-import { FaPhone } from 'react-icons/fa';
+import { FaMicrophone, FaPhone } from 'react-icons/fa';
 import Peer, { DataConnection } from 'peerjs';
 import userProps from '../../types/userProps';
 import axiosInstance from '../../helper/axiosInstance';
@@ -36,6 +36,8 @@ export default function VideoChat(): ReactElement {
   const [chat, setChat] = useState<boolean>(false);
   const [nudge, setNudge] = useState<boolean>(false);
   const [screenshare,setScreenshare]=useState<boolean>(false)
+  // const voiceRef=useRef<boolean>(false)
+  const [voice,setVoice]=useState<boolean>(false)
   const dispatch = useAppDispatch();
   const location = useLocation().state;
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -50,6 +52,7 @@ export default function VideoChat(): ReactElement {
   const connectionRef = useRef<DataConnection>();
   const chatContainer = useRef<HTMLDivElement>(null);
   const renderCount = useRef<number>(0);
+
   
   useEffect(() => {
     dispatch(setPage('review'));
@@ -64,7 +67,7 @@ export default function VideoChat(): ReactElement {
         // If the stream is not instantiated, get a new one
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
-          audio: true,
+          audio: false,
         });
         streamRef.current = stream; // Store the new stream in ref
         return stream;
@@ -347,6 +350,33 @@ export default function VideoChat(): ReactElement {
     }
     navigate('/user/dashboard');
   };
+  const voiceHandler=async ()=>{
+    if(streamRef.current){
+      console.log(streamRef.current)
+      if(voice){
+        const audioTracks = streamRef.current.getAudioTracks();
+        audioTracks.forEach(track => {
+          track.stop(); // Stop the track
+          
+          streamRef.current?.removeTrack(track); // Remove it from the stream
+      });
+
+      }else{
+        try {
+          const audioStream=await navigator.mediaDevices.getUserMedia({audio:true})
+          const audioTrack = audioStream.getAudioTracks()[0];
+          streamRef.current.addTrack(audioTrack)
+
+        } catch (error) {
+          console.log("Error adding audio track",error)
+        }
+
+      }
+
+    }
+    //essentially toggling the voice
+    setVoice(prev=>!prev)    
+  }
   return (
     <>
       {loading && (
@@ -390,9 +420,13 @@ export default function VideoChat(): ReactElement {
         <button className=" rounded-lg p-2 items-center justify-center  bg-red-600 flex ">
           <FaPhone onClick={() => backHandler()} color="white" />
         </button>
+        <button className={`${voice ? "bg-green-500" : "bg-red-600"} ml-4 rounded-lg p-2 items-center justify-center   flex `}>
+          <FaMicrophone onClick={() => voiceHandler()}  color="white" />
+        </button>
+
         {user.authorization !== 'reviewer' && (
           <button
-            className="flex items-center justify-center ml-10"
+            className="flex items-center justify-center ml-4"
             onClick={() => screenShareHandler()}
           >
             <img className="h-6 w-6" src="/videochat/screenshare.png" />
@@ -403,7 +437,7 @@ export default function VideoChat(): ReactElement {
         )}
         <button
           onClick={() => chatHandler()}
-          className="flex ml-10 items-center justify-center"
+          className="flex ml-4 items-center justify-center"
         >
           <img className="h-6 w-6" src="/videochat/chat.png" />
         </button>
