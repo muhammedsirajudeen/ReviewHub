@@ -1,4 +1,4 @@
-import { ReactElement, Ref, useState } from 'react';
+import { ReactElement, Ref, useRef, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { ClipLoader } from 'react-spinners';
@@ -52,11 +52,13 @@ export default function PaymentDialog({
   const [Razorpay] = useRazorpay();
   const user = useAppSelector((state) => state.global.user);
   const dispatch = useAppDispatch();
+  const failureCount=useRef<number>(0)
   const toastHandler = () => {
     toast('added successfully');
   };
   const handlePayment = async (order: orderProps) => {
     try {
+      failureCount.current=0
       const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_ID;
       const options = {
         key: RAZORPAY_KEY_ID,
@@ -67,6 +69,7 @@ export default function PaymentDialog({
         order_id: order.id,
         handler: async (response: RazorpayResponse) => {
           try {
+            
             await axiosInstance.post('/user/payment/order/verify', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -101,7 +104,7 @@ export default function PaymentDialog({
         // alert(response.error.reason);
         // alert(response.error.metadata.order_id);
         // alert(response.error.metadata.payment_id);
-        if (response.error.metadata.payment_id) {
+        if (response.error.metadata.payment_id && failureCount.current===0 ) {
           const serverResponse = (
             await axiosInstance.put(
               `/user/payment/order/failure/${response.error.metadata.order_id}`,
@@ -111,6 +114,7 @@ export default function PaymentDialog({
           console.log(serverResponse);
           dispatch(setFailedPayment(parseInt(order.amount) / 100));
           // window.location.reload()
+          failureCount.current++
         }
       });
       rzpay.open();

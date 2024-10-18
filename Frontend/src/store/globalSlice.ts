@@ -116,18 +116,19 @@ export const globalSlice = createSlice({
       state.user.favoriteCourses.push(action.payload);
     },
     setUpdatedWallet: (state, action: PayloadAction<number>) => {
-      if (state.user.walletId) {
-        if (state.user.walletId.redeemable===0) {
-          state.user.walletId.redeemable +=action.payload;
 
-          
-          state.user.walletId.history.push({
-            type: 'payment',
-            status: true,
-            amount: action.payload,
-            paymentDate: new Date().toISOString(),
-          });
-        }
+    if (state.user.walletId && typeof state.user.walletId.redeemable === 'number' && state.user.walletId.redeemable >= 0) {
+      // Update the redeemable balance
+      state.user.walletId.redeemable += action.payload;
+  
+      // Log the payment history
+      state.user.walletId.history.push({
+          type: 'payment',
+          status: true,
+          amount: action.payload,
+          paymentDate: new Date().toISOString(),
+      });
+      
       }else{
         state.user['walletId']={
           redeemable:action.payload,
