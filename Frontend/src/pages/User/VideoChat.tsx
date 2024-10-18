@@ -3,7 +3,7 @@ import { useAppDispatch } from '../../store/hooks';
 import { setPage } from '../../store/globalSlice';
 import { useLoaderData, useLocation, useNavigate } from 'react-router';
 import { ClipLoader } from 'react-spinners';
-import { FaMicrophone, FaPhone } from 'react-icons/fa';
+import { FaMicrophone, FaPhone, FaVideo } from 'react-icons/fa';
 import Peer, { DataConnection } from 'peerjs';
 import userProps from '../../types/userProps';
 import axiosInstance from '../../helper/axiosInstance';
@@ -38,6 +38,7 @@ export default function VideoChat(): ReactElement {
   const [screenshare,setScreenshare]=useState<boolean>(false)
   // const voiceRef=useRef<boolean>(false)
   const [voice,setVoice]=useState<boolean>(false)
+  const [video,setVideo]=useState<boolean>(true)
   const dispatch = useAppDispatch();
   const location = useLocation().state;
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -377,6 +378,23 @@ export default function VideoChat(): ReactElement {
     //essentially toggling the voice
     setVoice(prev=>!prev)    
   }
+  const videoHandler=async ()=>{
+    if(streamRef.current){
+      if(video){
+        const videoTracks = streamRef.current.getVideoTracks();
+        videoTracks.forEach(track => {
+          track.stop()
+          streamRef.current?.removeTrack(track);
+      });
+      }else{
+        const videostream=await navigator.mediaDevices.getUserMedia({video:true})
+        const videotrack=videostream.getVideoTracks()[0]
+        streamRef.current.addTrack(videotrack)
+      }
+    }
+    setVideo(prev=>!prev)
+
+  }
   return (
     <>
       {loading && (
@@ -423,6 +441,10 @@ export default function VideoChat(): ReactElement {
         <button className={`${voice ? "bg-green-500" : "bg-red-600"} ml-4 rounded-lg p-2 items-center justify-center   flex `}>
           <FaMicrophone onClick={() => voiceHandler()}  color="white" />
         </button>
+        <button className={`${video ? "bg-green-500" : "bg-red-600"} ml-4 rounded-lg p-2 items-center justify-center   flex `}>
+          <FaVideo onClick={() => videoHandler()}  color="white" />
+        </button>
+
 
         {user.authorization !== 'reviewer' && (
           <button
