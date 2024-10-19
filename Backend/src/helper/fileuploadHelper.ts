@@ -2,10 +2,14 @@ import multer from 'multer';
 import path from 'path';
 import { Request, Response } from 'express';
 import sharp from 'sharp';
-import fs from 'fs';
+import fs, { existsSync, mkdirSync } from 'fs';
 
 function UploadHandler(pathName: string, type?: string) {
   const uploadDir = path.join(__dirname, '../public/', pathName);
+  //adding an option to make the dir if it doesnt exist
+  if(!existsSync(uploadDir)){
+    mkdirSync(uploadDir)
+  }
 
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
