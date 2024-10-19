@@ -131,8 +131,9 @@ def extract_json_from_text(text):
 
 def main():
     my_db,sub=QueryObjects()
-    while True:
-        msg=sub.get_message()
+    #more optimized rooting for a blocking version
+    for msg in sub.listen():
+        # msg=sub.get_message()
         if(msg):
             if(msg['type']=='subscribe'):
                 pass
