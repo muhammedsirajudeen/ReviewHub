@@ -8,7 +8,7 @@ function UploadHandler(pathName: string, type?: string) {
   const uploadDir = path.join(__dirname, '../public/', pathName);
   //adding an option to make the dir if it doesnt exist
   if(!existsSync(uploadDir)){
-    mkdirSync(uploadDir)
+    mkdirSync(uploadDir,{recursive:true})
   }
 
   const storage = multer.diskStorage({
