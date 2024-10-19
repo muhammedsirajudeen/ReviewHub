@@ -27,6 +27,12 @@ const localizer: DateLocalizer = momentLocalizer(moment);
 // type ValuePiece = Date | null;
 // type Value = ValuePiece | [ValuePiece, ValuePiece];
 
+interface eventsProps {
+  title: string,
+  start: Date,
+  end: Date
+}
+
 export default function Review(): ReactElement {
   const [reviews, setReviews] = useState<Array<reviewProps>>([]);
   const [pendingreviews, setPendingreviews] = useState<Array<reviewProps>>([]);
@@ -36,6 +42,7 @@ export default function Review(): ReactElement {
   const [review, setReview] = useState<reviewProps>();
   const deleteDialogRef = useRef<HTMLDialogElement>(null);
   const [deletedialog, setDeletedialog] = useState<boolean>(false);
+  const [events, setEvents] = useState<eventsProps[]>([])
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(setPage('review'));
@@ -43,6 +50,11 @@ export default function Review(): ReactElement {
       const response = (await axiosInstance.get('/user/review')).data;
       if (response.message === 'success') {
         setReviews(response.reviews);
+        const events: eventsProps[] = []
+        response.reviews.forEach((review: reviewProps) => {
+          events.push({ title: 'review', start: new Date(review.scheduledDate), end: new Date(review.scheduledDate) })
+        })
+        setEvents(events)
       }
     }
     async function requestedFetcher() {
@@ -103,7 +115,12 @@ export default function Review(): ReactElement {
       }
     } catch (error) {
       const axiosError = error as AxiosError;
-      toast.error(axiosError.message);
+      if (axiosError.status === 409) {
+        toast.error("You have already scheduled a review at that time")
+      } else {
+
+        toast.error(axiosError.message);
+      }
     }
   };
   const cancelHandler = (review: reviewProps) => {
@@ -219,6 +236,7 @@ export default function Review(): ReactElement {
                   </button>
                 </div>
                 <Calendar
+                  events={events}
                   localizer={localizer}
                   startAccessor="start"
                   endAccessor="end"

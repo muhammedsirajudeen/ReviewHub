@@ -7,6 +7,7 @@ import Wallet from '../../../model/Wallet';
 import mongoose from 'mongoose';
 import path from 'path';
 import { appendFile, existsSync, mkdirSync } from 'fs';
+import HttpResponse, { HttpMessage, HttpStatus } from '../../../helper/resConstants';
 
 export const REVIEW_POINT=70
 
@@ -136,7 +137,10 @@ const ScheduleReview = async (req: Request, res: Response) => {
     // const user = req.user as IUser;
     // const { roadmapId } = req.params;
     const { date,reviewId } = req.body;
-    
+    const checkReview=await Review.findOne({scheduledDate:new Date(date),reviewStatus:false})
+    if(checkReview){
+      return HttpResponse(HttpStatus.COLLISSION,HttpMessage.user_collission,res)
+    }
     const updateReview = await Review.findById(reviewId)
     if (updateReview) {
       updateReview.scheduledDate = new Date(date);
