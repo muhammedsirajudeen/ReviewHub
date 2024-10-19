@@ -45,7 +45,7 @@ export default function Profile(): ReactElement {
       });
       if (response.data.message === 'success') {
         toast('Profile updated successfully');
-        setTimeout(() => window.location.reload(), 1000);
+        // setTimeout(() => window.location.reload(), 1000);
       }
     } catch (error) {
       console.log(error);
