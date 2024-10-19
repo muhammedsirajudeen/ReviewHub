@@ -27,4 +27,4 @@ WORKDIR /usr/src/app/dist
 
 
 # Set the command to run the application
-CMD ["node", "index.js"]
+CMD ["npx","pm2","index.js"]
