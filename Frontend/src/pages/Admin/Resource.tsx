@@ -260,6 +260,7 @@ export default function Resource(): ReactElement {
       {resourceEdit && (
         <ResourceForm
           method={method}
+          setResource={setResource}
           //passing resource Id
           resourceId={resource?._id ?? ''}
           section={activeresource}

@@ -33,7 +33,8 @@ const AddResource = async (req: Request, res: Response) => {
     if (addResource) {
       addResource.Section.push(resource);
       await addResource.save();
-      res.status(200).json({ message: 'success' });
+      const newResource = await Resource.findById(addResource)
+      res.status(200).json({ message: 'success', resource: newResource });
     } else {
       res.status(404).json({ message: 'requested resource not found' });
     }
@@ -56,7 +57,8 @@ const EditResource = async (req: Request, res: Response) => {
         }
       });
       await updateResource.save();
-      res.status(200).json({ message: 'success' });
+      const newResource = await Resource.findById(updateResource.id)
+      res.status(200).json({ message: 'success', resource: updateResource });
     } else {
       res.status(404).json({ message: 'requested resource not found' });
     }

@@ -1,5 +1,5 @@
-import { Fragment, ReactElement, Ref } from 'react';
-import { contentProps, sectionProps } from '../../../types/courseProps';
+import { Dispatch, Fragment, ReactElement, Ref, SetStateAction } from 'react';
+import { contentProps, resourceProps, sectionProps } from '../../../types/courseProps';
 import { useFieldArray, useForm } from 'react-hook-form';
 import classNames from 'classnames'; // optional for conditional classes
 import axios from 'axios';
@@ -17,11 +17,13 @@ export default function ResourceForm({
   closeHandler,
   section,
   resourceId,
+  setResource,
   method,
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   section: sectionProps | undefined;
+  setResource:Dispatch<SetStateAction<resourceProps| undefined>>
   resourceId: string;
   method: string;
 }): ReactElement {
@@ -58,8 +60,9 @@ export default function ResourceForm({
         })
       ).data;
       if (response.message === 'success') {
-        toast('created successfully');
-        setTimeout(() => window.location.reload(), 1000);
+        toast.success('created successfully');
+        setResource(response.resource)
+        // setTimeout(() => window.location.reload(), 1000);
       } else {
         toast(response.message);
       }
@@ -77,8 +80,9 @@ export default function ResourceForm({
       )
     ).data;
     if (response.message === 'success') {
-      toast('edited successfully');
-      setTimeout(() => window.location.reload(), 1000);
+      toast.success('edited successfully');
+      setResource(response.resource)
+      // setTimeout(() => window.location.reload(), 1000);
     } else {
       toast(response.message);
     }
