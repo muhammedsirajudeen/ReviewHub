@@ -34,7 +34,7 @@ const AddResource = async (req: Request, res: Response) => {
       addResource.Section.push(resource);
       await addResource.save();
       const newResource = await Resource.findById(addResource)
-      res.status(200).json({ message: 'success', resource: newResource });
+      res.status(200).json({ message: 'success', resource: newResource, section: resource });
     } else {
       res.status(404).json({ message: 'requested resource not found' });
     }

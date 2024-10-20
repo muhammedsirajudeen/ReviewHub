@@ -76,7 +76,7 @@ export default function Resource(): ReactElement {
     dialogRef.current?.close();
     setResourceEdit(false);
     //reload when we clear the active resource
-    if (!activeresource) window.location.reload();
+    // if (!activeresource) window.location.reload();
   };
   const quizEditHandler = (quiz: quizProps) => {
     setMethod('put');
@@ -260,7 +260,9 @@ export default function Resource(): ReactElement {
       {resourceEdit && (
         <ResourceForm
           method={method}
+          setActive={setActive}
           setResource={setResource}
+          setActiveResource={setActiveresource}
           //passing resource Id
           resourceId={resource?._id ?? ''}
           section={activeresource}

@@ -6,6 +6,7 @@ import axios from 'axios';
 import url from '../../../helper/backendUrl';
 import { toast, ToastContainer } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
+import { produce } from 'immer';
 
 type Inputs = {
   sectionName: string;
@@ -17,13 +18,17 @@ export default function ResourceForm({
   closeHandler,
   section,
   resourceId,
+  setActiveResource,
   setResource,
   method,
+  setActive
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   section: sectionProps | undefined;
-  setResource:Dispatch<SetStateAction<resourceProps| undefined>>
+  setActiveResource:Dispatch<SetStateAction<sectionProps| undefined>>
+  setResource:Dispatch<SetStateAction<resourceProps|undefined>>
+  setActive:Dispatch<SetStateAction<string>>
   resourceId: string;
   method: string;
 }): ReactElement {
@@ -61,8 +66,13 @@ export default function ResourceForm({
       ).data;
       if (response.message === 'success') {
         toast.success('created successfully');
-        setResource(response.resource)
-        // setTimeout(() => window.location.reload(), 1000);
+        setResource(produce((draft)=>{
+          draft?.Section.push(response.section as sectionProps)
+        }))
+        setActiveResource(data as sectionProps)
+        setActive((data as sectionProps).sectionName)
+
+        closeHandler()
       } else {
         toast(response.message);
       }
@@ -82,7 +92,8 @@ export default function ResourceForm({
     if (response.message === 'success') {
       toast.success('edited successfully');
       setResource(response.resource)
-      // setTimeout(() => window.location.reload(), 1000);
+      setActiveResource(data as sectionProps)
+      setActive((data as sectionProps).sectionName)
     } else {
       toast(response.message);
     }
