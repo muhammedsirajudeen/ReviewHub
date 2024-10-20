@@ -1,10 +1,10 @@
-import { ReactElement, Ref, useState } from 'react';
+import { Dispatch, ReactElement, Ref, SetStateAction, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { quizProps } from '../../../types/courseProps';
+import { QuizProps, quizProps } from '../../../types/courseProps';
 import classNames from 'classnames';
 import axios from 'axios';
 import url from '../../../helper/backendUrl';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 import Toggle from 'react-toggle';
 import axiosInstance from '../../../helper/axiosInstance';
@@ -15,10 +15,12 @@ export default function QuizForm({
   quiz,
   quizId,
   method,
+  setQuiz,
 }: {
   dialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
   quiz: quizProps | undefined;
+  setQuiz:Dispatch<SetStateAction<QuizProps| undefined>>;
   quizId: string;
   method: string;
 }): ReactElement {
@@ -63,8 +65,10 @@ export default function QuizForm({
         })
       ).data;
       if (response.message === 'success') {
-        toast('created successfully');
-        setTimeout(() => window.location.reload(), 1000);
+        toast.success('created successfully');
+        setQuiz(response.quiz as QuizProps)
+        // setTimeout(() => window.location.reload(), 1000);
+        closeHandler()
       } else {
         toast(response.message);
       }
@@ -75,8 +79,10 @@ export default function QuizForm({
       await axiosInstance.put(`/admin/quiz/${quizId}/${quiz?._id}`, data, {})
     ).data;
     if (response.message === 'success') {
-      toast('edited successfully');
-      setTimeout(() => window.location.reload(), 1000);
+      toast.success('edited successfully');
+      setQuiz(response.quiz as QuizProps)
+      // setTimeout(() => window.location.reload(), 1000);
+      closeHandler()
     } else {
       toast(response.message);
     }
@@ -245,7 +251,6 @@ export default function QuizForm({
           </button>
         </form>
       </dialog>
-      <ToastContainer />
     </>
   );
 }

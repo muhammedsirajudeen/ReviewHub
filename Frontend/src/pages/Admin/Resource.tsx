@@ -282,15 +282,18 @@ export default function Resource(): ReactElement {
       )}
       {quizedit && (
         <QuizForm
+          setQuiz={setQuiz}
           method={method}
           quizId={quiz?._id ?? ''}
           quiz={activequiz}
+
           closeHandler={closeQuizEditHandler}
           dialogRef={quizdialogRef}
         />
       )}
       {quizdelete && (
         <QuizDelete
+          setQuiz={setQuiz}
           quizId={quiz?._id}
           quiz={activequiz}
           deleteQuizDialogRef={deleteQuizDialogRef}

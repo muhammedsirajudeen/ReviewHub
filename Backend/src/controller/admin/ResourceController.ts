@@ -115,7 +115,8 @@ const AddQuiz = async (req: Request, res: Response) => {
     if (addQuiz) {
       addQuiz.Quiz.push(quizBody);
       await addQuiz.save();
-      res.status(200).json({ message: 'success' });
+      const newQuiz=await Quiz.findById(quizId)
+      res.status(200).json({ message: 'success', quiz:newQuiz });
     } else {
       res.status(404).json({ message: 'requested resource not found' });
     }
@@ -144,7 +145,8 @@ const EditQuiz = async (req: Request, res: Response) => {
         }
       });
       await updateQuiz.save();
-      res.status(200).json({ message: 'success' });
+      const newQuiz=await Quiz.findById(quizId)
+      res.status(200).json({ message: 'success', quiz:newQuiz });
     } else {
       res.status(404).json({ message: 'success' });
     }
@@ -163,7 +165,8 @@ const DeleteQuiz = async (req: Request, res: Response) => {
         (quiz) => quiz._id !== questionId
       );
       await deleteQuiz.save();
-      res.status(200).json({ message: 'success' });
+      const newQuiz=await Quiz.findById(quizId)
+      res.status(200).json({ message: 'success', quiz:newQuiz });
     } else {
       res.status(404).json({ message: 'requested resource not found' });
     }

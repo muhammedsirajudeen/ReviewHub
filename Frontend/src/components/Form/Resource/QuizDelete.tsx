@@ -1,17 +1,19 @@
-import { ReactElement, Ref } from 'react';
-import { quizProps } from '../../../types/courseProps';
+import { Dispatch, ReactElement, Ref, SetStateAction } from 'react';
+import { QuizProps, quizProps } from '../../../types/courseProps';
 import axios from 'axios';
 import url from '../../../helper/backendUrl';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 export default function QuizDelete({
   deleteQuizDialogRef,
   closeHandler,
   quiz,
   quizId,
+  setQuiz
 }: {
   deleteQuizDialogRef: Ref<HTMLDialogElement>;
   closeHandler: VoidFunction;
+  setQuiz: Dispatch<SetStateAction<QuizProps | undefined>>
   quiz: quizProps | undefined;
   quizId: string | undefined;
 }): ReactElement {
@@ -24,8 +26,10 @@ export default function QuizDelete({
       })
     ).data;
     if (response.message === 'success') {
-      toast('deleted successfully');
-      setTimeout(() => window.location.reload(), 1000);
+      toast.success('deleted successfully');
+      setQuiz(response.quiz)
+      closeHandler()
+      // setTimeout(() => window.location.reload(), 1000);
     } else {
       toast(response.message);
     }
@@ -70,7 +74,6 @@ export default function QuizDelete({
           </button>
         </div>
       </dialog>
-      <ToastContainer />
     </>
   );
 }
