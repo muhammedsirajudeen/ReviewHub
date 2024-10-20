@@ -84,7 +84,8 @@ const CredentialSignup = async (req: Request, res: Response) => {
 
       const otp = randomNumberGenerator();
       addValueToCache(createdUser.email, parseInt(otp), 7200);
-      emailGenerator(createdUser.email, randomNumberGenerator());
+      //i was putting two different numbers at two places
+      emailGenerator(createdUser.email, otp);
       res.status(201).json({ message: 'success' });
     }
   } catch (error) {
