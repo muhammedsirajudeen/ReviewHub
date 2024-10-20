@@ -136,10 +136,10 @@ const GetScheduledRoadmaps = async (req: Request, res: Response) => {
 
 const ScheduleReview = async (req: Request, res: Response) => {
   try {
-    // const user = req.user as IUser;
+    const user = req.user as IUser;
     // const { roadmapId } = req.params;
     const { date,reviewId } = req.body;
-    const checkReview=await Review.findOne({scheduledDate:new Date(date),reviewStatus:false})
+    const checkReview=await Review.findOne({scheduledDate:new Date(date),reviewStatus:false,revieweeId:user.id})
     if(checkReview){
       return HttpResponse(HttpStatus.COLLISSION,HttpMessage.user_collission,res)
     }
