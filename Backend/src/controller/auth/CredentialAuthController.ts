@@ -83,7 +83,7 @@ const CredentialSignup = async (req: Request, res: Response) => {
       //sending the otp too
 
       const otp = randomNumberGenerator();
-      addValueToCache(createdUser.email, parseInt(otp), 3600);
+      addValueToCache(createdUser.email, parseInt(otp), 7200);
       emailGenerator(createdUser.email, randomNumberGenerator());
       res.status(201).json({ message: 'success' });
     }
