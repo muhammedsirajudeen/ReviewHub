@@ -1,5 +1,5 @@
-import { ReactElement, Ref } from 'react';
-import { sectionProps } from '../../../types/courseProps';
+import { Dispatch, ReactElement, Ref, SetStateAction } from 'react';
+import { resourceProps, sectionProps } from '../../../types/courseProps';
 import { toast, ToastContainer } from 'react-toastify';
 import url from '../../../helper/backendUrl';
 import axios from 'axios';
@@ -9,10 +9,16 @@ export default function ResourceDelete({
   section,
   closeHandler,
   resourceId,
+  setActive,
+  setActiveResource,
+  setResource
 }: {
   deleteDialogRef: Ref<HTMLDialogElement>;
   section: sectionProps | undefined;
   closeHandler: VoidFunction;
+  setActive: Dispatch<SetStateAction<string>>
+  setResource: Dispatch<SetStateAction<resourceProps | undefined>>
+  setActiveResource: Dispatch<SetStateAction<sectionProps | undefined>>
   resourceId: string | undefined;
 }): ReactElement {
   const handleDelete = async () => {
@@ -27,8 +33,11 @@ export default function ResourceDelete({
       )
     ).data;
     if (response.message === 'success') {
-      toast('deleted successfully');
-      setTimeout(() => window.location.reload(), 1000);
+      toast.success('deleted successfully');
+      setActive('')
+      setActiveResource(undefined)
+      setResource(response.resource)
+      closeHandler()
     } else {
       toast(response.message);
     }

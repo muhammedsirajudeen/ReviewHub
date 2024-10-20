@@ -58,7 +58,7 @@ const EditResource = async (req: Request, res: Response) => {
       });
       await updateResource.save();
       const newResource = await Resource.findById(updateResource.id)
-      res.status(200).json({ message: 'success', resource: updateResource });
+      res.status(200).json({ message: 'success', resource: newResource });
     } else {
       res.status(404).json({ message: 'requested resource not found' });
     }
@@ -77,7 +77,8 @@ const DeleteResource = async (req: Request, res: Response) => {
         (section) => section._id !== sectionId
       );
       await deleteResource.save();
-      res.status(200).json({ message: 'success' });
+      const newResource=await Resource.findById(resourceId)
+      res.status(200).json({ message: 'success', resource: newResource });
     } else {
       res.status(404).json({ message: 'requested resource not found' });
     }

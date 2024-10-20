@@ -159,11 +159,10 @@ export default function Resource(): ReactElement {
                     key={section.sectionName}
                     onClick={() => activeHandler(section)}
                     className={`cursor-pointer w-full p-3 flex items-start justify-between rounded-lg mb-2 transition-all duration-200 
-                  ${
-                    active === section.sectionName
-                      ? 'bg-blue-500 text-white font-bold'
-                      : 'bg-white hover:bg-blue-100'
-                  }`}
+                  ${active === section.sectionName
+                        ? 'bg-blue-500 text-white font-bold'
+                        : 'bg-white hover:bg-blue-100'
+                      }`}
                   >
                     <span>{section.sectionName}</span>
                     <button
@@ -272,6 +271,9 @@ export default function Resource(): ReactElement {
       )}
       {resourceDelete && (
         <ResourceDelete
+          setActive={setActive}
+          setActiveResource={setActiveresource}
+          setResource={setResource}
           resourceId={resource?._id}
           section={activeresource}
           closeHandler={closeDeleteResourceHandler}
