@@ -42,7 +42,7 @@ const ProgressSchema = new mongoose.Schema<IProgress>({
   courseId: {
     type: mongoose.Schema.ObjectId,
     required: true,
-    unique: true,
+    unique: false,
     ref: 'courses',
   },
   userId: {
