@@ -382,14 +382,34 @@ export default function VideoChat(): ReactElement {
     if(streamRef.current){
       if(video){
         const videoTracks = streamRef.current.getVideoTracks();
+        if(localVideoRef.current){
+          localVideoRef.current.src=''
+          localVideoRef.current.load()
+        }
         videoTracks.forEach(track => {
           track.stop()
           streamRef.current?.removeTrack(track);
       });
       }else{
+        
         const videostream=await navigator.mediaDevices.getUserMedia({video:true})
+        if(localVideoRef.current){
+          localVideoRef.current.srcObject=videostream
+          localVideoRef.current.play()
+        }
         const videotrack=videostream.getVideoTracks()[0]
+
         streamRef.current.addTrack(videotrack)
+        const peer = peerRef.current;
+        if (peer) {
+          const call = await peer.call(
+            await reviewDetailsFetcher(location),
+            streamRef.current
+          );
+          if (!call) {
+            return;
+          }
+        }
       }
     }
     setVideo(prev=>!prev)
@@ -408,7 +428,7 @@ export default function VideoChat(): ReactElement {
       <h1 className="text-3xl ml-36">VIDEO CHAT</h1>
       <div className="flex items-center w-full justify-center mt-10 ">
         <div className="w-1/2  flex items-center justify-center">
-          <video ref={localVideoRef} className="w-1/2 h-1/2 rounded-xl ">
+          <video ref={localVideoRef} className="w-1/2 h-1/2 rounded-xl bg-black ">
             {' '}
           </video>
         </div>

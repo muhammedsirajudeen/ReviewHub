@@ -41,6 +41,7 @@ export default function Recording(): ReactElement {
             reviewerVideoRef.current.pause()
             reviewerVideoRef.current.src=""
             reviewerVideoRef.current.load()
+
           }
 
         }
@@ -78,7 +79,7 @@ export default function Recording(): ReactElement {
               </p>
               <video
                 ref={userVideoRef}
-                src={`${url}/reviewrecording/user-${review?._id}.webm`}
+                src={`${url}/reviewrecording/user-${review?._id}.webm?date=${new Date().toISOString()}`}
                 autoPlay
                 controls
                 className="h-96 w-96 mt-2 rounded-lg border border-gray-300 shadow-md"
@@ -108,7 +109,7 @@ export default function Recording(): ReactElement {
               </p>
               <video
                 ref={reviewerVideoRef}
-                src={`${url}/reviewrecording/reviewer-${review?._id}.webm`}
+                src={`${url}/reviewrecording/reviewer-${review?._id}.webm?date=${new Date().toISOString()}`}
                 autoPlay
                 controls
                 className="h-96 w-96 mt-2 rounded-lg border border-gray-300 shadow-md"
