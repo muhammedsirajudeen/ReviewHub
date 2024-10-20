@@ -62,6 +62,8 @@ const RequestReview = async (req: Request, res: Response) => {
             status:false
           }
         )
+      }else if(user.premiumMember){
+        console.log('User is Premium Member')
       }
       else{
         return res.status(402).json({message:'insufficient funds'})
