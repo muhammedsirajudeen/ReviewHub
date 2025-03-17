@@ -59,7 +59,9 @@ client.connect().then(() => console.log('Connected to Redis'));
 
 const connection: ConnectionOptions = {
   host:  process.env.REDIS_HOST,
-  port: 6379,
+  port: 13786,
+  username:process.env.REDIS_USERNAME,
+  password:process.env.REDIS_PASSWORD
 };
 
 const worker = new Worker(
@@ -108,7 +110,6 @@ const worker = new Worker(
   },
   { connection }
 );
-
 // Handle worker errors
 worker.on('failed', (job, err) => {
   console.error(`Job failed`, err);

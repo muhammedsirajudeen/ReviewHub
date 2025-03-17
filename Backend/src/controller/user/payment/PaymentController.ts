@@ -43,8 +43,9 @@ const OrderFailure = async (req: Request, res: Response) => {
 const OrderCreator = async (req: Request, res: Response) => {
   try {
     const user = req.user as IUser;
-
+    console.log(user)
     const orderBody = req.body;
+    console.log(process.env.RAZORPAY_KEY_ID,process.env.RAZORPAY_KEY_SECRET)
     const instance = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID as string,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -55,9 +56,14 @@ const OrderCreator = async (req: Request, res: Response) => {
       receipt: 'order_rcptid_11',
     };
     instance.orders.create(options, async function (err, order) {
+      if(err){
+        console.log(err)
+        return res.status(500).json({message:err})
+      }
+      console.log(order)
       let newPayment = new Payment({
         amount: parseInt(orderBody.amount) / 100,
-        userId: user.id,
+        userId: user._id || user.id,
         orderId: order.id,
       });
       await newPayment.save();
