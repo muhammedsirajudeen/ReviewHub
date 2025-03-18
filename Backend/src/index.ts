@@ -18,7 +18,7 @@ import corsOptions from './helper/corsOptions';
 import User from './model/User';
 import { sendNotification } from './services/subscriptionService';
 import { createClient } from 'redis';
-import { ConnectionOptions, Job, Worker } from 'bullmq';
+import { ConnectionOptions, Job, Queue, Worker } from 'bullmq';
 import { schedulerProps } from './helper/bullmqIntegration';
 import Notification, { Type } from './model/Notification';
 import { ExpressPeerServer, IClient } from 'peer';
@@ -59,10 +59,19 @@ client.connect().then(() => console.log('Connected to Redis'));
 
 const connection: ConnectionOptions = {
   host:  process.env.REDIS_HOST,
-  port: 13786,
+  port: parseInt(process.env.REDIS_PORT!),
   username:process.env.REDIS_USERNAME,
   password:process.env.REDIS_PASSWORD
 };
+(async () => {
+  try {
+    const testQueue = new Queue('testQueue', { connection });
+    await testQueue.add('testJob', { message: 'Hello from BullMQ' });
+    console.log('Test connection succeeded');
+  } catch (error) {
+    console.error('Failed to add job:', error);
+  }
+})();
 
 const worker = new Worker(
   'reviewScheduler',
